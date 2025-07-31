@@ -1,14 +1,18 @@
-import Input from "@/components/ui/Input";
-import React from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 
-const PublicScreen = () => (
-    <View style={styles.container}>
-        <Text style={styles.title}>Welcome to Coworkers</Text>
-        <Input title={"Connectez-vous"} />
-    </View>
-);
+export default function Input({ title }) {
+    return (
+        <View>
+            <Text style={styles.title}>{title}</Text>
 
+            <TextInput
+                style={styles.input}
+                value="toto"
+                placeholder={"placeholder"}
+            />
+        </View>
+    );
+}
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -37,5 +41,3 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
 });
-
-export default PublicScreen;

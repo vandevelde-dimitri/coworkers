@@ -1,8 +1,19 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { StyleSheet } from "react-native";
+import { useAuth } from "@/hooks/authContext";
+import { supabase } from "@/utils/supabase";
+import { Button, StyleSheet } from "react-native";
 
 export default function ExploreScreen() {
+    const { session } = useAuth();
+
+    const handleClick = async () => {
+        // Handle logout or any other action
+        const { error } = await supabase.auth.signOut();
+    };
+
+    console.log("ExploreScreen session:", session);
+
     return (
         <ThemedView style={styles.container}>
             <ThemedText type="title">Explore</ThemedText>
@@ -11,6 +22,7 @@ export default function ExploreScreen() {
                 display features, news, or any other content you want to
                 highlight in your app.
             </ThemedText>
+            <Button title="Déconnexion" onPress={handleClick} />
         </ThemedView>
     );
 }
