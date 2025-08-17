@@ -1,9 +1,8 @@
+import { useAuth } from "@/hooks/authContext";
 import { containerStyles } from "@/styles/container.styles";
 import { formAuthStyles } from "@/styles/form.styles";
-import { supabase } from "@/utils/supabase";
 import FeatherIcon from "@expo/vector-icons/Feather";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { router } from "expo-router";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
@@ -15,10 +14,10 @@ import * as yup from "yup";
 
 const SignupScreen = () => {
     const insets = useSafeAreaInsets();
-
+    const { session } = useAuth();
     const schema = yup.object({
-        email: yup.string().email("Email invalide").required("Email requis"),
-        password: yup.string().required("Mot de passe requis"),
+        lastname: yup.string().required("Nom requis"),
+        firstname: yup.string().required("Prénom requis"),
     });
     const {
         control,
@@ -28,21 +27,10 @@ const SignupScreen = () => {
         resolver: yupResolver(schema),
     });
 
-    const onSubmit = async (data: { email: string; password: string }) => {
-        const { email, password } = data;
-        const { data: user, error } = await supabase.auth.signUp({
-            email,
-            password,
-        });
-
-        if (error) {
-            console.log("Erreur inscription:", error.message);
-            return;
-        }
-        console.log("error", error);
-
-        router.replace("/(protected)/register/username");
+    const onSubmit = async (data) => {
+        const { firstname, lastname } = data;
     };
+    console.log("session", session);
 
     return (
         <SafeAreaView
@@ -66,21 +54,21 @@ const SignupScreen = () => {
                 </View>
             </View>
 
-            <Text style={formAuthStyles.title}>Inscrivez-vous</Text>
-            <Text style={formAuthStyles.subtitle}>
-                Vous allez recevoir un e-mail de confirmation.
+            <Text style={formAuthStyles.title}>
+                Vous vous appelez comment ?
             </Text>
+
             <Controller
                 control={control}
-                name="email"
+                name="firstname"
                 render={({ field: { onChange, onBlur, value } }) => (
                     <TextInput
                         autoCapitalize="none"
                         autoCorrect={false}
                         clearButtonMode="while-editing"
-                        keyboardType="email-address"
+                        keyboardType="default"
                         onChangeText={onChange}
-                        placeholder="john@example.com"
+                        placeholder="John"
                         placeholderTextColor="#6b7280"
                         style={formAuthStyles.input}
                         value={value}
@@ -88,12 +76,14 @@ const SignupScreen = () => {
                     />
                 )}
             />
-            {errors.email && (
-                <Text style={formAuthStyles.error}>{errors.email.message}</Text>
+            {errors.firstname && (
+                <Text style={formAuthStyles.error}>
+                    {errors.firstname.message}
+                </Text>
             )}
             <Controller
                 control={control}
-                name="password"
+                name="lastname"
                 render={({ field: { onChange, onBlur, value } }) => (
                     <TextInput
                         autoCorrect={false}
@@ -101,31 +91,24 @@ const SignupScreen = () => {
                         value={value}
                         onBlur={onBlur}
                         onChangeText={onChange}
-                        placeholder="********"
+                        placeholder="Doe"
                         placeholderTextColor="#6b7280"
                         style={formAuthStyles.input}
-                        secureTextEntry={true}
                     />
                 )}
             />
-            {errors.password && (
+            {errors.lastname && (
                 <Text style={formAuthStyles.error}>
-                    {errors.password.message}
+                    {errors.lastname.message}
                 </Text>
             )}
-            <Text style={formAuthStyles.title}>Déja un compte ?</Text>
-            <Text
-                style={formAuthStyles.link}
-                onPress={() => router.push("/(public)/signin")}
-            >
-                Connectez-vous
-            </Text>
+
             <TouchableOpacity
                 onPress={handleSubmit(onSubmit)}
                 style={containerStyles.bottomButton}
             >
                 <View style={formAuthStyles.btn}>
-                    <Text style={formAuthStyles.btnText}>Recevoir</Text>
+                    <Text style={formAuthStyles.btnText}>Suivant</Text>
                 </View>
             </TouchableOpacity>
         </SafeAreaView>

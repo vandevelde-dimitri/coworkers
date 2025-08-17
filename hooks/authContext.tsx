@@ -1,12 +1,24 @@
-// lib/AuthContext.tsx
 import { supabase } from "@/utils/supabase";
 import { Session } from "@supabase/supabase-js";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+    createContext,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from "react";
 
-const AuthContext = createContext<{
+type AuthContextType = {
     session: Session | null;
     loading: boolean;
-}>({ session: null, loading: true });
+    profileCompleted: boolean;
+};
+
+const AuthContext = createContext<AuthContextType>({
+    session: null,
+    loading: true,
+    profileCompleted: false,
+});
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [session, setSession] = useState<Session | null>(null);
@@ -30,8 +42,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return () => subscription.unsubscribe();
     }, []);
 
+    // ⚡️ dériver profileCompleted de la session
+    const profileCompleted = useMemo(() => {
+        return session?.user?.user_metadata?.profile_completed === true;
+    }, [session]);
+
     return (
-        <AuthContext.Provider value={{ session, loading }}>
+        <AuthContext.Provider value={{ session, loading, profileCompleted }}>
             {children}
         </AuthContext.Provider>
     );

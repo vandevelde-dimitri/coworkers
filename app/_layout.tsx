@@ -1,32 +1,38 @@
-// app/_layout.tsx
 import { AuthProvider, useAuth } from "@/hooks/authContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Slot, useRouter, useSegments } from "expo-router";
 import React, { useEffect } from "react";
 
 function InitialLayout() {
-    const { session, loading } = useAuth();
+    const { session, loading, profileCompleted } = useAuth(); // <-- ajoute profileCompleted
     const segments = useSegments();
     const router = useRouter();
 
-    const inAuthGroup = segments[0] === "(public)";
+    const inPublicGroup = segments[0] === "(public)";
     const inTabsGroup = segments[0] === "(tabs)";
+    const inRegisterGroup = segments[0] === "(protected)"; // tes étapes d’onboarding
 
     useEffect(() => {
         if (!loading) {
-            // Si pas de session ET (dans tabs OU pas dans auth)
-            if (!session && (inTabsGroup || !inAuthGroup)) {
+            // 🔴 Cas 1 : pas connecté
+            if (!session && (inTabsGroup || !inPublicGroup)) {
                 router.replace("/welcome");
                 return;
             }
 
-            // Si session ET dans auth
-            if (session && inAuthGroup) {
+            // 🟠 Cas 2 : connecté mais profil incomplet
+            if (session && !profileCompleted && !inRegisterGroup) {
+                router.replace("/(protected)/register/username");
+                return;
+            }
+
+            // 🟢 Cas 3 : connecté avec profil complet → empêche retour vers (public)
+            if (session && profileCompleted && inPublicGroup) {
                 router.replace("/(tabs)");
                 return;
             }
         }
-    }, [session, loading, segments]);
+    }, [session, loading, segments, profileCompleted]);
 
     if (loading) return null;
 
