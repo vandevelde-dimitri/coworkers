@@ -7,6 +7,7 @@ import React, {
     useMemo,
     useState,
 } from "react";
+import { AppState } from "react-native";
 
 type AuthContextType = {
     session: Session | null;
@@ -39,10 +40,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         getSession();
 
-        return () => subscription.unsubscribe();
+        // 🔹 Auto refresh session sur retour en foreground
+        const subscriptionAppState = AppState.addEventListener(
+            "change",
+            (state) => {
+                if (state === "active") {
+                    supabase.auth.startAutoRefresh();
+                } else {
+                    supabase.auth.stopAutoRefresh();
+                }
+            }
+        );
+
+        return () => {
+            subscription.unsubscribe();
+            subscriptionAppState.remove();
+        };
     }, []);
 
-    // ⚡️ dériver profileCompleted de la session
     const profileCompleted = useMemo(() => {
         return session?.user?.user_metadata?.profile_completed === true;
     }, [session]);
