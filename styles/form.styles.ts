@@ -10,6 +10,7 @@ export const formAuthStyles = StyleSheet.create({
     title: {
         fontSize: 32,
         fontWeight: "semibold",
+        marginBottom: 8,
     },
     subtitle: {
         fontSize: 15,

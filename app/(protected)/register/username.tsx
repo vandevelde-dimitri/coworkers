@@ -2,6 +2,7 @@ import { useAuth } from "@/hooks/authContext";
 import { containerStyles } from "@/styles/container.styles";
 import { formAuthStyles } from "@/styles/form.styles";
 import { supabase } from "@/utils/supabase";
+import { User } from "@/utils/user.interface";
 import FeatherIcon from "@expo/vector-icons/Feather";
 import { yupResolver } from "@hookform/resolvers/yup";
 import React from "react";
@@ -28,17 +29,14 @@ const SignupScreen = () => {
         resolver: yupResolver(schema),
     });
 
-    const onSubmit = async (data) => {
-        const { firstname, lastname } = data;
-        const { error } = await supabase.auth.updateUser({
-            data: { profile_completed: true },
+    const onSubmit = async (data: User) => {
+        const { data: user, error } = await supabase.from("users").upsert({
+            firstname: data.firstname,
+            lastname: data.lastname,
         });
     };
     console.log("session", session);
-    const handleClick = async () => {
-        // Handle logout or any other action
-        const { error } = await supabase.auth.signOut();
-    };
+
     return (
         <SafeAreaView
             style={[
@@ -118,11 +116,6 @@ const SignupScreen = () => {
                     <Text style={formAuthStyles.btnText}>Suivant</Text>
                 </View>
             </TouchableOpacity>
-            <View style={formAuthStyles.btn}>
-                <Text style={formAuthStyles.btnText} onPress={handleClick}>
-                    deco
-                </Text>
-            </View>
         </SafeAreaView>
     );
 };

@@ -30,16 +30,36 @@ const SignupScreen = () => {
 
     const onSubmit = async (data: { email: string; password: string }) => {
         const { email, password } = data;
-        const { data: user, error } = await supabase.auth.signUp({
-            email,
-            password,
-        });
 
-        if (error) {
-            console.log("Erreur inscription:", error.message);
+        const { data: userAuth, error: errorAuth } = await supabase.auth.signUp(
+            {
+                email,
+                password,
+            }
+        );
+
+        if (errorAuth) {
+            console.log("Erreur inscription:", errorAuth.message);
             return;
         }
-        console.log("error", error);
+
+        if (userAuth.user) {
+            const { data: user, error: errorUser } = await supabase
+                .from("users")
+                .upsert(
+                    [
+                        {
+                            id: userAuth.user.id,
+                        },
+                    ],
+                    { onConflict: "id" }
+                );
+
+            if (errorUser) {
+                console.log("Erreur création user table:", errorUser.message);
+                return;
+            }
+        }
 
         router.replace("/(protected)/register/username");
     };
