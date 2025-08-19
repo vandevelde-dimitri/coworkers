@@ -48,7 +48,7 @@ const FloorRegistrationScreen = () => {
         console.log("Utilisateur mis à jour:", user);
 
         console.log("Floor data submitted:", data);
-        router.replace("/(protected)/register/team");
+        router.replace("/(protected)/register/contract");
     };
     // console.log("session", session);
     if (isLoading) {

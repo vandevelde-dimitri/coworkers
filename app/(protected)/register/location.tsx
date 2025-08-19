@@ -40,7 +40,7 @@ const LocationRegistrationScreen = () => {
         }
         console.log("Utilisateur mis à jour:", user);
 
-        router.replace("/(protected)/register/contract");
+        router.replace("/(protected)/register/floor");
     };
     // console.log("session", session);
 

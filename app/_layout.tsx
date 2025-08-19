@@ -4,13 +4,13 @@ import { Slot, useRouter, useSegments } from "expo-router";
 import React, { useEffect } from "react";
 
 function InitialLayout() {
-    const { session, loading, profileCompleted } = useAuth(); // <-- ajoute profileCompleted
+    const { session, loading, profileCompleted } = useAuth();
     const segments = useSegments();
     const router = useRouter();
 
     const inPublicGroup = segments[0] === "(public)";
     const inTabsGroup = segments[0] === "(tabs)";
-    const inRegisterGroup = segments[0] === "(protected)"; // tes étapes d’onboarding
+    const inRegisterGroup = segments[0] === "(protected)";
 
     useEffect(() => {
         if (!loading) {
@@ -30,6 +30,10 @@ function InitialLayout() {
             if (session && profileCompleted && inPublicGroup) {
                 router.replace("/(tabs)");
                 return;
+            }
+            // 🟢 Cas 4 : connecté avec profil complet et pas dans les tabs → redirection vers tabs
+            if (session && profileCompleted && !inTabsGroup) {
+                router.replace("/(tabs)");
             }
         }
     }, [session, loading, segments, profileCompleted]);

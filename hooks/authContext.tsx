@@ -13,12 +13,14 @@ type AuthContextType = {
     session: Session | null;
     loading: boolean;
     profileCompleted: boolean;
+    refreshSession: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType>({
     session: null,
     loading: true,
     profileCompleted: false,
+    refreshSession: async () => {},
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -40,7 +42,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         getSession();
 
-        // 🔹 Auto refresh session sur retour en foreground
         const subscriptionAppState = AppState.addEventListener(
             "change",
             (state) => {
@@ -58,12 +59,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         };
     }, []);
 
+    const refreshSession = async () => {
+        const { data } = await supabase.auth.getSession();
+        setSession(data.session);
+    };
     const profileCompleted = useMemo(() => {
         return session?.user?.user_metadata?.profile_completed === true;
     }, [session]);
 
     return (
-        <AuthContext.Provider value={{ session, loading, profileCompleted }}>
+        <AuthContext.Provider
+            value={{ session, loading, profileCompleted, refreshSession }}
+        >
             {children}
         </AuthContext.Provider>
     );

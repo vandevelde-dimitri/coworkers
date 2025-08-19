@@ -7,7 +7,6 @@ import { supabase } from "@/utils/supabase";
 import FeatherIcon from "@expo/vector-icons/Feather";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Picker } from "@react-native-picker/picker";
-import { router } from "expo-router";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -19,7 +18,7 @@ import * as yup from "yup";
 
 const TeamRegistrationScreen = () => {
     const insets = useSafeAreaInsets();
-    const { session } = useAuth();
+    const { session, refreshSession } = useAuth();
     const schema = yup.object({
         team: yup
             .mixed<Team>()
@@ -40,19 +39,21 @@ const TeamRegistrationScreen = () => {
     const onSubmit = async (data: User) => {
         const { data: user, error } = await supabase
             .from("users")
-            .update({
-                team: data.team,
-            })
+            .update({ team: data.team })
             .eq("id", session?.user.id);
 
         if (error) {
             console.log("Erreur mise à jour user:", error.message);
             return;
         }
-        console.log("Utilisateur mis à jour:", user);
 
-        router.replace("/(protected)/register/floor");
+        console.log("Utilisateur mis à jour team:", user);
+
+        await supabase.auth.updateUser({ data: { profile_completed: true } });
+
+        refreshSession();
     };
+
     console.log("session", session);
 
     return (
