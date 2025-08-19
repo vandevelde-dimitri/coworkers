@@ -43,7 +43,7 @@ const UsernameRegisterScreen = () => {
 
         router.replace("/(protected)/register/location");
     };
-    console.log("session", session);
+    // console.log("session", session);
 
     return (
         <SafeAreaView

@@ -29,6 +29,17 @@ export const formAuthStyles = StyleSheet.create({
         padding: 12,
         marginBottom: 16,
     },
+    select: {
+        // paddingVertical: 20,
+        paddingHorizontal: 14,
+        // alignItems: "center",
+        justifyContent: "center",
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: "blue",
+        padding: 12,
+        marginBottom: 16,
+    },
     btn: {
         flexDirection: "row",
         alignItems: "center",

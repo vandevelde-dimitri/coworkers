@@ -1,25 +1,34 @@
 import { useAuth } from "@/hooks/authContext";
 import { containerStyles } from "@/styles/container.styles";
 import { formAuthStyles } from "@/styles/form.styles";
+import { Contract } from "@/types/enum/contract.enum";
+import { Team } from "@/types/enum/team.enum";
 import { User } from "@/types/user.interface";
 import { supabase } from "@/utils/supabase";
 import FeatherIcon from "@expo/vector-icons/Feather";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { Picker } from "@react-native-picker/picker";
 import { router } from "expo-router";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Button, Text, TouchableOpacity, View } from "react-native";
 import {
     SafeAreaView,
     useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import * as yup from "yup";
 
-const LocationRegistrationScreen = () => {
+const TeamRegistrationScreen = () => {
     const insets = useSafeAreaInsets();
     const { session } = useAuth();
     const schema = yup.object({
-        city: yup.string().required("Ville requis"),
+        team: yup
+            .mixed<Team>()
+            .oneOf(
+                Object.values(Team),
+                "Veuillez sélectionner une équipe valide"
+            )
+            .required("L'équipe est requis"),
     });
     const {
         control,
@@ -32,8 +41,11 @@ const LocationRegistrationScreen = () => {
     const onSubmit = async (data: User) => {
         const { data: user, error } = await supabase
             .from("users")
-            .update({ city: data.city })
+            .update({
+                team: data.team,
+            })
             .eq("id", session?.user.id);
+
         if (error) {
             console.log("Erreur mise à jour user:", error.message);
             return;
@@ -42,7 +54,7 @@ const LocationRegistrationScreen = () => {
 
         router.replace("/(protected)/register/contract");
     };
-    // console.log("session", session);
+    console.log("session", session);
 
     return (
         <SafeAreaView
@@ -67,26 +79,34 @@ const LocationRegistrationScreen = () => {
             </View>
 
             <Text style={formAuthStyles.title}>
-                Vous êtes de quelle ville ?
+                Vous êtes de quelle équipe ?
             </Text>
             <Controller
                 control={control}
-                name="city"
-                render={({ field: { onChange, onBlur, value } }) => (
-                    <TextInput
-                        autoCorrect={false}
-                        clearButtonMode="while-editing"
-                        value={value}
-                        onBlur={onBlur}
-                        onChangeText={onChange}
-                        placeholder="Paris, Lyon, Marseille..."
-                        placeholderTextColor="#6b7280"
-                        style={formAuthStyles.input}
-                    />
+                name="team"
+                render={({ field: { onChange, value } }) => (
+                    <View style={formAuthStyles.select}>
+                        <Picker
+                            selectedValue={value}
+                            onValueChange={(val) => onChange(val)}
+                        >
+                            <Picker.Item
+                                label="Sélectionnez une équipe..."
+                                value=""
+                            />
+                            {Object.values(Team).map((team) => (
+                                <Picker.Item
+                                    key={team}
+                                    label={team}
+                                    value={team}
+                                />
+                            ))}
+                        </Picker>
+                    </View>
                 )}
             />
-            {errors.city && (
-                <Text style={formAuthStyles.error}>{errors.city.message}</Text>
+            {errors.team && (
+                <Text style={formAuthStyles.error}>{errors.team.message}</Text>
             )}
 
             <TouchableOpacity
@@ -101,4 +121,4 @@ const LocationRegistrationScreen = () => {
     );
 };
 
-export default LocationRegistrationScreen;
+export default TeamRegistrationScreen;
