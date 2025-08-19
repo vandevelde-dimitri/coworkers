@@ -1,7 +1,7 @@
 import { useAuth } from "@/hooks/authContext";
+import { useFloorsAll } from "@/hooks/useFloor";
 import { containerStyles } from "@/styles/container.styles";
 import { formAuthStyles } from "@/styles/form.styles";
-import { Team } from "@/types/enum/team.enum";
 import { User } from "@/types/user.interface";
 import { supabase } from "@/utils/supabase";
 import FeatherIcon from "@expo/vector-icons/Feather";
@@ -17,17 +17,13 @@ import {
 } from "react-native-safe-area-context";
 import * as yup from "yup";
 
-const TeamRegistrationScreen = () => {
+const FloorRegistrationScreen = () => {
     const insets = useSafeAreaInsets();
+    const { data: floors, isLoading, error } = useFloorsAll();
+
     const { session } = useAuth();
     const schema = yup.object({
-        team: yup
-            .mixed<Team>()
-            .oneOf(
-                Object.values(Team),
-                "Veuillez sélectionner une équipe valide"
-            )
-            .required("L'équipe est requis"),
+        floor: yup.string().required("Centre requis"),
     });
     const {
         control,
@@ -41,7 +37,7 @@ const TeamRegistrationScreen = () => {
         const { data: user, error } = await supabase
             .from("users")
             .update({
-                team: data.team,
+                fc_id: data.floor,
             })
             .eq("id", session?.user.id);
 
@@ -51,10 +47,20 @@ const TeamRegistrationScreen = () => {
         }
         console.log("Utilisateur mis à jour:", user);
 
-        router.replace("/(protected)/register/floor");
+        console.log("Floor data submitted:", data);
+        router.replace("/(protected)/register/team");
     };
-    console.log("session", session);
+    // console.log("session", session);
+    if (isLoading) {
+        return <Text>Chargement...</Text>;
+    }
+    if (error) {
+        return <Text>Erreur de chargement des annonces.</Text>;
+    }
 
+    if (!floors || floors.length === 0) {
+        return <Text>Aucune annonce trouvée.</Text>;
+    }
     return (
         <SafeAreaView
             style={[
@@ -78,11 +84,11 @@ const TeamRegistrationScreen = () => {
             </View>
 
             <Text style={formAuthStyles.title}>
-                Vous êtes de quelle équipe ?
+                Vous faites parti de quelle centre Amazon ?
             </Text>
             <Controller
                 control={control}
-                name="team"
+                name="floor"
                 render={({ field: { onChange, value } }) => (
                     <View style={formAuthStyles.select}>
                         <Picker
@@ -90,22 +96,22 @@ const TeamRegistrationScreen = () => {
                             onValueChange={(val) => onChange(val)}
                         >
                             <Picker.Item
-                                label="Sélectionnez une équipe..."
+                                label="Sélectionnez un centre..."
                                 value=""
                             />
-                            {Object.values(Team).map((team) => (
+                            {floors.map((floor) => (
                                 <Picker.Item
-                                    key={team}
-                                    label={team}
-                                    value={team}
+                                    key={floor.id}
+                                    label={floor.name}
+                                    value={floor.id}
                                 />
                             ))}
                         </Picker>
                     </View>
                 )}
             />
-            {errors.team && (
-                <Text style={formAuthStyles.error}>{errors.team.message}</Text>
+            {errors.floor && (
+                <Text style={formAuthStyles.error}>{errors.floor.message}</Text>
             )}
 
             <TouchableOpacity
@@ -120,4 +126,4 @@ const TeamRegistrationScreen = () => {
     );
 };
 
-export default TeamRegistrationScreen;
+export default FloorRegistrationScreen;

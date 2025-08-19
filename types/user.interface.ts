@@ -7,4 +7,5 @@ export interface User {
     city?: string;
     contract?: Contract;
     team?: Team;
+    floor?: string;
 }
