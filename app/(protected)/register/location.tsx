@@ -15,12 +15,11 @@ import {
 } from "react-native-safe-area-context";
 import * as yup from "yup";
 
-const UsernameRegisterScreen = () => {
+const LocationRegistrationScreen = () => {
     const insets = useSafeAreaInsets();
     const { session } = useAuth();
     const schema = yup.object({
-        lastname: yup.string().required("Nom requis"),
-        firstname: yup.string().required("Prénom requis"),
+        city: yup.string().required("Ville requis"),
     });
     const {
         control,
@@ -33,7 +32,7 @@ const UsernameRegisterScreen = () => {
     const onSubmit = async (data: User) => {
         const { data: user, error } = await supabase
             .from("users")
-            .update({ firstname: data.firstname, lastname: data.lastname })
+            .update({ city: data.city })
             .eq("id", session?.user.id);
         if (error) {
             console.log("Erreur mise à jour user:", error.message);
@@ -41,7 +40,7 @@ const UsernameRegisterScreen = () => {
         }
         console.log("Utilisateur mis à jour:", user);
 
-        router.replace("/(protected)/register/location");
+        router.replace("/(protected)/register/contract");
     };
     console.log("session", session);
 
@@ -70,33 +69,9 @@ const UsernameRegisterScreen = () => {
             <Text style={formAuthStyles.title}>
                 Vous vous appelez comment ?
             </Text>
-
             <Controller
                 control={control}
-                name="firstname"
-                render={({ field: { onChange, onBlur, value } }) => (
-                    <TextInput
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        clearButtonMode="while-editing"
-                        keyboardType="default"
-                        onChangeText={onChange}
-                        placeholder="John"
-                        placeholderTextColor="#6b7280"
-                        style={formAuthStyles.input}
-                        value={value}
-                        onBlur={onBlur}
-                    />
-                )}
-            />
-            {errors.firstname && (
-                <Text style={formAuthStyles.error}>
-                    {errors.firstname.message}
-                </Text>
-            )}
-            <Controller
-                control={control}
-                name="lastname"
+                name="city"
                 render={({ field: { onChange, onBlur, value } }) => (
                     <TextInput
                         autoCorrect={false}
@@ -110,10 +85,8 @@ const UsernameRegisterScreen = () => {
                     />
                 )}
             />
-            {errors.lastname && (
-                <Text style={formAuthStyles.error}>
-                    {errors.lastname.message}
-                </Text>
+            {errors.city && (
+                <Text style={formAuthStyles.error}>{errors.city.message}</Text>
             )}
 
             <TouchableOpacity
@@ -128,4 +101,4 @@ const UsernameRegisterScreen = () => {
     );
 };
 
-export default UsernameRegisterScreen;
+export default LocationRegistrationScreen;
