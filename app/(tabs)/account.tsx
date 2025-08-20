@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-const TestScreen = () => {
+const AccountScreen = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Écran Protégé</Text>
@@ -30,4 +30,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default TestScreen;
+export default AccountScreen;

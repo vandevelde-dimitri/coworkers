@@ -114,7 +114,9 @@ const TeamRegistrationScreen = () => {
                 style={containerStyles.bottomButton}
             >
                 <View style={formAuthStyles.btn}>
-                    <Text style={formAuthStyles.btnText}>Suivant</Text>
+                    <Text style={formAuthStyles.btnText}>
+                        Inscription terminer
+                    </Text>
                 </View>
             </TouchableOpacity>
         </SafeAreaView>

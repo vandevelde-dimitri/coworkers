@@ -4,15 +4,15 @@ import { useAuth } from "@/hooks/authContext";
 import { supabase } from "@/utils/supabase";
 import { Button, StyleSheet } from "react-native";
 
-export default function ExploreScreen() {
+export default function AddAnnouncementScreen() {
+    // Fetch the current session
     const { session } = useAuth();
-
     const handleClick = async () => {
         // Handle logout or any other action
         const { error } = await supabase.auth.signOut();
     };
 
-    console.log("ExploreScreen session:", session);
+    console.log("AddAnnouncementScreen session:", session);
 
     return (
         <ThemedView style={styles.container}>
