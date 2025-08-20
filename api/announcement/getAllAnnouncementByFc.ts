@@ -1,21 +1,12 @@
+import { Announcement } from "@/types/announcement.interface";
 import { supabase } from "@/utils/supabase";
 
-export async function getAllAnnouncementByFc() {
+export async function getAllAnnouncementByFc(): Promise<Announcement[]> {
     const { data: sessionData, error: sessionError } =
         await supabase.auth.getSession();
+    if (sessionError) throw sessionError;
     const userId = sessionData?.session?.user?.id;
-    //     const { data: annonces, error } = await supabase
-    //         .from("annonces")
-    //         .select(
-    //             `
-    //     id,
-    //     title,
-    //     content,
-    //     number_of_places,
-    //     users!inner(fc_id)
-    //   `
-    //         )
-    //         .eq("users.fc_id", "b6ee1c86-c2b4-4385-806c-9bb262b60865");
+
     const { data: annonces, error } = await supabase.rpc(
         "get_annonces_for_user",
         {
