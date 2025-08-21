@@ -1,25 +1,24 @@
 import { AnnouncementWithUser } from "@/types/announcement.interface";
 import { supabase } from "@/utils/supabase";
 
-export async function getAllAnnouncementByFc(): Promise<
-    AnnouncementWithUser[]
-> {
+export async function getAnnouncementById(
+    id: string
+): Promise<AnnouncementWithUser> {
     const { data: sessionData, error: sessionError } =
         await supabase.auth.getSession();
     if (sessionError) throw sessionError;
     const userId = sessionData?.session?.user?.id;
 
-    const { data: annonces, error } = await supabase.rpc(
-        "get_annonces_for_user",
-        {
-            p_user_id: userId,
-        }
-    );
+    const { data: annonce, error } = await supabase
+        .from("annonces")
+        .select("*")
+        .eq("id", id)
+        .single();
     if (error) {
         console.error("Error fetching announcements:", error);
         throw error;
     }
-    console.log(" ✅  Fetched announcements:", annonces);
+    console.log(" ✅  Fetched announcements:", annonce);
 
-    return annonces || [];
+    return annonce;
 }

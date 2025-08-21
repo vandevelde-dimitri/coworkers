@@ -1,15 +1,17 @@
 import { useAnnouncementByFc } from "@/hooks/announcement/useAnnouncement";
 import { containerStyles } from "@/styles/container.styles";
 import { formAuthStyles } from "@/styles/form.styles";
+import { Contract } from "@/types/enum/contract.enum";
 import FeatherIcon from "@expo/vector-icons/Feather";
-import { StyleSheet, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import {
     SafeAreaView,
     useSafeAreaInsets,
 } from "react-native-safe-area-context";
-
 export default function HomeScreen() {
     const insets = useSafeAreaInsets();
+    const router = useRouter();
 
     const { data, isLoading, error } = useAnnouncementByFc();
 
@@ -79,10 +81,45 @@ export default function HomeScreen() {
                         number_of_places,
                         date_start,
                         date_end,
+                        user_name,
+                        contract,
+                        image_profile,
+                        team,
                     }) => (
-                        <View style={styles.card} key={id}>
+                        <TouchableOpacity
+                            style={styles.card}
+                            key={id}
+                            onPress={() => {
+                                router.push(
+                                    `/(tabs)/(home)/announcement/${id}`
+                                );
+                            }}
+                        >
+                            {/* 🔹 Header avec avatar et utilisateur */}
                             <View style={styles.header}>
-                                <Text style={styles.title}>{title}</Text>
+                                <Image
+                                    alt="Avatar"
+                                    source={{
+                                        uri: image_profile
+                                            ? image_profile
+                                            : "https://ui-avatars.com/api/?name=" +
+                                              user_name,
+                                    }}
+                                    style={[
+                                        styles.profileAvatar,
+                                        contract === Contract.CDI
+                                            ? { borderColor: "#1D4ED8" }
+                                            : contract === Contract.CDD
+                                            ? { borderColor: "#10B981" }
+                                            : { borderColor: "#6B7280" },
+                                    ]}
+                                />
+                                <View style={{ marginLeft: 8 }}>
+                                    <Text style={styles.userName}>
+                                        {user_name}
+                                    </Text>
+                                    <Text style={styles.fcName}>{team}</Text>
+                                </View>
                                 <View
                                     style={[
                                         styles.badge,
@@ -101,20 +138,22 @@ export default function HomeScreen() {
                                     </Text>
                                 </View>
                             </View>
-
-                            <Text style={styles.content}>{content}</Text>
-
+                            <View style={styles.body}>
+                                <Text style={styles.title}>{title}</Text>
+                                <Text style={styles.content}>{content}</Text>
+                            </View>
+                            <Text style={styles.places}>
+                                {number_of_places} place(s) restante(s)
+                            </Text>
                             {date_start && (
                                 <Text style={styles.dates}>
-                                    Du {date_start} à{" "}
-                                    {date_end ? `au ${date_end}` : "maintenant"}
+                                    Du {date_start}{" "}
+                                    {date_end
+                                        ? `au ${date_end}`
+                                        : "(valable sans limite)"}
                                 </Text>
                             )}
-
-                            <Text style={styles.places}>
-                                {number_of_places} place(s) restantes
-                            </Text>
-                        </View>
+                        </TouchableOpacity>
                     )
                 )}
             </View>
@@ -126,50 +165,63 @@ const styles = StyleSheet.create({
     card: {
         backgroundColor: "#fff",
         borderRadius: 12,
-        padding: 16,
-        marginBottom: 12,
+        padding: 12,
+        marginBottom: 16,
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
+        shadowOpacity: 0.05,
         shadowRadius: 4,
-        elevation: 3,
+        elevation: 2,
     },
     header: {
         flexDirection: "row",
-        justifyContent: "space-between",
         alignItems: "center",
+        justifyContent: "space-between",
         marginBottom: 8,
     },
-    title: {
+    profileAvatar: {
+        width: 42,
+        height: 42,
+        borderRadius: 21,
+        borderWidth: 2,
+    },
+    userName: {
         fontSize: 16,
         fontWeight: "600",
-        color: "#111827",
-        flex: 1,
-        marginRight: 8,
+    },
+    fcName: {
+        fontSize: 12,
+        color: "#6B7280",
     },
     badge: {
-        paddingHorizontal: 8,
+        borderRadius: 20,
+        paddingHorizontal: 10,
         paddingVertical: 4,
-        borderRadius: 8,
     },
     badgeText: {
         color: "#fff",
-        fontWeight: "600",
         fontSize: 12,
+        fontWeight: "600",
+    },
+    body: {
+        marginTop: 6,
+    },
+    title: {
+        fontSize: 15,
+        fontWeight: "600",
+        marginBottom: 4,
     },
     content: {
         fontSize: 14,
-        color: "#374151",
-        marginBottom: 8,
-    },
-    dates: {
-        fontSize: 12,
-        color: "#6B7280",
-        marginBottom: 4,
+        color: "#4B5563",
     },
     places: {
-        fontSize: 14,
+        marginTop: 8,
         fontWeight: "500",
-        color: "#1D4ED8", // bleu Blablacar
+        color: "#111827",
+    },
+    dates: {
+        marginTop: 4,
+        fontSize: 13,
+        color: "#6B7280",
     },
 });

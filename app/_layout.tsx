@@ -28,12 +28,12 @@ function InitialLayout() {
 
             // 🟢 Cas 3 : connecté avec profil complet → empêche retour vers (public)
             if (session && profileCompleted && inPublicGroup) {
-                router.replace("/(tabs)");
+                router.replace("/(tabs)/(home)");
                 return;
             }
             // 🟢 Cas 4 : connecté avec profil complet et pas dans les tabs → redirection vers tabs
             if (session && profileCompleted && !inTabsGroup) {
-                router.replace("/(tabs)");
+                router.replace("/(tabs)/(home)");
             }
         }
     }, [session, loading, segments, profileCompleted]);
