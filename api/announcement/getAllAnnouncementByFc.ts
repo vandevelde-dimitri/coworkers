@@ -19,7 +19,6 @@ export async function getAllAnnouncementByFc(): Promise<
         console.error("Error fetching announcements:", error);
         throw error;
     }
-    console.log(" ✅  Fetched announcements:", annonces);
 
     return annonces || [];
 }

@@ -1,8 +1,8 @@
+import SafeScreen from "@/components/Header";
 import { useAnnouncementByFc } from "@/hooks/announcement/useAnnouncement";
 import { containerStyles } from "@/styles/container.styles";
 import { formAuthStyles } from "@/styles/form.styles";
 import { Contract } from "@/types/enum/contract.enum";
-import FeatherIcon from "@expo/vector-icons/Feather";
 import { useRouter } from "expo-router";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import {
@@ -49,29 +49,7 @@ export default function HomeScreen() {
     }
     console.log("HomeScreen announcements:", data);
     return (
-        <SafeAreaView
-            style={[
-                formAuthStyles.container,
-                {
-                    paddingTop: insets.top,
-                    paddingBottom: insets.bottom,
-                    // paddingLeft: insets.left,
-                    // paddingRight: insets.right,
-                },
-            ]}
-        >
-            <View style={containerStyles.header}>
-                <View style={containerStyles.headerBack}>
-                    <FeatherIcon
-                        color="#1D2A32"
-                        name="chevron-left"
-                        size={30}
-                    />
-                </View>
-                <View style={containerStyles.headerTitle}>
-                    <Text>Annonces pour votre centre</Text>
-                </View>
-            </View>
+        <SafeScreen title="Annonces pour votre centre" backBtn={false}>
             <View style={containerStyles.container}>
                 {data?.map(
                     ({
@@ -157,7 +135,7 @@ export default function HomeScreen() {
                     )
                 )}
             </View>
-        </SafeAreaView>
+        </SafeScreen>
     );
 }
 

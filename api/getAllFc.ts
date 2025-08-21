@@ -6,7 +6,6 @@ export async function getAllFc() {
         console.error("Error fetching fc:", error);
         return [];
     }
-    console.log(" ✅  Fetched fc:", data);
 
     return data || [];
 }

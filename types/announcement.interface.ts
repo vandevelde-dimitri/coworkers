@@ -14,3 +14,9 @@ export interface AnnouncementWithUser {
     team: Team;
     image_profile: string;
 }
+
+export interface AnnouncementDetail extends AnnouncementWithUser {
+    users: {
+        firstname: string;
+    };
+}

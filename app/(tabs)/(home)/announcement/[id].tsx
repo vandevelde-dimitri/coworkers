@@ -1,18 +1,9 @@
+import SafeScreen from "@/components/Header";
 import { useAnnouncementById } from "@/hooks/announcement/useAnnouncement";
-import { containerStyles } from "@/styles/container.styles";
-import { formAuthStyles } from "@/styles/form.styles";
 import { Contract } from "@/types/enum/contract.enum";
-import FeatherIcon from "@expo/vector-icons/Feather";
 import { useLocalSearchParams } from "expo-router";
 import React from "react";
-import {
-    Image,
-    SafeAreaView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function AnnouncementDetail() {
@@ -33,75 +24,30 @@ export default function AnnouncementDetail() {
 
     if (!data) {
         return (
-            <SafeAreaView
-                style={[
-                    formAuthStyles.container,
-                    {
-                        paddingTop: insets.top,
-                        paddingBottom: insets.bottom,
-                    },
-                ]}
-            >
+            <SafeScreen>
                 <Text>Announcement not found</Text>
-            </SafeAreaView>
+            </SafeScreen>
         );
     }
 
     if (isLoading) {
         return (
-            <SafeAreaView
-                style={[
-                    formAuthStyles.container,
-                    {
-                        paddingTop: insets.top,
-                        paddingBottom: insets.bottom,
-                    },
-                ]}
-            >
+            <SafeScreen>
                 <Text>Loading...</Text>
-            </SafeAreaView>
+            </SafeScreen>
         );
     }
 
     if (error) {
         console.error("Error fetching announcements:", error);
         return (
-            <SafeAreaView
-                style={[
-                    formAuthStyles.container,
-                    {
-                        paddingTop: insets.top,
-                        paddingBottom: insets.bottom,
-                    },
-                ]}
-            >
+            <SafeScreen>
                 <Text>Error loading announcements</Text>
-            </SafeAreaView>
+            </SafeScreen>
         );
     }
     return (
-        <SafeAreaView
-            style={[
-                formAuthStyles.container,
-                {
-                    paddingTop: insets.top,
-                    paddingBottom: insets.bottom,
-                },
-            ]}
-        >
-            <View style={containerStyles.header}>
-                <View style={containerStyles.headerBack}>
-                    <FeatherIcon
-                        color="#1D2A32"
-                        name="chevron-left"
-                        size={30}
-                    />
-                </View>
-                <View style={containerStyles.headerTitle}>
-                    <Text>Annonces pour votre centre</Text>
-                </View>
-            </View>
-
+        <SafeScreen title={`Annonce de ${data.users.firstname}`} backBtn={true}>
             <View style={styles.card}>
                 <View style={styles.header}>
                     <Text style={styles.title}>{data.title}</Text>
@@ -178,7 +124,7 @@ export default function AnnouncementDetail() {
                     </TouchableOpacity>
                 </View>
             </View>
-        </SafeAreaView>
+        </SafeScreen>
     );
 }
 
