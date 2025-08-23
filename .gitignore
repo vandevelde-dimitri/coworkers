@@ -2,7 +2,7 @@
 
 # dependencies
 node_modules/
-
+bout_de_code
 # Expo
 .expo/
 dist/

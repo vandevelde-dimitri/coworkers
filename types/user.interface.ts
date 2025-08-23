@@ -8,4 +8,6 @@ export interface User {
     contract?: Contract;
     team?: Team;
     floor?: string;
+    image_profile?: string;
+    fc_name?: string;
 }

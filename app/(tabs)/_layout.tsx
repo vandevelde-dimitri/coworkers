@@ -1,12 +1,11 @@
 import { Tabs } from "expo-router";
 import React from "react";
-import { Platform } from "react-native";
+import { Platform, View } from "react-native";
 
 import { HapticTab } from "@/components/HapticTab";
 import { IconSymbol } from "@/components/ui/IconSymbol";
-import TabBarBackground from "@/components/ui/TabBarBackground";
-import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function TabLayout() {
     const colorScheme = useColorScheme();
@@ -14,14 +13,20 @@ export default function TabLayout() {
     return (
         <Tabs
             screenOptions={{
-                tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
                 headerShown: false,
+                tabBarActiveTintColor: "#10B981",
+                tabBarInactiveTintColor: "#9CA3AF",
                 tabBarButton: HapticTab,
-                tabBarBackground: TabBarBackground,
+                // tabBarBackground: BlurTabBarBackground,
                 tabBarStyle: Platform.select({
                     ios: {
                         // Use a transparent background on iOS to show the blur effect
                         position: "absolute",
+                    },
+                    android: {
+                        // backgroundColor: "#000", // couleur noire
+                        // borderTopWidth: 0,
+                        // elevation: 0,
                     },
                     default: {},
                 }),
@@ -30,16 +35,50 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="(home)"
                 options={{
-                    title: "Home",
+                    title: "Acceuil",
                     tabBarIcon: ({ color }) => (
                         <IconSymbol size={28} name="house.fill" color={color} />
                     ),
                 }}
             />
             <Tabs.Screen
-                name="addAnnouncement"
+                name="(travel)"
                 options={{
-                    title: "Ajouter",
+                    title: "Mes trajets",
+                    tabBarIcon: ({ color }) => (
+                        <IconSymbol size={28} name="house.fill" color={color} />
+                    ),
+                }}
+            />
+            <Tabs.Screen
+                name="test"
+                options={{
+                    title: "",
+                    tabBarIcon: ({ color, size, focused }) => (
+                        <View
+                            style={{
+                                width: 60,
+                                height: 60,
+                                borderRadius: 30,
+                                backgroundColor: "#10B981",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                marginBottom: 20, // pour qu'il dépasse de la tabBar
+                                shadowColor: "#000",
+                                shadowOpacity: 0.2,
+                                shadowRadius: 5,
+                                elevation: 5,
+                            }}
+                        >
+                            <Ionicons name="add" size={32} color="#fff" />
+                        </View>
+                    ),
+                }}
+            />
+            <Tabs.Screen
+                name="(chat)"
+                options={{
+                    title: "Chat",
                     tabBarIcon: ({ color }) => (
                         <IconSymbol
                             size={28}
