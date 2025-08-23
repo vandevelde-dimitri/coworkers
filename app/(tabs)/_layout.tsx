@@ -5,7 +5,6 @@ import { Platform, View } from "react-native";
 import { HapticTab } from "@/components/HapticTab";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { Ionicons } from "@expo/vector-icons";
 
 export default function TabLayout() {
     const colorScheme = useColorScheme();
@@ -17,6 +16,7 @@ export default function TabLayout() {
                 tabBarActiveTintColor: "#10B981",
                 tabBarInactiveTintColor: "#9CA3AF",
                 tabBarButton: HapticTab,
+
                 // tabBarBackground: BlurTabBarBackground,
                 tabBarStyle: Platform.select({
                     ios: {
@@ -46,7 +46,7 @@ export default function TabLayout() {
                 options={{
                     title: "Mes trajets",
                     tabBarIcon: ({ color }) => (
-                        <IconSymbol size={28} name="house.fill" color={color} />
+                        <IconSymbol size={28} name="car.fill" color={color} />
                     ),
                 }}
             />
@@ -70,7 +70,11 @@ export default function TabLayout() {
                                 elevation: 5,
                             }}
                         >
-                            <Ionicons name="add" size={32} color="#fff" />
+                            <IconSymbol
+                                size={28}
+                                name="plus.circle"
+                                color={"#fff"}
+                            />
                         </View>
                     ),
                 }}
@@ -78,11 +82,11 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="(chat)"
                 options={{
-                    title: "Chat",
+                    title: "Messages",
                     tabBarIcon: ({ color }) => (
                         <IconSymbol
                             size={28}
-                            name="paperplane.fill"
+                            name="message.fill"
                             color={color}
                         />
                     ),
@@ -95,7 +99,7 @@ export default function TabLayout() {
                     tabBarIcon: ({ color }) => (
                         <IconSymbol
                             size={28}
-                            name="paperplane.fill"
+                            name="person.crop.circle.fill"
                             color={color}
                         />
                     ),
