@@ -1,4 +1,4 @@
-import SafeScreen from "@/components/Header";
+import SafeScreen from "@/components/SafeScreen";
 import { useAnnouncementById } from "@/hooks/announcement/useAnnouncement";
 import { Contract } from "@/types/enum/contract.enum";
 import { useLocalSearchParams } from "expo-router";

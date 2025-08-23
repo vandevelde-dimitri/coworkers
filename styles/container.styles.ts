@@ -23,11 +23,12 @@ export const containerStyles = StyleSheet.create({
     headerBack: {
         padding: 8,
         paddingBottom: 0,
-        paddingTop: 0,
+        paddingTop: 24,
         position: "relative",
         marginLeft: -16,
+        paddingHorizontal: 24,
     },
     bottomButton: {
-        marginTop: "auto", // 👈 pousse vers le bas
+        marginTop: "auto",
     },
 });

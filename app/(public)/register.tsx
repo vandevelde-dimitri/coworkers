@@ -2,22 +2,13 @@ import SafeScreen from "@/components/SafeScreen";
 import { formAuthStyles } from "@/styles/form.styles";
 import { supabase } from "@/utils/supabase";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useRouter } from "expo-router";
-import * as SecureStore from "expo-secure-store";
+import { router } from "expo-router";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
-import {
-    Alert,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import * as yup from "yup";
 
-const LoginScreen = () => {
-    const router = useRouter();
+const RegisterScreen = () => {
     const schema = yup.object({
         email: yup.string().email("Email invalide").required("Email requis"),
         password: yup.string().required("Mot de passe requis"),
@@ -29,32 +20,47 @@ const LoginScreen = () => {
     } = useForm({
         resolver: yupResolver(schema),
     });
-    const handleLogin = async (data: { email: string; password: string }) => {
+
+    const onSubmit = async (data: { email: string; password: string }) => {
         const { email, password } = data;
-        const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        });
 
-        if (error) {
-            Alert.alert("Erreur", error.message);
-        } else {
-            // ✅ Lire la route d'origine (si elle existe)
-            const redirectTo = await SecureStore.getItemAsync("redirectTo");
+        const { data: userAuth, error: errorAuth } = await supabase.auth.signUp(
+            {
+                email,
+                password,
+            }
+        );
 
-            if (redirectTo) {
-                await SecureStore.deleteItemAsync("redirectTo");
-                router.replace(redirectTo as any); // Type assertion for dynamic routes
-            } else {
-                router.replace("/(tabs)/(home)");
+        if (errorAuth) {
+            console.log("Erreur inscription:", errorAuth.message);
+            return;
+        }
+
+        if (userAuth.user) {
+            const { data: user, error: errorUser } = await supabase
+                .from("users")
+                .upsert(
+                    [
+                        {
+                            id: userAuth.user.id,
+                        },
+                    ],
+                    { onConflict: "id" }
+                );
+
+            if (errorUser) {
+                console.log("Erreur création user table:", errorUser.message);
+                return;
             }
         }
+
+        router.replace("/(protected)/register/username");
     };
 
     return (
         <SafeScreen backBtn>
             <View style={formAuthStyles.container}>
-                <Text style={formAuthStyles.title}>Se connecter</Text>
+                <Text style={formAuthStyles.title}>S' inscrire</Text>
                 <View style={formAuthStyles.form}>
                     <Controller
                         control={control}
@@ -101,17 +107,17 @@ const LoginScreen = () => {
                             {errors.password.message}
                         </Text>
                     )}
-                    <TouchableOpacity
-                        onPress={handleSubmit(handleLogin)}
-                        style={formAuthStyles.buttonPrimary}
-                    >
-                        <Text style={formAuthStyles.buttonText}>Connexion</Text>
+                    <TouchableOpacity onPress={() => router.push("/signin")}>
+                        <Text style={formAuthStyles.link}>
+                            Déjà un compte ? se connecter
+                        </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        onPress={() => router.push("/(public)/register")}
+                        onPress={handleSubmit(onSubmit)}
+                        style={formAuthStyles.buttonPrimary}
                     >
-                        <Text style={formAuthStyles.link}>
-                            Pas encore de compte ? S'inscrire
+                        <Text style={formAuthStyles.buttonText}>
+                            Inscription
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -120,4 +126,4 @@ const LoginScreen = () => {
     );
 };
 
-export default LoginScreen;
+export default RegisterScreen;

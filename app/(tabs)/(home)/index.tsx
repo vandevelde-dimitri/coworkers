@@ -1,6 +1,5 @@
-import SafeScreen from "@/components/Header";
+import SafeScreen from "@/components/SafeScreen";
 import { useAnnouncementByFc } from "@/hooks/announcement/useAnnouncement";
-import { useCurrentUser } from "@/hooks/user/useUsers";
 import { containerStyles } from "@/styles/container.styles";
 import { formAuthStyles } from "@/styles/form.styles";
 import { Contract } from "@/types/enum/contract.enum";

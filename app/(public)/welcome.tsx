@@ -1,125 +1,102 @@
+import SafeScreen from "@/components/SafeScreen";
 import { router } from "expo-router";
-import {
-    Image,
-    SafeAreaView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function WelcomeScreen() {
-    const insets = useSafeAreaInsets();
-
     return (
-        <SafeAreaView
-            style={[
-                styles.container,
-                {
-                    paddingTop: insets.top,
-                    paddingBottom: insets.bottom,
-                    paddingLeft: insets.left,
-                    paddingRight: insets.right,
-                },
-            ]}
-        >
-            <View style={styles.hero}>
+        <SafeScreen>
+            <View style={styles.container}>
                 <Image
                     source={require("@/assets/images/logo.png")}
-                    style={styles.heroImage}
+                    style={styles.logo}
                     resizeMode="contain"
                 />
-            </View>
-            <View style={styles.content}>
-                <View style={styles.contentHeader}>
-                    <Text style={styles.title}>Coworkers</Text>
-                    <Text style={styles.text}>
-                        Partage ta route, simplifie tes trajets.
-                    </Text>
-                </View>
-                <TouchableOpacity
-                    onPress={() => {
-                        router.push("/signup");
-                    }}
-                >
-                    <View style={styles.button}>
-                        <Text style={styles.buttonText}>
-                            Commencer l'aventure
+
+                <Text style={styles.title}>Bienvenue sur Coworkers</Text>
+                <Text style={styles.subtitle}>
+                    Partage ta route, simplifie tes trajets.
+                </Text>
+
+                <View style={styles.actions}>
+                    <TouchableOpacity
+                        style={styles.buttonPrimary}
+                        onPress={() => router.push("/(public)/signin")}
+                    >
+                        <Text style={styles.buttonText}>Se connecter</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={styles.buttonSecondary}
+                        onPress={() => router.push("/(public)/register")}
+                    >
+                        <Text style={styles.buttonTextSecondary}>
+                            S'inscrire
                         </Text>
-                    </View>
-                </TouchableOpacity>
+                    </TouchableOpacity>
+                </View>
+
+                <Text style={styles.footer}>Version 1.0</Text>
             </View>
-        </SafeAreaView>
+        </SafeScreen>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: "#fff",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 24,
+    },
+    logo: {
+        width: 170,
+        height: 170,
+        marginBottom: 24,
     },
     title: {
         fontSize: 28,
-        fontWeight: "500",
-        color: "#281b52",
+        fontWeight: "700",
+        color: "#111827",
         textAlign: "center",
         marginBottom: 12,
-        lineHeight: 40,
     },
-    text: {
-        fontSize: 15,
-        lineHeight: 24,
+    subtitle: {
+        fontSize: 16,
         fontWeight: "400",
-        color: "#9992a7",
+        color: "#6B7280",
         textAlign: "center",
+        marginBottom: 36,
     },
-    /** Hero */
-    hero: {
-        backgroundColor: "#d8dffe",
-        margin: 12,
-        borderRadius: 16,
-        padding: 16,
-    },
-    heroImage: {
+    actions: {
         width: "100%",
-        height: 400,
+        gap: 12,
     },
-    /** Content */
-    content: {
-        flex: 1,
-        justifyContent: "space-between",
-        paddingVertical: 24,
-        paddingHorizontal: 24,
-    },
-    contentHeader: {
-        paddingHorizontal: 24,
-    },
-    appName: {
-        backgroundColor: "#fff2dd",
-        transform: [
-            {
-                rotate: "-5deg",
-            },
-        ],
-        paddingHorizontal: 6,
-    },
-    appNameText: {
-        fontSize: 28,
-        fontWeight: "700",
-        color: "#281b52",
-    },
-    /** Button */
-    button: {
-        backgroundColor: "#56409e",
-        paddingVertical: 20,
-        paddingHorizontal: 14,
-        alignItems: "center",
-        justifyContent: "center",
+    buttonPrimary: {
+        backgroundColor: "#10B981",
+        padding: 16,
         borderRadius: 12,
+        alignItems: "center",
+    },
+    buttonSecondary: {
+        backgroundColor: "#F3F4F6",
+        padding: 16,
+        borderRadius: 12,
+        alignItems: "center",
     },
     buttonText: {
-        fontSize: 15,
-        fontWeight: "500",
         color: "#fff",
+        fontWeight: "600",
+        fontSize: 16,
+    },
+    buttonTextSecondary: {
+        color: "#111827",
+        fontWeight: "600",
+        fontSize: 16,
+    },
+    footer: {
+        fontSize: 12,
+        color: "#A1A1AA",
+        marginTop: 40,
     },
 });

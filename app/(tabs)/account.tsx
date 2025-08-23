@@ -1,4 +1,4 @@
-import SafeScreen from "@/components/Header";
+import SafeScreen from "@/components/SafeScreen";
 import { useCurrentUser } from "@/hooks/user/useUsers";
 import { Contract } from "@/types/enum/contract.enum";
 import { supabase } from "@/utils/supabase";
