@@ -141,6 +141,8 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
     card: {
+        flexDirection: "row",
+        alignItems: "center",
         backgroundColor: "#fff",
         borderRadius: 12,
         padding: 12,
