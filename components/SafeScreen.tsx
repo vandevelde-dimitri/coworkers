@@ -1,8 +1,8 @@
 import { containerStyles } from "@/styles/container.styles";
 import { formAuthStyles } from "@/styles/form.styles";
 import FeatherIcon from "@expo/vector-icons/Feather";
-import { router, useSegments } from "expo-router";
-import { SafeAreaView, Text, TouchableOpacity, View } from "react-native";
+import { router } from "expo-router";
+import { SafeAreaView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function SafeScreen({
@@ -15,9 +15,6 @@ export default function SafeScreen({
     backBtn?: boolean;
 }): React.JSX.Element {
     const insets = useSafeAreaInsets();
-    const segments = useSegments();
-
-    const isAnnouncementList = segments[1] === "(home)";
 
     return (
         <SafeAreaView
@@ -42,9 +39,7 @@ export default function SafeScreen({
                         />
                     </View>
                 )}
-                <View style={containerStyles.headerTitle}>
-                    <Text>{title}</Text>
-                </View>
+                <Text style={containerStyles.headerTitle}>{title}</Text>
             </View>
             <View style={containerStyles.container}>{children}</View>
         </SafeAreaView>

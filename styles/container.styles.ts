@@ -10,15 +10,14 @@ export const containerStyles = StyleSheet.create({
     header: {
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-between",
+        justifyContent: "center",
+        // justifyContent: "space-between",
         marginBottom: 12,
     },
     headerTitle: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        paddingLeft: 16,
-        paddingRight: 16,
+        fontSize: 20,
+        fontWeight: "600",
+        color: "#000",
     },
     headerBack: {
         padding: 8,

@@ -13,6 +13,7 @@ export interface AnnouncementWithUser {
     contract: Contract;
     team: Team;
     image_profile: string;
+    city: string;
 }
 
 export interface AnnouncementDetail extends AnnouncementWithUser {
