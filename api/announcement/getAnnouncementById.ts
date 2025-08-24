@@ -13,11 +13,18 @@ export async function getAnnouncementById(
         .from("annonces")
         .select(
             `
-      *,
-      users:users (
-        firstname
+    *,
+    users:users (
+      firstname,
+      image_profile,
+      contract,
+      team,
+      city,
+      fc:fc_id ( 
+        name
       )
-    `
+    )
+  `
         )
         .eq("id", id)
         .single();
@@ -25,6 +32,7 @@ export async function getAnnouncementById(
         console.error("Error fetching announcement:", error);
         throw error;
     }
+    console.log("✅  Fetched announcement:", annonce);
 
     return annonce;
 }

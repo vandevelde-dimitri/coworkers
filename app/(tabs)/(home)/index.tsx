@@ -39,7 +39,7 @@ export default function HomeScreen() {
         }
 
         return data;
-    }, [search, availableOnly, sortOrder]);
+    }, [search, availableOnly, sortOrder, announcements]);
 
     if (isLoading) {
         return (

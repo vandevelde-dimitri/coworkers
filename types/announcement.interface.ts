@@ -16,8 +16,25 @@ export interface AnnouncementWithUser {
     city: string;
 }
 
-export interface AnnouncementDetail extends AnnouncementWithUser {
+export interface Announcement {
+    content: string;
+    date_end: string;
+    date_start: string;
+    id: string;
+    number_of_places: number;
+    title: string;
+    userId: string;
+}
+
+export interface AnnouncementDetail extends Announcement {
     users: {
         firstname: string;
+        image_profile: string;
+        contract: Contract;
+        team: Team;
+        city: string;
+        fc: {
+            name: string;
+        };
     };
 }

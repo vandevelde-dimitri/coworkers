@@ -46,7 +46,7 @@ export default function AnnouncementCardList({
                 <Text style={styles.date}>
                     {`${
                         data.date_end
-                            ? ` Du ${date_start_formated} au ${date_end_formated}`
+                            ? `Du ${date_start_formated} au ${date_end_formated}`
                             : `A partir du ${date_start_formated}`
                     }`}
                 </Text>
