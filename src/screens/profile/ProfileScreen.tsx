@@ -1,0 +1,96 @@
+import FeatherIcon from "@expo/vector-icons/Feather";
+import { useNavigation } from "@react-navigation/native";
+import React from "react";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ProfileCard } from "../../components/ProfileCard";
+import { useAuth } from "../../contexts/authContext";
+import { useCurrentUser } from "../../hooks/user/useUsers";
+import { accountStyles } from "../../styles/account.styles";
+
+export default function ProfileScreen() {
+    const { data: user } = useCurrentUser();
+    const { session } = useAuth();
+    const navigation = useNavigation();
+    // const formatedDate = formatDate(session?.user.created_at || "");
+
+    console.log("user profile data:", user);
+
+    return (
+        <View style={accountStyles.container}>
+            <ScrollView
+                contentContainerStyle={accountStyles.content}
+                style={{ flex: 1 }}
+                showsVerticalScrollIndicator={false}
+            >
+                <ProfileCard />
+
+                <View style={accountStyles.section}>
+                    <Text style={accountStyles.sectionTitle}>Informations</Text>
+                    <View style={accountStyles.sectionBody}>
+                        <View style={accountStyles.row}>
+                            <Text style={accountStyles.rowLabel}>
+                                Centre Amazon
+                            </Text>
+                            <Text style={accountStyles.rowValue}>
+                                {user?.fc.name}
+                            </Text>
+                        </View>
+                        <View style={accountStyles.row}>
+                            <Text style={accountStyles.rowLabel}>Équipe</Text>
+                            <Text style={accountStyles.rowValue}>
+                                {user?.team}
+                            </Text>
+                        </View>
+                        <View style={accountStyles.row}>
+                            <Text style={accountStyles.rowLabel}>Contrat</Text>
+                            <Text style={accountStyles.rowValue}>
+                                {user?.contract}
+                            </Text>
+                        </View>
+                        <View style={accountStyles.row}>
+                            <Text style={accountStyles.rowLabel}>Ville</Text>
+                            <Text style={accountStyles.rowValue}>
+                                {user?.city}
+                            </Text>
+                        </View>
+
+                        <View style={accountStyles.row}>
+                            <Text style={accountStyles.rowLabel}>
+                                Date d'inscription
+                            </Text>
+                            <Text style={accountStyles.rowValue}>
+                                {session?.user.created_at}
+                            </Text>
+                        </View>
+                    </View>
+                </View>
+
+                <View style={accountStyles.section}>
+                    <Text style={accountStyles.sectionTitle}>Actions</Text>
+                    <View style={accountStyles.sectionBody}>
+                        <TouchableOpacity style={accountStyles.row}>
+                            <Text style={accountStyles.rowLabel}>
+                                Mes favoris
+                            </Text>
+                            <FeatherIcon
+                                name="chevron-right"
+                                size={20}
+                                color="#bcbcbc"
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={accountStyles.row}>
+                            <Text style={accountStyles.rowLabel}>
+                                Mes candidatures
+                            </Text>
+                            <FeatherIcon
+                                name="chevron-right"
+                                size={20}
+                                color="#bcbcbc"
+                            />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </ScrollView>
+        </View>
+    );
+}
