@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { isMyAnnouncement } from "../../../utils/announcementUtils";
 import { formatDate } from "../../../utils/formatedDate";
+import SafeScreen from "../../components/SafeScreen";
 import { useAuth } from "../../contexts/authContext";
 import {
     useAnnouncementById,
@@ -87,116 +88,122 @@ export default function AnnouncementDetailScreen() {
     const isOwner = isMyAnnouncement(announcement, session?.user.id);
 
     return (
-        <View>
-            <ScrollView contentContainerStyle={styles.content}>
-                {/* Card principale */}
-                <View style={styles.card}>
-                    <Text style={styles.title}>{announcement.title}</Text>
+        <SafeScreen backBtn title="Détail de l'annonce">
+            <View>
+                <ScrollView contentContainerStyle={styles.content}>
+                    {/* Card principale */}
+                    <View style={styles.card}>
+                        <Text style={styles.title}>{announcement.title}</Text>
 
-                    <View style={styles.userSection}>
-                        <Image
-                            source={{
-                                uri:
-                                    announcement.users.image_profile ||
-                                    "https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=facearea&w=256&h=256&q=80",
-                            }}
+                        <View style={styles.userSection}>
+                            <Image
+                                source={{
+                                    uri:
+                                        announcement.users.image_profile ||
+                                        "https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=facearea&w=256&h=256&q=80",
+                                }}
+                                style={[
+                                    styles.avatar,
+                                    announcement.users.contract === Contract.CDI
+                                        ? { borderColor: "#1D4ED8" }
+                                        : { borderColor: "#10B981" },
+                                ]}
+                            />
+                            <View style={{ marginLeft: 12 }}>
+                                <Text style={styles.userName}>
+                                    {announcement.users.firstname}
+                                </Text>
+                                <Text style={styles.city}>
+                                    {announcement.users.city}
+                                </Text>
+                            </View>
+                        </View>
+
+                        <Text style={styles.contentText}>
+                            {announcement.content}
+                        </Text>
+
+                        {announcement.date_start && (
+                            <Text style={styles.dates}>
+                                {`${
+                                    announcement.date_end
+                                        ? `Du ${date_start_formated} au ${date_end_formated}`
+                                        : `A partir du ${date_start_formated}`
+                                }`}
+                            </Text>
+                        )}
+
+                        <Text
                             style={[
-                                styles.avatar,
-                                announcement.users.contract === Contract.CDI
-                                    ? { borderColor: "#1D4ED8" }
-                                    : { borderColor: "#10B981" },
+                                styles.places,
+                                announcement.number_of_places === 0 && {
+                                    color: "#ff0000",
+                                },
                             ]}
-                        />
-                        <View style={{ marginLeft: 12 }}>
-                            <Text style={styles.userName}>
-                                {announcement.users.firstname}
-                            </Text>
-                            <Text style={styles.city}>
-                                {announcement.users.city}
-                            </Text>
+                        >
+                            {announcement.number_of_places} place
+                            {announcement.number_of_places > 1 ? "s" : ""} dispo
+                        </Text>
+
+                        {/* Actions */}
+                        <View style={styles.actions}>
+                            {isOwner ? (
+                                <>
+                                    <TouchableOpacity
+                                        style={styles.buttonPrimary}
+                                        onPress={onEdit}
+                                    >
+                                        <Text style={styles.buttonPrimaryText}>
+                                            Modifier
+                                        </Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity
+                                        style={styles.buttonSecondaryTrash}
+                                        onPress={onDelete}
+                                    >
+                                        <Text
+                                            style={
+                                                styles.buttonSecondaryTextTrash
+                                            }
+                                        >
+                                            Supprimer
+                                        </Text>
+                                    </TouchableOpacity>
+                                </>
+                            ) : (
+                                <>
+                                    <TouchableOpacity
+                                        style={styles.buttonPrimary}
+                                        onPress={onApply}
+                                    >
+                                        <Text style={styles.buttonPrimaryText}>
+                                            Postuler
+                                        </Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity
+                                        style={styles.buttonSecondary}
+                                        onPress={onFavorite}
+                                    >
+                                        <FeatherIcon
+                                            name="heart"
+                                            size={20}
+                                            color="#10B981"
+                                        />
+                                        <Text
+                                            style={styles.buttonSecondaryText}
+                                        >
+                                            Mettre en favoris
+                                        </Text>
+                                    </TouchableOpacity>
+                                </>
+                            )}
                         </View>
                     </View>
-
-                    <Text style={styles.contentText}>
-                        {announcement.content}
-                    </Text>
-
-                    {announcement.date_start && (
-                        <Text style={styles.dates}>
-                            {`${
-                                announcement.date_end
-                                    ? `Du ${date_start_formated} au ${date_end_formated}`
-                                    : `A partir du ${date_start_formated}`
-                            }`}
-                        </Text>
-                    )}
-
-                    <Text
-                        style={[
-                            styles.places,
-                            announcement.number_of_places === 0 && {
-                                color: "#ff0000",
-                            },
-                        ]}
-                    >
-                        {announcement.number_of_places} place
-                        {announcement.number_of_places > 1 ? "s" : ""} dispo
-                    </Text>
-
-                    {/* Actions */}
-                    <View style={styles.actions}>
-                        {isOwner ? (
-                            <>
-                                <TouchableOpacity
-                                    style={styles.buttonPrimary}
-                                    onPress={onEdit}
-                                >
-                                    <Text style={styles.buttonPrimaryText}>
-                                        Modifier
-                                    </Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    style={styles.buttonSecondaryTrash}
-                                    onPress={onDelete}
-                                >
-                                    <Text
-                                        style={styles.buttonSecondaryTextTrash}
-                                    >
-                                        Supprimer
-                                    </Text>
-                                </TouchableOpacity>
-                            </>
-                        ) : (
-                            <>
-                                <TouchableOpacity
-                                    style={styles.buttonPrimary}
-                                    onPress={onApply}
-                                >
-                                    <Text style={styles.buttonPrimaryText}>
-                                        Postuler
-                                    </Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    style={styles.buttonSecondary}
-                                    onPress={onFavorite}
-                                >
-                                    <FeatherIcon
-                                        name="heart"
-                                        size={20}
-                                        color="#10B981"
-                                    />
-                                    <Text style={styles.buttonSecondaryText}>
-                                        Mettre en favoris
-                                    </Text>
-                                </TouchableOpacity>
-                            </>
-                        )}
-                    </View>
-                </View>
-            </ScrollView>
-        </View>
+                </ScrollView>
+            </View>
+        </SafeScreen>
     );
 }
 

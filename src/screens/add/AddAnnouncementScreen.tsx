@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import * as yup from "yup";
 
+import SafeScreen from "../../components/SafeScreen";
 import { FormDatePicker } from "../../components/ui/DatePicker";
 import { FormInput } from "../../components/ui/FormInput";
 import {
@@ -117,58 +118,60 @@ export default function FormAnnouncementScreen() {
     };
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            <FormInput
-                name="title"
-                control={control}
-                label="Titre"
-                placeholder="Entrez un titre"
-                type="text"
-            />
-            <FormInput
-                name="content"
-                control={control}
-                label="Description"
-                placeholder="Décris ton trajet"
-                type="textarea"
-            />
-            <FormInput
-                name="number_of_places"
-                control={control}
-                label="Nombre de places"
-                placeholder="Ex: 3"
-                type="number"
-            />
-            <FormDatePicker
-                name="date_start"
-                control={control}
-                label="Date de début"
-            />
-            <FormDatePicker
-                name="date_end"
-                control={control}
-                label="Date de fin (optionnel)"
-            />
+        <SafeScreen backBtn title="Ajouter une annonce">
+            <ScrollView contentContainerStyle={styles.container}>
+                <FormInput
+                    name="title"
+                    control={control}
+                    label="Titre"
+                    placeholder="Entrez un titre"
+                    type="text"
+                />
+                <FormInput
+                    name="content"
+                    control={control}
+                    label="Description"
+                    placeholder="Décris ton trajet"
+                    type="textarea"
+                />
+                <FormInput
+                    name="number_of_places"
+                    control={control}
+                    label="Nombre de places"
+                    placeholder="Ex: 3"
+                    type="number"
+                />
+                <FormDatePicker
+                    name="date_start"
+                    control={control}
+                    label="Date de début"
+                />
+                <FormDatePicker
+                    name="date_end"
+                    control={control}
+                    label="Date de fin (optionnel)"
+                />
 
-            <TouchableOpacity
-                style={[
-                    styles.button,
-                    (isPending || isUpdating) && styles.buttonDisabled,
-                ]}
-                onPress={handleSubmit(onSubmit)}
-                disabled={isPending || isUpdating}
-            >
-                <Text style={styles.buttonText}>
-                    {isEditMode
-                        ? isUpdating
-                            ? "Modification en cours..."
-                            : "Modifier l'annonce"
-                        : isPending
-                        ? "Publication en cours..."
-                        : "Publier l'annonce"}
-                </Text>
-            </TouchableOpacity>
-        </ScrollView>
+                <TouchableOpacity
+                    style={[
+                        styles.button,
+                        (isPending || isUpdating) && styles.buttonDisabled,
+                    ]}
+                    onPress={handleSubmit(onSubmit)}
+                    disabled={isPending || isUpdating}
+                >
+                    <Text style={styles.buttonText}>
+                        {isEditMode
+                            ? isUpdating
+                                ? "Modification en cours..."
+                                : "Modifier l'annonce"
+                            : isPending
+                            ? "Publication en cours..."
+                            : "Publier l'annonce"}
+                    </Text>
+                </TouchableOpacity>
+            </ScrollView>
+        </SafeScreen>
     );
 }
 

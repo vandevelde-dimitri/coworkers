@@ -1,7 +1,10 @@
 import FeatherIcon from "@expo/vector-icons/Feather";
-import { router, useSegments } from "expo-router";
-import { SafeAreaView, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
+import { Text, View } from "react-native";
+import {
+    SafeAreaView,
+    useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { containerStyles } from "../styles/container.styles";
 
 export default function SafeScreen({
@@ -14,21 +17,19 @@ export default function SafeScreen({
     backBtn?: boolean;
 }): React.JSX.Element {
     const insets = useSafeAreaInsets();
-    const segments = useSegments();
+    const navigation = useNavigation<any>();
+    console.log("navigation", navigation.getState().routes.length);
 
     const isEditProfile =
-        segments[0] === "(tabs)" &&
-        segments[1] === "account" &&
-        segments[2] === undefined;
-
+        navigation.getState().routes[0].name === "ProfileHome";
     return (
         <SafeAreaView
             style={[
                 {
                     flex: 1,
                     backgroundColor: "#fff",
-                    paddingTop: insets.top,
-                    paddingBottom: 0, // Pas de padding bottom ici pour permettre le scroll complet
+                    paddingTop: 0,
+                    paddingBottom: -insets.bottom, // Pas de padding bottom ici pour permettre le scroll complet
                 },
             ]}
         >
@@ -39,7 +40,7 @@ export default function SafeScreen({
                             color="#1D2A32"
                             name="chevron-left"
                             size={30}
-                            onPress={() => router.back()}
+                            onPress={() => navigation.goBack()}
                         />
                     </View>
                 )}
@@ -51,7 +52,7 @@ export default function SafeScreen({
                             name="settings"
                             size={25}
                             onPress={() =>
-                                router.push("/(tabs)/account/settings")
+                                navigation.navigate("SettingsScreen")
                             }
                         />
                     </View>

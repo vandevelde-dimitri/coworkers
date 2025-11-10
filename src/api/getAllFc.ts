@@ -1,4 +1,4 @@
-import { supabase } from "@/utils/supabase";
+import { supabase } from "../../utils/supabase";
 
 export async function getAllFc() {
     const { data, error } = await supabase.from("fc").select("*");

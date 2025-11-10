@@ -11,3 +11,8 @@ export interface User {
     image_profile?: string;
     fc: { name: string };
 }
+
+export interface authUserUpdate {
+    email?: string;
+    password?: string;
+}

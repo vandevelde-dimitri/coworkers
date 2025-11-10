@@ -1,6 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import SafeScreen from "../components/SafeScreen";
 import { AuthStackParamList } from "../types/navigation/authStackType";
 
 type WelcomeScreenNavigationProp =
@@ -9,36 +10,40 @@ type WelcomeScreenNavigationProp =
 export default function WelcomeScreen() {
     const navigation = useNavigation<WelcomeScreenNavigationProp>();
     return (
-        <View style={styles.container}>
-            <Image
-                source={require("../../assets/logo.png")}
-                style={styles.logo}
-                resizeMode="contain"
-            />
+        <SafeScreen backBtn>
+            <View style={styles.container}>
+                <Image
+                    source={require("../../assets/logo.png")}
+                    style={styles.logo}
+                    resizeMode="contain"
+                />
 
-            <Text style={styles.title}>Bienvenue sur Coworkers</Text>
-            <Text style={styles.subtitle}>
-                Partage ta route, simplifie tes trajets.
-            </Text>
+                <Text style={styles.title}>Bienvenue sur Coworkers</Text>
+                <Text style={styles.subtitle}>
+                    Partage ta route, simplifie tes trajets.
+                </Text>
 
-            <View style={styles.actions}>
-                <TouchableOpacity
-                    style={styles.buttonPrimary}
-                    onPress={() => navigation.navigate("Login")}
-                >
-                    <Text style={styles.buttonText}>Se connecter</Text>
-                </TouchableOpacity>
+                <View style={styles.actions}>
+                    <TouchableOpacity
+                        style={styles.buttonPrimary}
+                        onPress={() => navigation.navigate("Login")}
+                    >
+                        <Text style={styles.buttonText}>Se connecter</Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={styles.buttonSecondary}
-                    onPress={() => navigation.navigate("Register")}
-                >
-                    <Text style={styles.buttonTextSecondary}>S'inscrire</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.buttonSecondary}
+                        onPress={() => navigation.navigate("Register")}
+                    >
+                        <Text style={styles.buttonTextSecondary}>
+                            S'inscrire
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+
+                <Text style={styles.footer}>Version 1.0</Text>
             </View>
-
-            <Text style={styles.footer}>Version 1.0</Text>
-        </View>
+        </SafeScreen>
     );
 }
 

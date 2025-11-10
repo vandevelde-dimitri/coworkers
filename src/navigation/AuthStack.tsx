@@ -1,3 +1,4 @@
+import { useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
 import { Text, TouchableOpacity } from "react-native";
@@ -10,14 +11,22 @@ import { AuthStackParamList } from "../types/navigation/authStackType";
 const Stack = createNativeStackNavigator<AuthStackParamList>();
 
 export default function AuthStack() {
+    const navigation = useNavigation();
+
     return (
-        <Stack.Navigator>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen
-                name="Wecome"
+                name="Welcome"
                 component={WelcomeScreen}
                 options={({ navigation }) => ({
                     headerLeft: () => (
-                        <TouchableOpacity onPress={() => navigation.goBack()}>
+                        <TouchableOpacity
+                            onPress={() =>
+                                navigation.navigate("HomeStack", {
+                                    screen: "Home",
+                                })
+                            }
+                        >
                             <Text style={{ fontSize: 18, color: "#10B981" }}>
                                 ✕
                             </Text>

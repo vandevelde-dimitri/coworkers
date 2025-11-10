@@ -5,7 +5,7 @@ const Stack = createNativeStackNavigator();
 
 export default function FormStack() {
     return (
-        <Stack.Navigator screenOptions={{ headerShown: true }}>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen
                 name="FormAnnouncementScreen"
                 component={FormAnnouncementScreen}

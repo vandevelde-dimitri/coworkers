@@ -1,12 +1,15 @@
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import * as yup from "yup";
 import { supabase } from "../../../utils/supabase";
+import SafeScreen from "../../components/SafeScreen";
 import { formAuthStyles } from "../../styles/form.styles";
 
 const RegisterScreen = () => {
+    const navigation = useNavigation<any>();
     const schema = yup.object({
         email: yup.string().email("Email invalide").required("Email requis"),
         password: yup.string().required("Mot de passe requis"),
@@ -53,70 +56,77 @@ const RegisterScreen = () => {
         }
 
         // router.replace("/(protected)/register/username");
+        navigation.navigate("OnboardingStack", {
+            screen: "UsernameEditScreen",
+        });
     };
 
     return (
-        <View style={formAuthStyles.container}>
-            <Text style={formAuthStyles.title}>S' inscrire</Text>
-            <View style={formAuthStyles.form}>
-                <Controller
-                    control={control}
-                    name="email"
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <TextInput
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                            clearButtonMode="while-editing"
-                            keyboardType="email-address"
-                            onChangeText={onChange}
-                            placeholder="john@example.com"
-                            placeholderTextColor="#6b7280"
-                            style={formAuthStyles.input}
-                            value={value}
-                            onBlur={onBlur}
-                        />
+        <SafeScreen backBtn>
+            <View style={formAuthStyles.container}>
+                <Text style={formAuthStyles.title}>S' inscrire</Text>
+                <View style={formAuthStyles.form}>
+                    <Controller
+                        control={control}
+                        name="email"
+                        render={({ field: { onChange, onBlur, value } }) => (
+                            <TextInput
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                clearButtonMode="while-editing"
+                                keyboardType="email-address"
+                                onChangeText={onChange}
+                                placeholder="john@example.com"
+                                placeholderTextColor="#6b7280"
+                                style={formAuthStyles.input}
+                                value={value}
+                                onBlur={onBlur}
+                            />
+                        )}
+                    />
+                    {errors.email && (
+                        <Text style={formAuthStyles.error}>
+                            {errors.email.message}
+                        </Text>
                     )}
-                />
-                {errors.email && (
-                    <Text style={formAuthStyles.error}>
-                        {errors.email.message}
-                    </Text>
-                )}
-                <Controller
-                    control={control}
-                    name="password"
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <TextInput
-                            autoCorrect={false}
-                            clearButtonMode="while-editing"
-                            value={value}
-                            onBlur={onBlur}
-                            onChangeText={onChange}
-                            placeholder="********"
-                            placeholderTextColor="#6b7280"
-                            style={formAuthStyles.input}
-                            secureTextEntry={true}
-                        />
+                    <Controller
+                        control={control}
+                        name="password"
+                        render={({ field: { onChange, onBlur, value } }) => (
+                            <TextInput
+                                autoCorrect={false}
+                                clearButtonMode="while-editing"
+                                value={value}
+                                onBlur={onBlur}
+                                onChangeText={onChange}
+                                placeholder="********"
+                                placeholderTextColor="#6b7280"
+                                style={formAuthStyles.input}
+                                secureTextEntry={true}
+                            />
+                        )}
+                    />
+                    {errors.password && (
+                        <Text style={formAuthStyles.error}>
+                            {errors.password.message}
+                        </Text>
                     )}
-                />
-                {errors.password && (
-                    <Text style={formAuthStyles.error}>
-                        {errors.password.message}
-                    </Text>
-                )}
-                <TouchableOpacity>
-                    <Text style={formAuthStyles.link}>
-                        Déjà un compte ? se connecter
-                    </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    onPress={handleSubmit(onSubmit)}
-                    style={formAuthStyles.buttonPrimary}
-                >
-                    <Text style={formAuthStyles.buttonText}>Inscription</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity>
+                        <Text style={formAuthStyles.link}>
+                            Déjà un compte ? se connecter
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={handleSubmit(onSubmit)}
+                        style={formAuthStyles.buttonPrimary}
+                    >
+                        <Text style={formAuthStyles.buttonText}>
+                            Inscription
+                        </Text>
+                    </TouchableOpacity>
+                </View>
             </View>
-        </View>
+        </SafeScreen>
     );
 };
 

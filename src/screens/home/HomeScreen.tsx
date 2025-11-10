@@ -8,6 +8,7 @@ import {
     View,
 } from "react-native";
 import AnnouncementCardList from "../../components/AnnouncementCardList";
+import SafeScreen from "../../components/SafeScreen";
 import { useAnnouncementByFc } from "../../hooks/announcement/useAnnouncement";
 
 export default function HomeScreen() {
@@ -59,7 +60,7 @@ export default function HomeScreen() {
     }
 
     return (
-        <View style={styles.container}>
+        <SafeScreen title="Annonce pour Lil1">
             <TextInput
                 style={styles.searchInput}
                 placeholder="Rechercher une annonce..."
@@ -120,20 +121,26 @@ export default function HomeScreen() {
                 </TouchableOpacity>
             </View>
 
-            <FlatList
-                data={filtered}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item, index }) => (
-                    <AnnouncementCardList
-                        data={item}
-                        key={index}
-                        index={index}
-                    />
-                )}
-                contentContainerStyle={{ paddingBottom: 40 }}
-                style={{ flex: 1, width: "100%" }}
-            />
-        </View>
+            {!announcements || announcements.length === 0 ? (
+                <View style={styles.loadingContainer}>
+                    <Text>Aucune annonce disponible.</Text>
+                </View>
+            ) : (
+                <FlatList
+                    data={filtered}
+                    keyExtractor={(item) => item.id.toString()}
+                    renderItem={({ item, index }) => (
+                        <AnnouncementCardList
+                            data={item}
+                            key={index}
+                            index={index}
+                        />
+                    )}
+                    contentContainerStyle={{ paddingBottom: 40 }}
+                    style={{ flex: 1, width: "100%" }}
+                />
+            )}
+        </SafeScreen>
     );
 }
 

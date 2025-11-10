@@ -5,6 +5,7 @@ export const formAuthStyles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         backgroundColor: "#fff",
+        padding: 24,
     },
     title: {
         fontSize: 28,

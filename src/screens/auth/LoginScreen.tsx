@@ -5,6 +5,7 @@ import { Controller, useForm } from "react-hook-form";
 import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
 import * as yup from "yup";
 import { supabase } from "../../../utils/supabase";
+import SafeScreen from "../../components/SafeScreen";
 import { formAuthStyles } from "../../styles/form.styles";
 
 const LoginScreen = () => {
@@ -42,69 +43,71 @@ const LoginScreen = () => {
     };
 
     return (
-        <View style={formAuthStyles.container}>
-            <Text style={formAuthStyles.title}>Se connecter</Text>
-            <View style={formAuthStyles.form}>
-                <Controller
-                    control={control}
-                    name="email"
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <TextInput
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                            clearButtonMode="while-editing"
-                            keyboardType="email-address"
-                            onChangeText={onChange}
-                            placeholder="john@example.com"
-                            placeholderTextColor="#6b7280"
-                            style={formAuthStyles.input}
-                            value={value}
-                            onBlur={onBlur}
-                        />
+        <SafeScreen backBtn>
+            <View style={formAuthStyles.container}>
+                <Text style={formAuthStyles.title}>Se connecter</Text>
+                <View style={formAuthStyles.form}>
+                    <Controller
+                        control={control}
+                        name="email"
+                        render={({ field: { onChange, onBlur, value } }) => (
+                            <TextInput
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                clearButtonMode="while-editing"
+                                keyboardType="email-address"
+                                onChangeText={onChange}
+                                placeholder="john@example.com"
+                                placeholderTextColor="#6b7280"
+                                style={formAuthStyles.input}
+                                value={value}
+                                onBlur={onBlur}
+                            />
+                        )}
+                    />
+                    {errors.email && (
+                        <Text style={formAuthStyles.error}>
+                            {errors.email.message}
+                        </Text>
                     )}
-                />
-                {errors.email && (
-                    <Text style={formAuthStyles.error}>
-                        {errors.email.message}
-                    </Text>
-                )}
-                <Controller
-                    control={control}
-                    name="password"
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <TextInput
-                            autoCorrect={false}
-                            clearButtonMode="while-editing"
-                            value={value}
-                            onBlur={onBlur}
-                            onChangeText={onChange}
-                            placeholder="********"
-                            placeholderTextColor="#6b7280"
-                            style={formAuthStyles.input}
-                            secureTextEntry={true}
-                        />
+                    <Controller
+                        control={control}
+                        name="password"
+                        render={({ field: { onChange, onBlur, value } }) => (
+                            <TextInput
+                                autoCorrect={false}
+                                clearButtonMode="while-editing"
+                                value={value}
+                                onBlur={onBlur}
+                                onChangeText={onChange}
+                                placeholder="********"
+                                placeholderTextColor="#6b7280"
+                                style={formAuthStyles.input}
+                                secureTextEntry={true}
+                            />
+                        )}
+                    />
+                    {errors.password && (
+                        <Text style={formAuthStyles.error}>
+                            {errors.password.message}
+                        </Text>
                     )}
-                />
-                {errors.password && (
-                    <Text style={formAuthStyles.error}>
-                        {errors.password.message}
-                    </Text>
-                )}
-                <TouchableOpacity
-                    onPress={handleSubmit(handleLogin)}
-                    style={formAuthStyles.buttonPrimary}
-                >
-                    <Text style={formAuthStyles.buttonText}>Connexion</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                // onPress={() => router.push("/(public)/register")}
-                >
-                    <Text style={formAuthStyles.link}>
-                        Pas encore de compte ? S'inscrire
-                    </Text>
-                </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={handleSubmit(handleLogin)}
+                        style={formAuthStyles.buttonPrimary}
+                    >
+                        <Text style={formAuthStyles.buttonText}>Connexion</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                    // onPress={() => router.push("/(public)/register")}
+                    >
+                        <Text style={formAuthStyles.link}>
+                            Pas encore de compte ? S'inscrire
+                        </Text>
+                    </TouchableOpacity>
+                </View>
             </View>
-        </View>
+        </SafeScreen>
     );
 };
 

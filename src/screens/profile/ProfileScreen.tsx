@@ -3,6 +3,7 @@ import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { ProfileCard } from "../../components/ProfileCard";
+import SafeScreen from "../../components/SafeScreen";
 import { useAuth } from "../../contexts/authContext";
 import { useCurrentUser } from "../../hooks/user/useUsers";
 import { accountStyles } from "../../styles/account.styles";
@@ -16,7 +17,7 @@ export default function ProfileScreen() {
     console.log("user profile data:", user);
 
     return (
-        <View style={accountStyles.container}>
+        <SafeScreen backBtn title="Profil">
             <ScrollView
                 contentContainerStyle={accountStyles.content}
                 style={{ flex: 1 }}
@@ -91,6 +92,6 @@ export default function ProfileScreen() {
                     </View>
                 </View>
             </ScrollView>
-        </View>
+        </SafeScreen>
     );
 }
