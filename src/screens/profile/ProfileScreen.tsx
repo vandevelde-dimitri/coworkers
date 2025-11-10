@@ -2,6 +2,7 @@ import FeatherIcon from "@expo/vector-icons/Feather";
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { formatDate } from "../../../utils/formatedDate";
 import { ProfileCard } from "../../components/ProfileCard";
 import SafeScreen from "../../components/SafeScreen";
 import { useAuth } from "../../contexts/authContext";
@@ -12,7 +13,7 @@ export default function ProfileScreen() {
     const { data: user } = useCurrentUser();
     const { session } = useAuth();
     const navigation = useNavigation();
-    // const formatedDate = formatDate(session?.user.created_at || "");
+    const formatedDate = formatDate(session?.user.created_at || "");
 
     console.log("user profile data:", user);
 
@@ -60,7 +61,7 @@ export default function ProfileScreen() {
                                 Date d'inscription
                             </Text>
                             <Text style={accountStyles.rowValue}>
-                                {session?.user.created_at}
+                                {formatedDate}
                             </Text>
                         </View>
                     </View>

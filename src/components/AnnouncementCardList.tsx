@@ -1,6 +1,13 @@
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+    Image,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
 import { formatDate } from "../../utils/formatedDate";
 import { AnnouncementWithUser } from "../types/announcement.interface";
 import { Contract } from "../types/enum/contract.enum";
@@ -19,54 +26,56 @@ export default function AnnouncementCardList({
     const navigation = useNavigation();
 
     return (
-        <TouchableOpacity
-            key={data.id}
-            style={[styles.card, index === 0 && { marginTop: 12 }]}
-            onPress={() => {
-                // router.push(`/(tabs)/(home)/announcement/${data.id}`);
-                navigation.navigate("AnnouncementDetail", { id: data.id });
-            }}
-        >
-            <Image
-                source={{
-                    uri:
-                        data.image_profile ||
-                        "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        <ScrollView>
+            <TouchableOpacity
+                key={data.id}
+                style={[styles.card, index === 0 && { marginTop: 12 }]}
+                onPress={() => {
+                    // router.push(`/(tabs)/(home)/announcement/${data.id}`);
+                    navigation.navigate("AnnouncementDetail", { id: data.id });
                 }}
-                style={[
-                    styles.avatar,
-                    data.contract === Contract.CDI
-                        ? { borderColor: "#1D4ED8" }
-                        : { borderColor: "#10B981" },
-                ]}
-            />
-
-            <View style={styles.cardBody}>
-                <Text style={styles.name}>{data.user_name}</Text>
-
-                <Text style={styles.date}>{data.city}</Text>
-                <Text style={styles.date}>
-                    {`${
-                        data.date_end
-                            ? `Du ${date_start_formated} au ${date_end_formated}`
-                            : `A partir du ${date_start_formated}`
-                    }`}
-                </Text>
-                <Text
+            >
+                <Image
+                    source={{
+                        uri:
+                            data.image_profile ||
+                            "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    }}
                     style={[
-                        styles.places,
-                        data.number_of_places === 0 && {
-                            color: "#ff0000",
-                        },
+                        styles.avatar,
+                        data.contract === Contract.CDI
+                            ? { borderColor: "#1D4ED8" }
+                            : { borderColor: "#10B981" },
                     ]}
-                >
-                    {data.number_of_places} place
-                    {data.number_of_places > 1 ? "s" : ""} dispo
-                </Text>
-            </View>
+                />
 
-            <Feather name="chevron-right" size={22} color="#bcbcbc" />
-        </TouchableOpacity>
+                <View style={styles.cardBody}>
+                    <Text style={styles.name}>{data.user_name}</Text>
+
+                    <Text style={styles.date}>{data.city}</Text>
+                    <Text style={styles.date}>
+                        {`${
+                            data.date_end
+                                ? `Du ${date_start_formated} au ${date_end_formated}`
+                                : `A partir du ${date_start_formated}`
+                        }`}
+                    </Text>
+                    <Text
+                        style={[
+                            styles.places,
+                            data.number_of_places === 0 && {
+                                color: "#ff0000",
+                            },
+                        ]}
+                    >
+                        {data.number_of_places} place
+                        {data.number_of_places > 1 ? "s" : ""} dispo
+                    </Text>
+                </View>
+
+                <Feather name="chevron-right" size={22} color="#bcbcbc" />
+            </TouchableOpacity>
+        </ScrollView>
     );
 }
 

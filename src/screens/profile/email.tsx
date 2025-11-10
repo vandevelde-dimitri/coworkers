@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import * as yup from "yup";
 import { supabase } from "../../../utils/supabase";
+import SafeScreen from "../../components/SafeScreen";
 import { containerStyles } from "../../styles/container.styles";
 import { formAuthStyles } from "../../styles/form.styles";
 
@@ -49,41 +50,47 @@ const EmailRegistrationScreen = () => {
     };
 
     return (
-        <ScrollView style={[containerStyles.container]}>
-            <Text style={formAuthStyles.title}>
-                Entre ta nouvelle adresse mail
-            </Text>
+        <SafeScreen backBtn>
+            <ScrollView style={[containerStyles.container]}>
+                <Text style={formAuthStyles.title}>
+                    Entre ta nouvelle adresse mail
+                </Text>
 
-            <Controller
-                control={control}
-                name="email"
-                render={({ field: { onChange, onBlur, value } }) => (
-                    <TextInput
-                        keyboardType="email-address"
-                        autoCorrect={false}
-                        clearButtonMode="while-editing"
-                        value={value}
-                        onBlur={onBlur}
-                        onChangeText={onChange}
-                        placeholder="john@doe.fr"
-                        placeholderTextColor="#6b7280"
-                        style={formAuthStyles.input}
-                    />
+                <Controller
+                    control={control}
+                    name="email"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                        <TextInput
+                            keyboardType="email-address"
+                            autoCorrect={false}
+                            clearButtonMode="while-editing"
+                            value={value}
+                            onBlur={onBlur}
+                            onChangeText={onChange}
+                            placeholder="john@doe.fr"
+                            placeholderTextColor="#6b7280"
+                            style={formAuthStyles.input}
+                        />
+                    )}
+                />
+                {errors.email && (
+                    <Text style={formAuthStyles.error}>
+                        {errors.email.message}
+                    </Text>
                 )}
-            />
-            {errors.email && (
-                <Text style={formAuthStyles.error}>{errors.email.message}</Text>
-            )}
 
-            <TouchableOpacity
-                onPress={handleSubmit(onSubmit)}
-                style={containerStyles.bottomButton}
-            >
-                <View style={formAuthStyles.buttonPrimary}>
-                    <Text style={formAuthStyles.buttonText}>Enregistrer</Text>
-                </View>
-            </TouchableOpacity>
-        </ScrollView>
+                <TouchableOpacity
+                    onPress={handleSubmit(onSubmit)}
+                    style={containerStyles.bottomButton}
+                >
+                    <View style={formAuthStyles.buttonPrimary}>
+                        <Text style={formAuthStyles.buttonText}>
+                            Enregistrer
+                        </Text>
+                    </View>
+                </TouchableOpacity>
+            </ScrollView>
+        </SafeScreen>
     );
 };
 
