@@ -118,7 +118,7 @@ export default function FormAnnouncementScreen() {
     };
 
     return (
-        <SafeScreen backBtn title="Ajouter une annonce">
+        <SafeScreen title="Ajouter une annonce">
             <ScrollView contentContainerStyle={styles.container}>
                 <FormInput
                     name="title"

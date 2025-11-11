@@ -8,4 +8,5 @@ export type ProfileStackParamList = {
     TeamRegistrationScreen: undefined;
     UsernameRegisterScreen: undefined;
     EmailRegistrationScreen: undefined;
+    FavoriteScreen: undefined;
 };

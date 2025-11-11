@@ -25,14 +25,18 @@ export default function AnnouncementCardList({
     const date_end_formated = formatDate(data.date_end);
     const navigation = useNavigation();
 
+    console.log("data", data);
+
     return (
         <ScrollView>
             <TouchableOpacity
                 key={data.id}
                 style={[styles.card, index === 0 && { marginTop: 12 }]}
                 onPress={() => {
-                    // router.push(`/(tabs)/(home)/announcement/${data.id}`);
-                    navigation.navigate("AnnouncementDetail", { id: data.id });
+                    navigation.navigate("HomeStack", {
+                        screen: "AnnouncementDetail",
+                        params: { id: data.id },
+                    });
                 }}
             >
                 <Image
@@ -50,9 +54,13 @@ export default function AnnouncementCardList({
                 />
 
                 <View style={styles.cardBody}>
-                    <Text style={styles.name}>{data.user_name}</Text>
+                    <Text style={styles.name}>
+                        {data.user_name || data.users.firstname}
+                    </Text>
 
-                    <Text style={styles.date}>{data.city}</Text>
+                    <Text style={styles.date}>
+                        {data.city || data.users.city}
+                    </Text>
                     <Text style={styles.date}>
                         {`${
                             data.date_end

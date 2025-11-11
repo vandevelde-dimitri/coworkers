@@ -1,4 +1,3 @@
-import FeatherIcon from "@expo/vector-icons/Feather";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import React from "react";
 import {
@@ -11,6 +10,7 @@ import {
 } from "react-native";
 import { isMyAnnouncement } from "../../../utils/announcementUtils";
 import { formatDate } from "../../../utils/formatedDate";
+import FavoriteButton from "../../components/FavoriteButton";
 import SafeScreen from "../../components/SafeScreen";
 import { useAuth } from "../../contexts/authContext";
 import {
@@ -59,11 +59,6 @@ export default function AnnouncementDetailScreen() {
     const onApply = () => {
         console.log("Apply to announcement:", id);
         // Logique pour postuler à l'annonce
-    };
-
-    const onFavorite = () => {
-        console.log("Add to favorites:", id);
-        // Logique pour ajouter aux favoris
     };
 
     const onEdit = () => {
@@ -182,7 +177,7 @@ export default function AnnouncementDetailScreen() {
                                         </Text>
                                     </TouchableOpacity>
 
-                                    <TouchableOpacity
+                                    {/* <TouchableOpacity
                                         style={styles.buttonSecondary}
                                         onPress={onFavorite}
                                     >
@@ -196,7 +191,8 @@ export default function AnnouncementDetailScreen() {
                                         >
                                             Mettre en favoris
                                         </Text>
-                                    </TouchableOpacity>
+                                    </TouchableOpacity> */}
+                                    <FavoriteButton annonceId={id} />
                                 </>
                             )}
                         </View>

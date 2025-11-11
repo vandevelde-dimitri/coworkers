@@ -6,6 +6,7 @@ import ProfileScreen from "../screens/profile/ProfileScreen";
 import SettingsScreen from "../screens/profile/SettingsScreen";
 import ContractRegistrationScreen from "../screens/profile/contract";
 import EmailRegistrationScreen from "../screens/profile/email";
+import FavoriteScreen from "../screens/profile/favoriteScreen";
 import FloorRegistrationScreen from "../screens/profile/floor";
 import LocationRegistrationScreen from "../screens/profile/location";
 import TeamRegistrationScreen from "../screens/profile/team";
@@ -74,6 +75,11 @@ export default function ProfileStack() {
                 name="EmailRegistrationScreen"
                 component={EmailRegistrationScreen}
                 options={{ title: "Modification de l'utilisateur" }}
+            />
+            <Stack.Screen
+                name="FavoriteScreen"
+                component={FavoriteScreen}
+                options={{ title: "Mes favoris" }}
             />
         </Stack.Navigator>
     );

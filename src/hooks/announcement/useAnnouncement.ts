@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import deleteAnnouncement from "../../api/announcement/deleteAnnouncement";
 import { getAllAnnouncementByFc } from "../../api/announcement/getAllAnnouncementByFc";
+import { getAllAnnouncementFavorite } from "../../api/announcement/getAllAnnouncementFavorite";
 import { getAnnouncementById } from "../../api/announcement/getAnnouncementById";
 import addAnnouncement from "../../api/announcement/postAnnouncement";
 import updateAnnouncement from "../../api/announcement/updateAnnouncement";
@@ -18,6 +19,13 @@ export function useAnnouncementById(id: string, enabled?: boolean) {
         queryKey: ["announcement", id],
         queryFn: () => getAnnouncementById(id),
         enabled: !!id && enabled !== false,
+    });
+}
+
+export function useAnnouncementsFavorites() {
+    return useQuery({
+        queryKey: ["announcements", "favorites"],
+        queryFn: () => getAllAnnouncementFavorite(),
     });
 }
 

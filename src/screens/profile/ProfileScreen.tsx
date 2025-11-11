@@ -1,7 +1,13 @@
 import FeatherIcon from "@expo/vector-icons/Feather";
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+    Linking,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
 import { formatDate } from "../../../utils/formatedDate";
 import { ProfileCard } from "../../components/ProfileCard";
 import SafeScreen from "../../components/SafeScreen";
@@ -18,7 +24,7 @@ export default function ProfileScreen() {
     console.log("user profile data:", user);
 
     return (
-        <SafeScreen backBtn title="Profil">
+        <SafeScreen title="Profil">
             <ScrollView
                 contentContainerStyle={accountStyles.content}
                 style={{ flex: 1 }}
@@ -26,6 +32,7 @@ export default function ProfileScreen() {
             >
                 <ProfileCard />
 
+                {/* Section Informations */}
                 <View style={accountStyles.section}>
                     <Text style={accountStyles.sectionTitle}>Informations</Text>
                     <View style={accountStyles.sectionBody}>
@@ -55,7 +62,6 @@ export default function ProfileScreen() {
                                 {user?.city}
                             </Text>
                         </View>
-
                         <View style={accountStyles.row}>
                             <Text style={accountStyles.rowLabel}>
                                 Date d'inscription
@@ -67,10 +73,16 @@ export default function ProfileScreen() {
                     </View>
                 </View>
 
+                {/* Section Actions */}
                 <View style={accountStyles.section}>
                     <Text style={accountStyles.sectionTitle}>Actions</Text>
                     <View style={accountStyles.sectionBody}>
-                        <TouchableOpacity style={accountStyles.row}>
+                        <TouchableOpacity
+                            style={accountStyles.row}
+                            onPress={() =>
+                                navigation.navigate("FavoriteScreen")
+                            }
+                        >
                             <Text style={accountStyles.rowLabel}>
                                 Mes favoris
                             </Text>
@@ -87,6 +99,68 @@ export default function ProfileScreen() {
                             <FeatherIcon
                                 name="chevron-right"
                                 size={20}
+                                color="#bcbcbc"
+                            />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+                {/* 🧾 Section Mentions légales */}
+                <View style={accountStyles.section}>
+                    <Text style={accountStyles.sectionTitle}>
+                        Mentions légales
+                    </Text>
+                    <View style={accountStyles.sectionBody}>
+                        <TouchableOpacity
+                            style={accountStyles.row}
+                            onPress={() =>
+                                Linking.openURL(
+                                    "https://dimdev.notion.site/politique-de-confidentialite-coworkers-XXXXXXXXXXXX"
+                                )
+                            }
+                        >
+                            <Text style={accountStyles.rowLabel}>
+                                Politique de confidentialité
+                            </Text>
+                            <FeatherIcon
+                                name="external-link"
+                                size={18}
+                                color="#bcbcbc"
+                            />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={accountStyles.row}
+                            onPress={() =>
+                                Linking.openURL(
+                                    "https://dimdev.notion.site/conditions-utilisation-coworkers-XXXXXXXXXXXX"
+                                )
+                            }
+                        >
+                            <Text style={accountStyles.rowLabel}>
+                                Conditions d’utilisation
+                            </Text>
+                            <FeatherIcon
+                                name="external-link"
+                                size={18}
+                                color="#bcbcbc"
+                            />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={accountStyles.row}
+                            onPress={() =>
+                                Linking.openURL(
+                                    "mailto:vandevdimitri@gmail.com"
+                                )
+                            }
+                        >
+                            <Text style={accountStyles.rowLabel}>
+                                Contacter le développeur
+                            </Text>
+                            <FeatherIcon
+                                name="mail"
+                                size={18}
                                 color="#bcbcbc"
                             />
                         </TouchableOpacity>
