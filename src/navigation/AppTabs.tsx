@@ -4,7 +4,7 @@ import React from "react";
 import { Platform, View } from "react-native";
 import { HapticTab } from "../components/HapticTab";
 import { IconSymbol } from "../components/ui/IconSymbol";
-import ChatScreen from "../screens/chat/ChatScreen";
+import ChatScreen from "../screens/chat/messengingScreen";
 import TravelScreen from "../screens/travel/TravelScreen";
 import FormStack from "./FormStack";
 import HomeStack from "./HomeStack";
@@ -42,7 +42,7 @@ export default function AppTabs() {
                         const stack = state.routes.find(
                             (r) => r.name === "HomeStack"
                         );
-                        if (stack && stack.state?.index > 0) {
+                        if (stack && stack.state?.index! > 0) {
                             e.preventDefault();
                             navigation.navigate("HomeStack", {
                                 screen: "Home",
@@ -125,7 +125,7 @@ export default function AppTabs() {
                         const stack = state.routes.find(
                             (r) => r.name === "ProfileStack"
                         );
-                        if (stack && stack.state?.index > 0) {
+                        if (stack && stack.state?.index! > 0) {
                             e.preventDefault();
                             navigation.dispatch(
                                 CommonActions.reset({

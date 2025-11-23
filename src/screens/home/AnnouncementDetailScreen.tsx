@@ -159,7 +159,9 @@ export default function AnnouncementDetailScreen() {
                                             backgroundColor: "#ccc",
                                         },
                                     ]}
-                                    onPress={() => onApply(id)}
+                                    onPress={() =>
+                                        onApply(announcement.user_id)
+                                    }
                                     disabled={!canApply}
                                 >
                                     <Text style={styles.buttonPrimaryText}>

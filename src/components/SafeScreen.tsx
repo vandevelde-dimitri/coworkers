@@ -47,14 +47,24 @@ export default function SafeScreen({
                 <Text style={containerStyles.headerTitle}>{title}</Text>
                 {isEditProfile && (
                     <View style={containerStyles.headerEdit}>
-                        <FeatherIcon
-                            color="#1D2A32"
-                            name="settings"
-                            size={25}
-                            onPress={() =>
-                                navigation.navigate("SettingsScreen")
-                            }
-                        />
+                        <View style={{ flexDirection: "row", gap: 16 }}>
+                            <FeatherIcon
+                                color="#1D2A32"
+                                name="bell"
+                                size={25}
+                                onPress={() =>
+                                    navigation.navigate("NotificationsScreen")
+                                }
+                            />
+                            <FeatherIcon
+                                color="#1D2A32"
+                                name="settings"
+                                size={25}
+                                onPress={() =>
+                                    navigation.navigate("SettingsScreen")
+                                }
+                            />
+                        </View>
                     </View>
                 )}
             </View>
