@@ -48,6 +48,7 @@ export async function getAllAnnouncementFavorite(): Promise<
         contract,
         team,
         city,
+        to_convey,
         fc:fc_id (
           name
         )

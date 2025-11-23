@@ -55,7 +55,6 @@ const RegisterScreen = () => {
             }
         }
 
-        // router.replace("/(protected)/register/username");
         navigation.navigate("OnboardingStack", {
             screen: "UsernameEditScreen",
         });

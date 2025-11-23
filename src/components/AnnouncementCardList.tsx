@@ -62,23 +62,24 @@ export default function AnnouncementCardList({
                         {data.city || data.users.city}
                     </Text>
                     <Text style={styles.date}>
-                        {`${
-                            data.date_end
-                                ? `Du ${date_start_formated} au ${date_end_formated}`
-                                : `A partir du ${date_start_formated}`
-                        }`}
+                        {data.date_end
+                            ? `Du ${date_start_formated} au ${date_end_formated}`
+                            : `A partir du ${date_start_formated}`}
                     </Text>
                     <Text
                         style={[
                             styles.places,
-                            data.number_of_places === 0 && {
-                                color: "#ff0000",
-                            },
+                            data.number_of_places === 0 && { color: "#ff0000" },
                         ]}
                     >
                         {data.number_of_places} place
                         {data.number_of_places > 1 ? "s" : ""} dispo
                     </Text>
+
+                    {/* 🚗 Véhicule */}
+                    {!data.to_convey && (
+                        <Text style={styles.noVehicle}>🚫 Pas de véhicule</Text>
+                    )}
                 </View>
 
                 <Feather name="chevron-right" size={22} color="#bcbcbc" />
@@ -125,5 +126,11 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: "600",
         color: "#10B981",
+    },
+    noVehicle: {
+        marginTop: 4,
+        color: "#ff0000",
+        fontWeight: "600",
+        fontSize: 14,
     },
 });

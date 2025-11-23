@@ -18,6 +18,7 @@ export async function getAnnouncementById(
       contract,
       team,
       city,
+      to_convey,
       fc:fc_id ( 
         name
       )

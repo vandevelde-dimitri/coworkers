@@ -19,10 +19,11 @@ export default function SettingsScreen() {
         emailNotifications: true,
         pushNotifications: false,
         vacationNotification: false,
+        to_convey: true,
     });
 
     return (
-        <SafeScreen backBtn title="Détail de l'utilisateur">
+        <SafeScreen backBtn title="Paramètres">
             <View style={accountStyles.container}>
                 <ScrollView
                     contentContainerStyle={accountStyles.content}
@@ -174,6 +175,33 @@ export default function SettingsScreen() {
                                         ],
                                     }}
                                     value={form.vacationNotification}
+                                />
+                            </TouchableOpacity>
+                            <TouchableOpacity style={accountStyles.row}>
+                                <Text style={accountStyles.rowLabel}>
+                                    Vehiculer
+                                </Text>
+                                <Switch
+                                    thumbColor={
+                                        form.to_convey ? "#10B981" : "#f4f3f4"
+                                    }
+                                    trackColor={{
+                                        false: "#76757780",
+                                        true: "#10b98186",
+                                    }}
+                                    onValueChange={(to_convey) =>
+                                        setForm({
+                                            ...form,
+                                            to_convey,
+                                        })
+                                    }
+                                    style={{
+                                        transform: [
+                                            { scaleX: 0.95 },
+                                            { scaleY: 0.95 },
+                                        ],
+                                    }}
+                                    value={form.to_convey}
                                 />
                             </TouchableOpacity>
                         </View>

@@ -14,6 +14,7 @@ export interface AnnouncementWithUser {
     team: Team;
     image_profile: string;
     city: string;
+    to_convey: boolean;
 }
 
 export interface AnnouncementFormValues {

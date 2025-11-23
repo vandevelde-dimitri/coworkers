@@ -1,4 +1,6 @@
 import { Announcement } from "@/types/announcement.interface";
+import { getCurrentUser } from "../src/api/user/getCurrentUser";
+import { supabase } from "./supabase";
 
 /**
  * Vérifie si l'annonce appartient à l'utilisateur actuel
@@ -39,4 +41,23 @@ export const isAnnouncementExpired = (announcement: Announcement): boolean => {
     const today = new Date();
     const startDate = new Date(announcement.date_start);
     return startDate < today;
+};
+
+export const canApplyToAnnouncement = async (
+    announcement: Announcement
+): Promise<boolean> => {
+    try {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const session = sessionData?.session;
+        if (!session) return false;
+
+        const currentUser = await getCurrentUser(session);
+        const userHasVehicle = !!currentUser.to_convey;
+        const ownerHasVehicle = !!announcement.users.to_convey;
+
+        return userHasVehicle || ownerHasVehicle;
+    } catch (error) {
+        console.error("Error checking if user can apply:", error);
+        return false;
+    }
 };

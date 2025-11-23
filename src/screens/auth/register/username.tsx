@@ -3,7 +3,6 @@ import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as yup from "yup";
 import { supabase } from "../../../../utils/supabase";
 import SafeScreen from "../../../components/SafeScreen";
@@ -14,7 +13,6 @@ import { formAuthStyles } from "../../../styles/form.styles";
 const UsernameEditScreen = () => {
     const navigation = useNavigation<any>();
 
-    const insets = useSafeAreaInsets();
     const { session } = useAuth();
     const schema = yup.object({
         lastname: yup.string().required("Nom requis"),

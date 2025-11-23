@@ -10,6 +10,7 @@ export interface User {
     team?: Team;
     floor?: string;
     image_profile?: string;
+    to_convey?: boolean;
     fc: { name: string };
 }
 
