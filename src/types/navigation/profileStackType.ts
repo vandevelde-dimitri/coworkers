@@ -9,4 +9,5 @@ export type ProfileStackParamList = {
     UsernameRegisterScreen: undefined;
     EmailRegistrationScreen: undefined;
     FavoriteScreen: undefined;
+    AvatarRegistrationScreen: undefined;
 };

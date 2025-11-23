@@ -12,6 +12,7 @@ import LocationRegistrationScreen from "../screens/profile/location";
 import TeamRegistrationScreen from "../screens/profile/team";
 import UsernameRegisterScreen from "../screens/profile/username";
 import { ProfileStackParamList } from "../types/navigation/profileStackType";
+import AvatarRegistrationScreen from "../screens/profile/avatarScreen";
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
 
@@ -79,6 +80,11 @@ export default function ProfileStack() {
             <Stack.Screen
                 name="FavoriteScreen"
                 component={FavoriteScreen}
+                options={{ title: "Mes favoris" }}
+            />
+            <Stack.Screen
+                name="AvatarRegistrationScreen"
+                component={AvatarRegistrationScreen}
                 options={{ title: "Mes favoris" }}
             />
         </Stack.Navigator>

@@ -28,9 +28,9 @@ const EditProfileScreen = () => {
                     <View style={accountStyles.sectionBody}>
                         <TouchableOpacity
                             style={accountStyles.row}
-                            // onPress={() => {
-                            //     navigation.navigate("UsernameRegisterScreen");
-                            // }}
+                            onPress={() => {
+                                navigation.navigate("AvatarRegistrationScreen");
+                            }}
                         >
                             <Text style={accountStyles.rowLabel}>
                                 Photo de profil

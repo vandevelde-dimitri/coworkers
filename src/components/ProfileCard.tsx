@@ -11,7 +11,9 @@ export function ProfileCard() {
             <Image
                 style={styles.avatar}
                 source={{
-                    uri: "https://randomuser.me/api/portraits/men/32.jpg",
+                    uri:
+                        user?.image_profile ||
+                        "https://randomuser.me/api/portraits/men/32.jpg",
                 }}
             />
             <Text style={styles.name}>
