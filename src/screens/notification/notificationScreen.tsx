@@ -7,31 +7,31 @@ import {
     View,
 } from "react-native";
 import SafeScreen from "../../components/SafeScreen";
+import { useAllNotificationByUser } from "../../hooks/notification/useNotification";
 
 export default function NotificationsScreen() {
-    // 🔹 Fake notifications
-    const notifications = [
-        {
-            id: "1",
-            type: "application",
-            message: "Alex Dupont a postulé à votre annonce 🚗",
-            date: "Il y a 2h",
-        },
-        {
-            id: "2",
-            type: "status",
-            message:
-                "Votre candidature à l’annonce Lille ➝ Amazon a été acceptée ✅",
-            date: "Il y a 1j",
-        },
-        {
-            id: "3",
-            type: "status",
-            message:
-                "Votre candidature à l’annonce Paris ➝ Amazon a été refusée ❌",
-            date: "Il y a 3j",
-        },
-    ];
+    const {
+        data: notifications,
+        isLoading,
+        error,
+    } = useAllNotificationByUser();
+
+    if (isLoading) {
+        return (
+            <SafeScreen backBtn title="Notifications">
+                <Text>Chargement des notifications...</Text>
+            </SafeScreen>
+        );
+    }
+
+    if (error) {
+        console.log("RQ ERROR:", error);
+        return (
+            <SafeScreen backBtn title="Notifications">
+                <Text>Erreur lors du chargement des notifications.</Text>
+            </SafeScreen>
+        );
+    }
 
     const renderItem = ({ item }) => (
         <View
@@ -43,11 +43,13 @@ export default function NotificationsScreen() {
             <Text style={styles.message}>{item.message}</Text>
             <Text style={styles.date}>{item.date}</Text>
 
+            {/* Si le statut = pending → afficher boutons */}
             {item.type === "application" && (
                 <View style={styles.actions}>
                     <TouchableOpacity style={[styles.actionBtn, styles.accept]}>
                         <Text style={styles.actionText}>Accepter</Text>
                     </TouchableOpacity>
+
                     <TouchableOpacity style={[styles.actionBtn, styles.reject]}>
                         <Text style={styles.actionText}>Refuser</Text>
                     </TouchableOpacity>
@@ -59,7 +61,7 @@ export default function NotificationsScreen() {
     return (
         <SafeScreen backBtn title="Notifications">
             <FlatList
-                data={notifications}
+                data={notifications ?? []}
                 keyExtractor={(item) => item.id}
                 renderItem={renderItem}
                 contentContainerStyle={{ paddingBottom: 20 }}
