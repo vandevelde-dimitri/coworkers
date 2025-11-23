@@ -13,6 +13,7 @@ import {
     isMyAnnouncement,
 } from "../../../utils/announcementUtils";
 import { formatDate } from "../../../utils/formatedDate";
+import { onApply } from "../../../utils/onApply";
 import FavoriteButton from "../../components/FavoriteButton";
 import SafeScreen from "../../components/SafeScreen";
 import { useAuth } from "../../contexts/authContext";
@@ -44,12 +45,6 @@ export default function AnnouncementDetailScreen() {
             })();
         }
     }, [announcement]);
-
-    // Actions
-    const onApply = () => {
-        console.log("Apply to announcement:", id);
-        // TODO: logique pour postuler
-    };
 
     const onEdit = () => {
         if (!isOwner) return;
@@ -127,7 +122,7 @@ export default function AnnouncementDetailScreen() {
                         {announcement.number_of_places > 1 ? "s" : ""} dispo
                     </Text>
                     {/* 🚗 Véhicule */}
-                    {!announcement.to_convey && (
+                    {!announcement.users.to_convey && (
                         <Text style={styles.noVehicle}>🚫 Pas de véhicule</Text>
                     )}
 
@@ -164,7 +159,7 @@ export default function AnnouncementDetailScreen() {
                                             backgroundColor: "#ccc",
                                         },
                                     ]}
-                                    onPress={onApply}
+                                    onPress={() => onApply(id)}
                                     disabled={!canApply}
                                 >
                                     <Text style={styles.buttonPrimaryText}>

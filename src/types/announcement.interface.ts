@@ -41,6 +41,7 @@ export interface AnnouncementDetail extends Announcement {
         contract: Contract;
         team: Team;
         city: string;
+        to_convey: boolean;
         fc: {
             name: string;
         };
