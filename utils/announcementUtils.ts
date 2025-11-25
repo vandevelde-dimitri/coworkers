@@ -61,3 +61,31 @@ export const canApplyToAnnouncement = async (
         return false;
     }
 };
+
+/**
+ * Vérifie si l'utilisateur a déjà postulé à cette annonce
+ */
+export const hasAlreadyApplied = async (announcementId: string) => {
+    console.log("announcementId", announcementId);
+
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (!sessionData.session) return false;
+
+    try {
+        const { data: appliedData, error } = await supabase
+            .from("user_annonces")
+            .select("id")
+            .eq("annonce_id", announcementId)
+            .eq("user_id", sessionData.session.user.id);
+
+        if (error) {
+            console.error("Error checking if user has applied:", error);
+            return false;
+        }
+
+        return appliedData && appliedData.length > 0;
+    } catch (err) {
+        console.error("Unexpected error:", err);
+        return false;
+    }
+};

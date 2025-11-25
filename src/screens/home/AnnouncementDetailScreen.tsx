@@ -10,10 +10,11 @@ import {
 } from "react-native";
 import {
     canApplyToAnnouncement,
+    hasAlreadyApplied,
     isMyAnnouncement,
 } from "../../../utils/announcementUtils";
 import { formatDate } from "../../../utils/formatedDate";
-import { onApply } from "../../../utils/onApply";
+import ApplyButton from "../../components/ApplyButton";
 import FavoriteButton from "../../components/FavoriteButton";
 import SafeScreen from "../../components/SafeScreen";
 import { useAuth } from "../../contexts/authContext";
@@ -27,7 +28,7 @@ export default function AnnouncementDetailScreen() {
     const route = useRoute();
     const navigation = useNavigation();
     const [canApply, setCanApply] = useState<boolean>(false);
-
+    const [hasApplied, setHasApplied] = useState<boolean>(false);
     const { id } = route.params as { id: string };
     const { session } = useAuth();
 
@@ -36,15 +37,17 @@ export default function AnnouncementDetailScreen() {
 
     const isOwner = isMyAnnouncement(announcement, session?.user.id);
 
-    // Hook pour vérifier si l'utilisateur peut postuler
     useEffect(() => {
-        if (announcement) {
-            (async () => {
-                const result = await canApplyToAnnouncement(announcement);
-                setCanApply(result);
-            })();
-        }
-    }, [announcement]);
+        if (!announcement || !session?.user.id) return;
+
+        (async () => {
+            const canApplyResult = await canApplyToAnnouncement(announcement);
+            setCanApply(canApplyResult);
+
+            const applied = await hasAlreadyApplied(id);
+            setHasApplied(applied);
+        })();
+    }, [announcement, session]);
 
     const onEdit = () => {
         if (!isOwner) return;
@@ -152,25 +155,7 @@ export default function AnnouncementDetailScreen() {
                             </>
                         ) : (
                             <>
-                                <TouchableOpacity
-                                    style={[
-                                        styles.buttonPrimary,
-                                        !canApply && {
-                                            backgroundColor: "#ccc",
-                                        },
-                                    ]}
-                                    onPress={() =>
-                                        onApply(announcement.user_id)
-                                    }
-                                    disabled={!canApply}
-                                >
-                                    <Text style={styles.buttonPrimaryText}>
-                                        {canApply
-                                            ? "Postuler"
-                                            : "Non disponible"}
-                                    </Text>
-                                </TouchableOpacity>
-
+                                <ApplyButton annonce={announcement} />
                                 <FavoriteButton annonceId={id} />
                             </>
                         )}
@@ -210,7 +195,11 @@ const styles = StyleSheet.create({
         color: "#10B981",
         marginBottom: 12,
     },
-    actions: { flexDirection: "row", justifyContent: "space-between", gap: 12 },
+    actions: {
+        flexDirection: "column",
+        justifyContent: "space-between",
+        gap: 12,
+    },
     buttonPrimary: {
         flex: 1,
         backgroundColor: "#10B981",
@@ -246,5 +235,6 @@ const styles = StyleSheet.create({
         color: "#ff0000",
         fontWeight: "600",
         fontSize: 14,
+        marginBottom: 12,
     },
 });
