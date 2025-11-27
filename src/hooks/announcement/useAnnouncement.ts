@@ -3,6 +3,7 @@ import deleteAnnouncement from "../../api/announcement/deleteAnnouncement";
 import { getAllAnnouncementByFc } from "../../api/announcement/getAllAnnouncementByFc";
 import { getAllAnnouncementFavorite } from "../../api/announcement/getAllAnnouncementFavorite";
 import { getAnnouncementById } from "../../api/announcement/getAnnouncementById";
+import { getAnnouncementByCurrentUser } from "../../api/announcement/getAnnouncementCurrentUser";
 import addAnnouncement from "../../api/announcement/postAnnouncement";
 import updateAnnouncement from "../../api/announcement/updateAnnouncement";
 import { AnnouncementFormValues } from "../../types/announcement.interface";
@@ -22,6 +23,13 @@ export function useAnnouncementById(id: string, enabled?: boolean) {
     });
 }
 
+export function useAnnouncementCurrentUser() {
+    return useQuery({
+        queryKey: ["announcement", "currentUser"],
+        queryFn: () => getAnnouncementByCurrentUser(),
+    });
+}
+
 export function useAnnouncementsFavorites() {
     return useQuery({
         queryKey: ["announcements", "favorites"],
@@ -36,7 +44,11 @@ export function useAddAnnouncement() {
         mutationFn: (body: AnnouncementFormValues) => addAnnouncement(body),
         onSuccess: () => {
             // Invalidation du cache pour forcer le rechargement des listes d'annonces
+            // et de l'annonce de l'utilisateur courant (utilisé par TravelScreen)
             queryClient.invalidateQueries({ queryKey: ["announcements"] });
+            queryClient.invalidateQueries({
+                queryKey: ["announcement", "currentUser"],
+            });
         },
     });
 }
@@ -56,6 +68,10 @@ export function useUpdateAnnouncement() {
             // Invalidation du cache pour l'annonce spécifique et la liste
             queryClient.invalidateQueries({ queryKey: ["announcement", id] });
             queryClient.invalidateQueries({ queryKey: ["announcements"] });
+            // Aussi invalider l'annonce du user courant au cas où il modifie sa propre annonce
+            queryClient.invalidateQueries({
+                queryKey: ["announcement", "currentUser"],
+            });
         },
     });
 }
@@ -69,6 +85,10 @@ export function useDeleteAnnouncement() {
         onSuccess: () => {
             // Invalidation du cache pour forcer le rechargement des listes d'annonces
             queryClient.invalidateQueries({ queryKey: ["announcements"] });
+            // Si l'utilisateur supprime son annonce, s'assurer que l'écran Mon annonce est mis à jour
+            queryClient.invalidateQueries({
+                queryKey: ["announcement", "currentUser"],
+            });
         },
     });
 }
