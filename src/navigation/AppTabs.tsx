@@ -4,8 +4,8 @@ import React from "react";
 import { Platform, View } from "react-native";
 import { HapticTab } from "../components/HapticTab";
 import { IconSymbol } from "../components/ui/IconSymbol";
-import ChatScreen from "../screens/chat/messengingScreen";
 import TravelScreen from "../screens/travel/TravelScreen";
+import ChatStack from "./ChatStack";
 import FormStack from "./FormStack";
 import HomeStack from "./HomeStack";
 import ProfileStack from "./ProfileStack";
@@ -94,7 +94,7 @@ export default function AppTabs() {
             />
             <Tab.Screen
                 name="Chat"
-                component={ChatScreen}
+                component={ChatStack}
                 options={{
                     title: "Messages",
                     tabBarIcon: ({ color }) => (
@@ -105,6 +105,34 @@ export default function AppTabs() {
                         />
                     ),
                 }}
+                listeners={({ navigation }) => ({
+                    tabPress: (e) => {
+                        const state = navigation.getState();
+                        const stack = state.routes.find(
+                            (r) => r.name === "ChatStack"
+                        );
+                        if (stack && stack.state?.index! > 0) {
+                            e.preventDefault();
+                            navigation.dispatch(
+                                CommonActions.reset({
+                                    index: 0,
+                                    routes: [
+                                        {
+                                            name: "ChatStack",
+                                            state: {
+                                                routes: [
+                                                    {
+                                                        name: "conversationsList",
+                                                    },
+                                                ],
+                                            },
+                                        },
+                                    ],
+                                })
+                            );
+                        }
+                    },
+                })}
             />
             <Tab.Screen
                 name="ProfileStack"
