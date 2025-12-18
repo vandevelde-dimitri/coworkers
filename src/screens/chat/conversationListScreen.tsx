@@ -2,12 +2,14 @@ import React from "react";
 import { FlatList } from "react-native";
 import ConversationItem from "../../components/ConversationItem";
 import SafeScreen from "../../components/SafeScreen";
+import { useMessageStatus } from "../../contexts/messageContext";
 import { useUserConversations } from "../../hooks/conversation/useConversationUser";
 
 export default function ConversationsListScreen({ navigation }: any) {
-    // Fake data
+    const { data: conversations, isLoading } = useUserConversations();
+    const { unreadConversations } = useMessageStatus();
 
-    const { data: conversations } = useUserConversations();
+    if (isLoading) return null;
 
     return (
         <SafeScreen title="Messages">
@@ -17,9 +19,11 @@ export default function ConversationsListScreen({ navigation }: any) {
                 renderItem={({ item }) => (
                     <ConversationItem
                         item={item}
+                        unread={!!unreadConversations[item.conversation_id]}
                         onPress={() =>
                             navigation.navigate("ChatScreen", {
                                 conversationId: item.conversation_id,
+                                title: item.annonce_title,
                             })
                         }
                     />

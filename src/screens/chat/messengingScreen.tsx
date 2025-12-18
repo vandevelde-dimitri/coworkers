@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useRef, useState } from "react";
 import { FlatList, StyleSheet } from "react-native";
 import { supabase } from "../../../utils/supabase";
@@ -11,22 +12,19 @@ export default function ChatScreen({ route }: any) {
     const { conversationId, title } = route.params;
     const { session } = useAuth();
     const { markConversationRead } = useMessageStatus();
-    console.log("route", route);
+    const queryClient = useQueryClient();
 
     const flatListRef = useRef<FlatList>(null);
     const [messages, setMessages] = useState<any[]>([]);
 
-    // ---------------------------
-    // Charger les messages
-    // ---------------------------
     const loadMessages = async () => {
-        const { data, error } = await supabase
+        const { data } = await supabase
             .from("messages")
             .select("id, sender_id, content, created_at")
             .eq("conversation_id", conversationId)
             .order("created_at", { ascending: true });
 
-        if (!error && data) {
+        if (data) {
             setMessages(
                 data.map((m) => ({
                     ...m,
@@ -34,25 +32,16 @@ export default function ChatScreen({ route }: any) {
                 }))
             );
         }
-        if (data) {
-            console.log("error", data);
-        }
     };
 
-    // ---------------------------
-    // Initial load + mark read
-    // ---------------------------
     useEffect(() => {
         loadMessages();
         markConversationRead(conversationId);
     }, [conversationId]);
 
-    // ---------------------------
-    // Realtime messages
-    // ---------------------------
     useEffect(() => {
         const channel = supabase
-            .channel(`conversation-${conversationId}`)
+            .channel(`chat-${conversationId}`)
             .on(
                 "postgres_changes",
                 {
@@ -63,6 +52,7 @@ export default function ChatScreen({ route }: any) {
                 },
                 (payload) => {
                     const msg = payload.new;
+
                     setMessages((prev) => [
                         ...prev,
                         {
@@ -79,9 +69,6 @@ export default function ChatScreen({ route }: any) {
         };
     }, [conversationId]);
 
-    // ---------------------------
-    // Envoi message
-    // ---------------------------
     const onSend = async (text: string) => {
         if (!text.trim()) return;
 
@@ -89,6 +76,11 @@ export default function ChatScreen({ route }: any) {
             conversation_id: conversationId,
             sender_id: session?.user.id,
             content: text,
+        });
+
+        // 🔥 refresh preview
+        queryClient.invalidateQueries({
+            queryKey: ["user-conversations", session?.user.id],
         });
     };
 
@@ -104,14 +96,11 @@ export default function ChatScreen({ route }: any) {
                     flatListRef.current?.scrollToEnd({ animated: true })
                 }
             />
-
             <ChatInput onSend={onSend} />
         </SafeScreen>
     );
 }
 
 const styles = StyleSheet.create({
-    list: {
-        paddingVertical: 10,
-    },
+    list: { paddingVertical: 10 },
 });

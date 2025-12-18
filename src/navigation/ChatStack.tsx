@@ -1,8 +1,5 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
-import AnnouncementDetailScreen from "../screens/home/AnnouncementDetailScreen";
-import HomeScreen from "../screens/home/HomeScreen";
-import { HomeStackParamList } from "../types/navigation/homeStackType";
 import ConversationsListScreen from "../screens/chat/conversationListScreen";
 import ChatScreen from "../screens/chat/messengingScreen";
 

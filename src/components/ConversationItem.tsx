@@ -1,34 +1,46 @@
 import React from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ConversationPreview } from "../api/user/getUserConversations";
 
-export default function ConversationItem({ item, onPress }: any) {
-    console.log("item", item);
-
+export default function ConversationItem({
+    item,
+    unread,
+    onPress,
+}: {
+    item: ConversationPreview;
+    unread: boolean;
+    onPress: () => void;
+}) {
     return (
         <TouchableOpacity style={styles.row} onPress={onPress}>
-            {item.image_profile ? (
-                <Image
-                    source={{ uri: item.image_profile }}
-                    style={styles.avatar}
-                />
-            ) : (
-                <View style={styles.avatarFallback}>
+            <View style={styles.avatar}>
+                {item.image_profile ? (
+                    <Text style={styles.avatarText}>👤</Text>
+                ) : (
                     <Text style={styles.avatarText}>
-                        {item.title?.[0]?.toUpperCase()}
+                        {item.annonce_title?.[0]?.toUpperCase() ?? "?"}
                     </Text>
-                </View>
-            )}
+                )}
+            </View>
 
             <View style={styles.content}>
                 <Text style={styles.name}>{item.annonce_title}</Text>
                 <Text style={styles.lastMessage} numberOfLines={1}>
-                    {item.last_message}
+                    {item.last_message ?? "Aucun message"}
                 </Text>
             </View>
 
             <View style={styles.right}>
-                {item.time && <Text style={styles.time}>{item.time}</Text>}
-                {item.unread && <View style={styles.badge} />}
+                <Text style={styles.time}>
+                    {item.last_message_time
+                        ? new Date(item.last_message_time).toLocaleTimeString(
+                              "fr-FR",
+                              { hour: "2-digit", minute: "2-digit" }
+                          )
+                        : ""}
+                </Text>
+
+                {unread && <View style={styles.badge} />}
             </View>
         </TouchableOpacity>
     );
@@ -46,7 +58,7 @@ const styles = StyleSheet.create({
         width: 46,
         height: 46,
         borderRadius: 23,
-        backgroundColor: "#3B82F6",
+        backgroundColor: "#10B981",
         alignItems: "center",
         justifyContent: "center",
         marginRight: 12,
@@ -56,9 +68,7 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         fontSize: 18,
     },
-    content: {
-        flex: 1,
-    },
+    content: { flex: 1 },
     name: {
         fontSize: 16,
         fontWeight: "600",
@@ -81,14 +91,5 @@ const styles = StyleSheet.create({
         height: 10,
         borderRadius: 5,
         backgroundColor: "#EF4444",
-    },
-    avatarFallback: {
-        width: 46,
-        height: 46,
-        borderRadius: 23,
-        backgroundColor: "#3B82F6",
-        alignItems: "center",
-        justifyContent: "center",
-        marginRight: 12,
     },
 });

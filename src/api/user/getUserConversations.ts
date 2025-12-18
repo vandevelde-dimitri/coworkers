@@ -6,7 +6,6 @@ export type ConversationPreview = {
     image_profile: string | null;
     last_message: string | null;
     last_message_time: string | null;
-    unread?: boolean; // optionnel
 };
 
 export async function getUserConversationsPreview(
@@ -22,7 +21,9 @@ export async function getUserConversationsPreview(
       annonces!fk_conversation_annonce (
         title,
         users:user_id (
-          image_profile
+          image_profile,
+          firstname,
+          lastname
         )
       ),
       messages (
@@ -54,7 +55,6 @@ export async function getUserConversationsPreview(
             image_profile: conv?.annonces?.users?.image_profile ?? null,
             last_message: lastMessage?.content ?? null,
             last_message_time: lastMessage?.created_at ?? null,
-            unread: true, // À implémenter plus tard
         };
     });
 }

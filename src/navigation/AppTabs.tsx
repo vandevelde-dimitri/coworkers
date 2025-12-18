@@ -119,6 +119,34 @@ export default function AppTabs() {
                         </View>
                     ),
                 }}
+                listeners={({ navigation }) => ({
+                    tabPress: (e) => {
+                        const state = navigation.getState();
+                        const stack = state.routes.find(
+                            (r) => r.name === "Chat"
+                        );
+                        if (stack && stack.state?.index! > 0) {
+                            e.preventDefault();
+                            navigation.dispatch(
+                                CommonActions.reset({
+                                    index: 0,
+                                    routes: [
+                                        {
+                                            name: "Chat",
+                                            state: {
+                                                routes: [
+                                                    {
+                                                        name: "conversationsList",
+                                                    },
+                                                ],
+                                            },
+                                        },
+                                    ],
+                                })
+                            );
+                        }
+                    },
+                })}
             />
 
             <Tab.Screen

@@ -1,17 +1,17 @@
+import { useQueryClient } from "@tanstack/react-query";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "../../utils/supabase";
+import { useAuth } from "./authContext";
 
 type MessageContextType = {
     unreadCount: number;
     unreadConversations: Record<string, boolean>;
-    refreshUnread: () => Promise<void>;
     markConversationRead: (conversationId: string) => Promise<void>;
 };
 
 const MessageContext = createContext<MessageContextType>({
     unreadCount: 0,
     unreadConversations: {},
-    refreshUnread: async () => {},
     markConversationRead: async () => {},
 });
 
@@ -20,66 +20,40 @@ export const MessageProvider = ({
 }: {
     children: React.ReactNode;
 }) => {
+    const { session } = useAuth();
+    const userId = session?.user.id;
+    const queryClient = useQueryClient();
+
     const [unreadConversations, setUnreadConversations] = useState<
         Record<string, boolean>
     >({});
 
-    /* -------------------------------
-     1️⃣ CHARGEMENT INITIAL (BDD)
-  -------------------------------- */
-    const refreshUnread = async () => {
-        const { data: sessionData } = await supabase.auth.getSession();
-        const userId = sessionData?.session?.user.id;
+    // ---------------------------
+    // Chargement initial (BDD)
+    // ---------------------------
+    const loadUnreadConversations = async () => {
         if (!userId) return;
 
-        const { data, error } = await supabase
-            .from("conversation_participants")
-            .select(
-                `
-        conversation_id,
-        last_read_at,
-        conversations (
-          messages (
-            created_at
-          )
-        )
-      `
-            )
-            .eq("user_id", userId)
-            .order("created_at", {
-                referencedTable: "conversations.messages",
-                ascending: false,
-            })
-            .limit(1, { foreignTable: "conversations.messages" });
-
-        if (error) {
-            console.error("Erreur refresh unread:", error);
-            return;
-        }
-
-        const unreadMap: Record<string, boolean> = {};
-
-        data.forEach((cp) => {
-            const lastMessage = cp.conversations?.messages?.[0];
-            if (!lastMessage) return;
-
-            const hasUnread =
-                !cp.last_read_at ||
-                new Date(lastMessage.created_at) > new Date(cp.last_read_at);
-
-            if (hasUnread) {
-                unreadMap[cp.conversation_id] = true;
-            }
+        const { data } = await supabase.rpc("get_unread_conversations", {
+            p_user_id: userId,
         });
 
-        setUnreadConversations(unreadMap);
+        if (data) {
+            const map: Record<string, boolean> = {};
+            data.forEach((row: any) => {
+                map[row.conversation_id] = true;
+            });
+            setUnreadConversations(map);
+        }
     };
 
-    /* -------------------------------
-     2️⃣ REALTIME (INSERT MESSAGE)
-  -------------------------------- */
+    // ---------------------------
+    // Realtime messages
+    // ---------------------------
     useEffect(() => {
-        refreshUnread();
+        if (!userId) return;
+
+        loadUnreadConversations();
 
         const channel = supabase
             .channel("messages-global")
@@ -90,14 +64,22 @@ export const MessageProvider = ({
                     schema: "public",
                     table: "messages",
                 },
-                async (payload) => {
-                    const message = payload.new;
+                (payload) => {
+                    const msg = payload.new;
 
-                    // On marque la conversation comme non lue
+                    // ignorer mes propres messages
+                    if (msg.sender_id === userId) return;
+
+                    // badge non-lu
                     setUnreadConversations((prev) => ({
                         ...prev,
-                        [message.conversation_id]: true,
+                        [msg.conversation_id]: true,
                     }));
+
+                    // 🔥 refresh preview conversations
+                    queryClient.invalidateQueries({
+                        queryKey: ["user-conversations", userId],
+                    });
                 }
             )
             .subscribe();
@@ -105,23 +87,19 @@ export const MessageProvider = ({
         return () => {
             supabase.removeChannel(channel);
         };
-    }, []);
+    }, [userId]);
 
-    /* -------------------------------
-     3️⃣ MARQUER COMME LU
-  -------------------------------- */
+    // ---------------------------
+    // Marquer une conversation comme lue
+    // ---------------------------
     const markConversationRead = async (conversationId: string) => {
-        const { data: sessionData } = await supabase.auth.getSession();
-        const userId = sessionData?.session?.user.id;
         if (!userId) return;
 
-        await supabase
-            .from("conversation_participants")
-            .update({
-                last_read_at: new Date().toISOString(),
-            })
-            .eq("conversation_id", conversationId)
-            .eq("user_id", userId);
+        await supabase.from("conversation_reads").upsert({
+            conversation_id: conversationId,
+            user_id: userId,
+            last_read_at: new Date().toISOString(),
+        });
 
         setUnreadConversations((prev) => {
             const copy = { ...prev };
@@ -130,14 +108,11 @@ export const MessageProvider = ({
         });
     };
 
-    const unreadCount = Object.keys(unreadConversations).length;
-
     return (
         <MessageContext.Provider
             value={{
-                unreadCount,
+                unreadCount: Object.keys(unreadConversations).length,
                 unreadConversations,
-                refreshUnread,
                 markConversationRead,
             }}
         >
@@ -146,7 +121,4 @@ export const MessageProvider = ({
     );
 };
 
-/* -------------------------------
-   HOOK
--------------------------------- */
 export const useMessageStatus = () => useContext(MessageContext);
