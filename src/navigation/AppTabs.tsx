@@ -1,9 +1,10 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { CommonActions } from "@react-navigation/native";
 import React from "react";
-import { Platform, View } from "react-native";
+import { Platform, StyleSheet, Text, View } from "react-native";
 import { HapticTab } from "../components/HapticTab";
 import { IconSymbol } from "../components/ui/IconSymbol";
+import { useMessageStatus } from "../contexts/messageContext";
 import TravelScreen from "../screens/travel/TravelScreen";
 import ChatStack from "./ChatStack";
 import FormStack from "./FormStack";
@@ -13,6 +14,7 @@ import ProfileStack from "./ProfileStack";
 const Tab = createBottomTabNavigator();
 
 export default function AppTabs() {
+    const { unreadCount } = useMessageStatus();
     return (
         <Tab.Navigator
             screenOptions={{
@@ -98,42 +100,27 @@ export default function AppTabs() {
                 options={{
                     title: "Messages",
                     tabBarIcon: ({ color }) => (
-                        <IconSymbol
-                            size={28}
-                            name="message.fill"
-                            color={color}
-                        />
+                        <View style={{ position: "relative" }}>
+                            <IconSymbol
+                                size={28}
+                                name="message.fill"
+                                color={color}
+                            />
+
+                            {unreadCount > 0 && (
+                                <View style={styles.badge}>
+                                    {unreadCount < 10 && (
+                                        <Text style={styles.badgeText}>
+                                            {unreadCount}
+                                        </Text>
+                                    )}
+                                </View>
+                            )}
+                        </View>
                     ),
                 }}
-                listeners={({ navigation }) => ({
-                    tabPress: (e) => {
-                        const state = navigation.getState();
-                        const stack = state.routes.find(
-                            (r) => r.name === "ChatStack"
-                        );
-                        if (stack && stack.state?.index! > 0) {
-                            e.preventDefault();
-                            navigation.dispatch(
-                                CommonActions.reset({
-                                    index: 0,
-                                    routes: [
-                                        {
-                                            name: "ChatStack",
-                                            state: {
-                                                routes: [
-                                                    {
-                                                        name: "conversationsList",
-                                                    },
-                                                ],
-                                            },
-                                        },
-                                    ],
-                                })
-                            );
-                        }
-                    },
-                })}
             />
+
             <Tab.Screen
                 name="ProfileStack"
                 component={ProfileStack}
@@ -177,3 +164,23 @@ export default function AppTabs() {
         </Tab.Navigator>
     );
 }
+
+const styles = StyleSheet.create({
+    badge: {
+        position: "absolute",
+        top: -4,
+        right: -8,
+        minWidth: 16,
+        height: 16,
+        borderRadius: 8,
+        backgroundColor: "#EF4444",
+        justifyContent: "center",
+        alignItems: "center",
+        paddingHorizontal: 4,
+    },
+    badgeText: {
+        color: "#fff",
+        fontSize: 10,
+        fontWeight: "700",
+    },
+});

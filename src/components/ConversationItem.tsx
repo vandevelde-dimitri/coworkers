@@ -1,24 +1,33 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function ConversationItem({ item, onPress }: any) {
+    console.log("item", item);
+
     return (
         <TouchableOpacity style={styles.row} onPress={onPress}>
-            <View style={styles.avatar}>
-                <Text style={styles.avatarText}>
-                    {item.name[0].toUpperCase()}
-                </Text>
-            </View>
+            {item.image_profile ? (
+                <Image
+                    source={{ uri: item.image_profile }}
+                    style={styles.avatar}
+                />
+            ) : (
+                <View style={styles.avatarFallback}>
+                    <Text style={styles.avatarText}>
+                        {item.title?.[0]?.toUpperCase()}
+                    </Text>
+                </View>
+            )}
 
             <View style={styles.content}>
-                <Text style={styles.name}>{item.name}</Text>
+                <Text style={styles.name}>{item.annonce_title}</Text>
                 <Text style={styles.lastMessage} numberOfLines={1}>
-                    {item.lastMessage}
+                    {item.last_message}
                 </Text>
             </View>
 
             <View style={styles.right}>
-                <Text style={styles.time}>{item.time}</Text>
+                {item.time && <Text style={styles.time}>{item.time}</Text>}
                 {item.unread && <View style={styles.badge} />}
             </View>
         </TouchableOpacity>
@@ -72,5 +81,14 @@ const styles = StyleSheet.create({
         height: 10,
         borderRadius: 5,
         backgroundColor: "#EF4444",
+    },
+    avatarFallback: {
+        width: 46,
+        height: 46,
+        borderRadius: 23,
+        backgroundColor: "#3B82F6",
+        alignItems: "center",
+        justifyContent: "center",
+        marginRight: 12,
     },
 });

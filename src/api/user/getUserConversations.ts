@@ -1,0 +1,60 @@
+import { supabase } from "../../../utils/supabase";
+
+export type ConversationPreview = {
+    conversation_id: string;
+    annonce_title: string | null;
+    image_profile: string | null;
+    last_message: string | null;
+    last_message_time: string | null;
+    unread?: boolean; // optionnel
+};
+
+export async function getUserConversationsPreview(
+    userId: string
+): Promise<ConversationPreview[]> {
+    const { data, error } = await supabase
+        .from("conversation_participants")
+        .select(
+            `
+    conversation_id,
+    conversations (
+      id,
+      annonces!fk_conversation_annonce (
+        title,
+        users:user_id (
+          image_profile
+        )
+      ),
+      messages (
+        content,
+        created_at
+      )
+    )
+    `
+        )
+        .eq("user_id", userId)
+        .order("created_at", {
+            referencedTable: "conversations.messages",
+            ascending: false,
+        })
+        .limit(1, { foreignTable: "conversations.messages" });
+
+    if (error) {
+        console.error("Erreur chargement conversations:", error);
+        throw error;
+    }
+
+    return data.map((item) => {
+        const conv = item.conversations;
+        const lastMessage = conv?.messages?.[0];
+
+        return {
+            conversation_id: conv?.id ?? item.conversation_id,
+            annonce_title: conv?.annonces?.title ?? null,
+            image_profile: conv?.annonces?.users?.image_profile ?? null,
+            last_message: lastMessage?.content ?? null,
+            last_message_time: lastMessage?.created_at ?? null,
+            unread: true, // À implémenter plus tard
+        };
+    });
+}

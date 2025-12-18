@@ -28,5 +28,6 @@ export default async function addAnnouncement(
         console.error("Error adding announcement:", error);
         throw error;
     }
+    // console.log("Announcement added:", data);
     return data;
 }

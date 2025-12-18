@@ -25,7 +25,7 @@ export default function AnnouncementCardList({
     const date_end_formated = formatDate(data.date_end);
     const navigation = useNavigation();
 
-    console.log("data", data);
+    // console.log("data", data);
 
     return (
         <ScrollView>

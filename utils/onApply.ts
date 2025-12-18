@@ -1,41 +1,54 @@
-import { Alert } from "react-native";
-import { StatusNotification } from "../src/types/enum/statusNotification.enum";
 import { supabase } from "./supabase";
 
-// utils/onApply.ts
-export const onApply = async (annonce_id: string) => {
-    const { data } = await supabase.auth.getSession();
-    if (!data.session) {
-        console.log("User not logged in");
-        return;
+export async function onApply(annonceId: string) {
+    // 1️⃣ Session
+    const { data: sessionData } = await supabase.auth.getSession();
+    const userId = sessionData?.session?.user.id;
+
+    if (!userId) {
+        throw new Error("Utilisateur non connecté");
     }
-    const user_id = data.session.user.id;
-    const confirmed = await new Promise<boolean>((resolve) => {
-        Alert.alert(
-            "Confirmer",
-            "Voulez-vous postuler ?",
-            [
-                {
-                    text: "Annuler",
-                    onPress: () => resolve(false),
-                    style: "cancel",
-                },
-                { text: "Oui", onPress: () => resolve(true) },
-            ],
-            { cancelable: true }
-        );
-    });
-    if (!confirmed) return;
 
-    const { data: notification, error } = await supabase
-        .from("user_annonces")
-        .upsert({
-            user_id,
-            annonce_id,
-            status: StatusNotification.PENDING,
+    // 2️⃣ Récupérer la conversation liée à l’annonce
+    const { data: annonce, error: annonceError } = await supabase
+        .from("annonces")
+        .select("conversation_id, number_of_places")
+        .eq("id", annonceId)
+        .single();
+
+    if (annonceError || !annonce?.conversation_id) {
+        throw new Error("Conversation introuvable pour cette annonce");
+    }
+
+    const conversationId = annonce.conversation_id;
+
+    if (annonce.number_of_places <= 0) {
+        throw new Error("Plus de place disponible");
+    }
+
+    // 3️⃣ Ajouter l'utilisateur à la conversation
+    const { error: participantError } = await supabase
+        .from("conversation_participants")
+        .insert({
+            conversation_id: conversationId,
+            user_id: userId,
+        });
+
+    if (participantError) {
+        throw participantError;
+    }
+
+    // 4️⃣ Décrémenter les places
+    const { error: updateError } = await supabase
+        .from("annonces")
+        .update({
+            number_of_places: annonce.number_of_places - 1,
         })
-        .select();
+        .eq("id", annonceId);
 
-    if (error) console.error("Erreur candidature:", error);
-    else console.log("Candidature envoyée ✅", notification);
-};
+    if (updateError) {
+        throw updateError;
+    }
+
+    return true;
+}

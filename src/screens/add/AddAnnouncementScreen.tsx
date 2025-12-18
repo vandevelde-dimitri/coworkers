@@ -12,6 +12,8 @@ import {
 } from "react-native";
 import * as yup from "yup";
 
+import { supabase } from "../../../utils/supabase";
+import { createConversation } from "../../api/messaging/createConversation";
 import SafeScreen from "../../components/SafeScreen";
 import { FormDatePicker } from "../../components/ui/DatePicker";
 import { FormInput } from "../../components/ui/FormInput";
@@ -99,17 +101,86 @@ export default function FormAnnouncementScreen() {
             );
         } else {
             createAnnouncement(data, {
-                onSuccess: () => {
-                    reset();
-                    Alert.alert("Succès", "Annonce créée !", [
-                        {
-                            text: "OK",
-                            onPress: () =>
-                                navigation.navigate("HomeStack", {
-                                    screen: "HomeScreen",
-                                }),
-                        },
-                    ]);
+                onSuccess: async (annonce) => {
+                    if (!annonce) return;
+
+                    try {
+                        // 1️⃣ Création conversation
+                        const conversation = await createConversation(
+                            annonce.id
+                        );
+                        console.log("Conversation créée :", conversation);
+
+                        if (!conversation) {
+                            console.error(
+                                "Conversation non créée correctement !"
+                            );
+                            return;
+                        }
+
+                        // 2️⃣ Mettre à jour l’annonce avec conversation_id
+                        const { error: updateError } = await supabase
+                            .from("annonces")
+                            .update({ conversation_id: conversation })
+                            .eq("id", annonce.id);
+
+                        if (updateError) {
+                            console.error(
+                                "Erreur update annonce:",
+                                updateError
+                            );
+                        }
+
+                        // 3️⃣  Ajouter le créateur comme participant
+                        const { data: sessionData } =
+                            await supabase.auth.getSession();
+                        const userId = sessionData?.session?.user.id;
+
+                        if (!userId) return;
+
+                        const {
+                            data: participantData,
+                            error: participantError,
+                        } = await supabase
+                            .from("conversation_participants")
+                            .insert({
+                                conversation_id: conversation,
+                                user_id: userId,
+                            })
+                            .select(); // permet de voir ce qui a été inséré
+
+                        if (participantError) {
+                            console.error(
+                                "Erreur ajout participant :",
+                                participantError
+                            );
+                        } else {
+                            console.log(
+                                "Participant ajouté :",
+                                participantData
+                            );
+                        }
+
+                        reset();
+                        Alert.alert("Succès", "Annonce créée !", [
+                            {
+                                text: "OK",
+                                onPress: () =>
+                                    navigation.navigate("HomeStack", {
+                                        screen: "HomeScreen",
+                                    }),
+                            },
+                        ]);
+                    } catch (err) {
+                        console.error(
+                            "Erreur création annonce / conversation :",
+                            err
+                        );
+                        Alert.alert(
+                            "Erreur",
+                            "Impossible de publier l'annonce"
+                        );
+                    }
                 },
                 onError: () =>
                     Alert.alert("Erreur", "Impossible de publier l'annonce"),

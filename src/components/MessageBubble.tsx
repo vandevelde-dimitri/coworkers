@@ -1,8 +1,16 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-export default function MessageBubble({ message }: any) {
-    const isMine = message.isMine;
+type Props = {
+    message: {
+        content: string;
+        created_at: string;
+        isMine: boolean;
+    };
+};
+
+export default function MessageBubble({ message }: Props) {
+    const { isMine, content, created_at } = message;
 
     return (
         <View style={[styles.container, isMine ? styles.right : styles.left]}>
@@ -12,8 +20,13 @@ export default function MessageBubble({ message }: any) {
                     isMine ? styles.bubbleRight : styles.bubbleLeft,
                 ]}
             >
-                <Text style={styles.text}>{message.text}</Text>
-                <Text style={styles.time}>{message.time}</Text>
+                <Text style={styles.text}>{content}</Text>
+                <Text style={styles.time}>
+                    {new Date(created_at).toLocaleTimeString("fr-FR", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    })}
+                </Text>
             </View>
         </View>
     );

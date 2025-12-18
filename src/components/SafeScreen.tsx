@@ -18,7 +18,6 @@ export default function SafeScreen({
 }): React.JSX.Element {
     const insets = useSafeAreaInsets();
     const navigation = useNavigation<any>();
-    console.log("navigation", navigation.getState().routes.length);
 
     const isEditProfile =
         navigation.getState().routes[0].name === "ProfileHome";
