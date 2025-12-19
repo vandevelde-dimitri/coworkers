@@ -1,4 +1,5 @@
-import React from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import React, { useCallback } from "react";
 import { FlatList } from "react-native";
 import ConversationItem from "../../components/ConversationItem";
 import SafeScreen from "../../components/SafeScreen";
@@ -6,8 +7,14 @@ import { useMessageStatus } from "../../contexts/messageContext";
 import { useUserConversations } from "../../hooks/conversation/useConversationUser";
 
 export default function ConversationsListScreen({ navigation }: any) {
-    const { data: conversations, isLoading } = useUserConversations();
+    const { data: conversations, isLoading, refetch } = useUserConversations();
     const { unreadConversations } = useMessageStatus();
+
+    useFocusEffect(
+        useCallback(() => {
+            refetch();
+        }, [])
+    );
 
     if (isLoading) return null;
 

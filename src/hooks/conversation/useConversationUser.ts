@@ -9,5 +9,7 @@ export function useUserConversations() {
         queryKey: ["user-conversations", session?.user.id],
         queryFn: getUserConversationsPreview.bind(null, session?.user.id!),
         enabled: !!session?.user.id,
+        refetchOnWindowFocus: true,
+        refetchOnMount: true,
     });
 }

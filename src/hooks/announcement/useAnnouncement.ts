@@ -6,6 +6,7 @@ import { getAnnouncementById } from "../../api/announcement/getAnnouncementById"
 import { getAnnouncementByCurrentUser } from "../../api/announcement/getAnnouncementCurrentUser";
 import addAnnouncement from "../../api/announcement/postAnnouncement";
 import updateAnnouncement from "../../api/announcement/updateAnnouncement";
+import { useAuth } from "../../contexts/authContext";
 import { AnnouncementFormValues } from "../../types/announcement.interface";
 
 export function useAnnouncementByFc() {
@@ -39,6 +40,7 @@ export function useAnnouncementsFavorites() {
 
 export function useAddAnnouncement() {
     const queryClient = useQueryClient();
+    const { session } = useAuth();
 
     return useMutation({
         mutationFn: (body: AnnouncementFormValues) => addAnnouncement(body),
@@ -49,6 +51,10 @@ export function useAddAnnouncement() {
             queryClient.invalidateQueries({
                 queryKey: ["announcement", "currentUser"],
             });
+            // // 🔄 refresh conversations
+            // queryClient.invalidateQueries({
+            //     queryKey: ["user-conversations", session?.user.id],
+            // });
         },
     });
 }
@@ -88,6 +94,10 @@ export function useDeleteAnnouncement() {
             // Si l'utilisateur supprime son annonce, s'assurer que l'écran Mon annonce est mis à jour
             queryClient.invalidateQueries({
                 queryKey: ["announcement", "currentUser"],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["user-conversations"],
+                exact: false,
             });
         },
     });
