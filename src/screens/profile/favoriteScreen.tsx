@@ -15,26 +15,34 @@ const FavoriteScreen = () => {
         );
     }
 
+    if (!announcements || announcements.length === 0) {
+        return (
+            <SafeScreen title="Mes favoris">
+                <View style={styles.emptyContainer}>
+                    <Text style={styles.emptyText}>
+                        Vous n'avez pas encore d'annonce en favoris.
+                    </Text>
+                </View>
+            </SafeScreen>
+        );
+    }
+
     console.log("annonce en favori", announcements);
 
     return (
         <SafeScreen backBtn title="Mes favoris">
             <View style={{ flex: 1 }}>
-                {!announcements || announcements.length === 0 ? (
-                    <Text>Aucune annonce en favoris.</Text>
-                ) : (
-                    <FlatList
-                        data={announcements}
-                        keyExtractor={(item) => item.id.toString()}
-                        renderItem={({ item, index }) => (
-                            <AnnouncementCardList data={item} index={index} />
-                        )}
-                        contentContainerStyle={{
-                            padding: 16,
-                            paddingBottom: 40,
-                        }}
-                    />
-                )}
+                <FlatList
+                    data={announcements}
+                    keyExtractor={(item) => item.id.toString()}
+                    renderItem={({ item, index }) => (
+                        <AnnouncementCardList data={item} index={index} />
+                    )}
+                    contentContainerStyle={{
+                        padding: 16,
+                        paddingBottom: 40,
+                    }}
+                />
             </View>
         </SafeScreen>
     );
@@ -76,4 +84,11 @@ const styles = StyleSheet.create({
     buttonActive: { backgroundColor: "#10B981" },
     buttonText: { fontSize: 14, color: "#111827", fontWeight: "500" },
     buttonTextActive: { color: "#fff" },
+    emptyContainer: {
+        padding: 16,
+        alignItems: "center",
+        justifyContent: "center",
+        flex: 1,
+    },
+    emptyText: { fontSize: 16, marginBottom: 12 },
 });

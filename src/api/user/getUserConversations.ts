@@ -4,6 +4,8 @@ export type ConversationPreview = {
     conversation_id: string;
     annonce_title: string | null;
     image_profile: string | null;
+    firstname: string | null;
+    lastname: string | null;
     last_message: string | null;
     last_message_time: string | null;
 };
@@ -53,6 +55,8 @@ export async function getUserConversationsPreview(
             conversation_id: conv?.id ?? item.conversation_id,
             annonce_title: conv?.annonces?.title ?? null,
             image_profile: conv?.annonces?.users?.image_profile ?? null,
+            firstname: conv?.annonces?.users?.firstname ?? null,
+            lastname: conv?.annonces?.users?.lastname ?? null,
             last_message: lastMessage?.content ?? null,
             last_message_time: lastMessage?.created_at ?? null,
         };

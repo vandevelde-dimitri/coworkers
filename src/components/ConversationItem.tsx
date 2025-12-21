@@ -11,6 +11,8 @@ export default function ConversationItem({
     unread: boolean;
     onPress: () => void;
 }) {
+    console.log("✔ item", item);
+
     return (
         <TouchableOpacity style={styles.row} onPress={onPress}>
             <View style={styles.avatar}>
@@ -18,7 +20,7 @@ export default function ConversationItem({
                     <Text style={styles.avatarText}>👤</Text>
                 ) : (
                     <Text style={styles.avatarText}>
-                        {item.annonce_title?.[0]?.toUpperCase() ?? "?"}
+                        {`${item.lastname?.[0]?.toUpperCase()}${item.firstname?.[0]?.toUpperCase()}`}
                     </Text>
                 )}
             </View>
