@@ -8,6 +8,8 @@ import {
 } from "react-native";
 import SafeScreen from "../../components/SafeScreen";
 import { useAllNotificationByUser } from "../../hooks/notification/useNotification";
+import { StatusNotification } from "../../types/enum/statusNotification.enum";
+import { FormattedNotification } from "../../types/notification.interface";
 
 export default function NotificationsScreen() {
     const {
@@ -33,18 +35,24 @@ export default function NotificationsScreen() {
         );
     }
 
-    const renderItem = ({ item }) => (
+    const renderItem = ({ item }: { item: FormattedNotification }) => (
         <View
             style={[
                 styles.card,
-                item.type === "application" && styles.cardHighlight,
+                item.status === StatusNotification.PENDING &&
+                    styles.cardHighlight,
             ]}
         >
             <Text style={styles.message}>{item.message}</Text>
-            <Text style={styles.date}>{item.date}</Text>
+            <Text style={styles.date}>
+                {new Date(item.created_at).toLocaleString("fr-FR", {
+                    dateStyle: "short",
+                    timeStyle: "short",
+                })}
+            </Text>
 
-            {/* Si le statut = pending → afficher boutons */}
-            {item.type === "application" && (
+            {/* Si le statut = pending → afficher boutons Accepter / Refuser */}
+            {item.status === StatusNotification.PENDING && (
                 <View style={styles.actions}>
                     <TouchableOpacity style={[styles.actionBtn, styles.accept]}>
                         <Text style={styles.actionText}>Accepter</Text>
@@ -71,13 +79,6 @@ export default function NotificationsScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: "#fff", padding: 16 },
-    title: {
-        fontSize: 22,
-        fontWeight: "bold",
-        marginBottom: 16,
-        color: "#111827",
-    },
     card: {
         backgroundColor: "#F9FAFB",
         padding: 16,

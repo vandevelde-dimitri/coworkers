@@ -1,36 +1,36 @@
 import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity } from "react-native";
-import { onApply } from "../../utils/onApply";
 import { supabase } from "../../utils/supabase";
 import { useAuth } from "../contexts/authContext";
 
 export default function ApplyButton({ annonce }: { annonce: any }) {
     const { session } = useAuth();
-    const [alreadyJoined, setAlreadyJoined] = useState(false);
+    const [request, setRequest] = useState<any>(null);
     const [loading, setLoading] = useState(false);
 
     const annonceId = annonce.id;
-    const conversationId = annonce.conversation_id;
 
-    // 🔎 Vérifier si l'utilisateur est déjà dans la conversation
+    // 🔎 Charger la candidature si elle existe (pending)
     useEffect(() => {
-        const checkParticipant = async () => {
-            if (!session || !conversationId) return;
+        if (!session) return;
 
+        const loadRequest = async () => {
             const { data } = await supabase
-                .from("conversation_participants")
-                .select("id")
-                .eq("conversation_id", conversationId)
+                .from("participant_requests")
+                .select("*")
+                .eq("annonce_id", annonceId)
                 .eq("user_id", session.user.id)
+                .eq("status", "pending")
                 .maybeSingle();
 
-            setAlreadyJoined(!!data);
+            setRequest(data);
         };
 
-        checkParticipant();
-    }, [session, conversationId]);
+        loadRequest();
+    }, [session, annonceId]);
 
-    const handleApply = async () => {
+    // 🔄 Postuler ou annuler
+    const handleApplyToggle = async () => {
         if (!session) {
             Alert.alert("Connexion requise");
             return;
@@ -38,12 +38,38 @@ export default function ApplyButton({ annonce }: { annonce: any }) {
 
         try {
             setLoading(true);
-            await onApply(annonceId);
-            setAlreadyJoined(true);
 
-            Alert.alert("Succès", "Tu as rejoint la conversation 🎉");
+            if (request) {
+                // 🗑 Annuler sa candidature
+                await supabase
+                    .from("participant_requests")
+                    .delete()
+                    .eq("id", request.id);
+
+                setRequest(null);
+                Alert.alert("Succès", "Ta candidature a été annulée");
+            } else {
+                // ➕ Postuler
+                const { data, error } = await supabase
+                    .from("participant_requests")
+                    .insert({
+                        annonce_id: annonceId,
+                        user_id: session.user.id,
+                        status: "pending",
+                    })
+                    .select()
+                    .single();
+
+                if (error) throw error;
+
+                setRequest(data);
+                Alert.alert("Succès", "Tu postules à l'annonce !");
+            }
         } catch (e: any) {
-            Alert.alert("Erreur", e.message ?? "Impossible de postuler");
+            Alert.alert(
+                "Erreur",
+                e.message ?? "Impossible d'effectuer l'action"
+            );
         } finally {
             setLoading(false);
         }
@@ -58,62 +84,25 @@ export default function ApplyButton({ annonce }: { annonce: any }) {
         );
     }
 
-    // ✅ Déjà dans la conversation
-    if (alreadyJoined) {
-        return (
-            <TouchableOpacity style={styles.buttonPrimary} disabled>
-                <Text style={styles.buttonPrimaryText}>Déjà participant</Text>
-            </TouchableOpacity>
-        );
-    }
-
+    // ✅ Affichage du bouton selon l'état
     return (
         <TouchableOpacity
             style={styles.buttonPrimary}
-            onPress={handleApply}
+            onPress={handleApplyToggle}
             disabled={loading}
         >
             <Text style={styles.buttonPrimaryText}>
-                {loading ? "En cours..." : "Postuler"}
+                {loading
+                    ? "En cours..."
+                    : request
+                    ? "Annuler la candidature"
+                    : "Postuler"}
             </Text>
         </TouchableOpacity>
     );
 }
 
 const styles = StyleSheet.create({
-    content: { padding: 16, justifyContent: "center" },
-    card: {
-        backgroundColor: "#fff",
-        borderRadius: 12,
-        padding: 16,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
-        elevation: 2,
-    },
-    title: { fontSize: 20, fontWeight: "700", marginBottom: 12 },
-    userSection: {
-        flexDirection: "row",
-        alignItems: "center",
-        marginBottom: 12,
-    },
-    avatar: { width: 50, height: 50, borderRadius: 50, borderWidth: 2 },
-    userName: { fontSize: 16, fontWeight: "600" },
-    city: { fontSize: 13, color: "#999", marginTop: 2 },
-    contentText: { fontSize: 15, color: "#333", marginBottom: 8 },
-    dates: { fontSize: 13, color: "#999", marginBottom: 4 },
-    places: {
-        fontSize: 14,
-        fontWeight: "500",
-        color: "#10B981",
-        marginBottom: 12,
-    },
-    actions: {
-        flexDirection: "column",
-        justifyContent: "space-between",
-        gap: 12,
-    },
     buttonPrimary: {
         flex: 1,
         backgroundColor: "#10B981",
@@ -122,33 +111,4 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     buttonPrimaryText: { color: "#fff", fontWeight: "600" },
-    buttonSecondary: {
-        flex: 1,
-        flexDirection: "row",
-        backgroundColor: "#F3F4F6",
-        padding: 12,
-        borderRadius: 8,
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 6,
-    },
-    buttonSecondaryText: { color: "#10B981", fontWeight: "600" },
-    buttonSecondaryTrash: {
-        flex: 1,
-        flexDirection: "row",
-        backgroundColor: "#f80202ff",
-        padding: 12,
-        borderRadius: 8,
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 6,
-    },
-    buttonSecondaryTextTrash: { color: "#F3F4F6", fontWeight: "600" },
-    noVehicle: {
-        marginTop: 4,
-        color: "#ff0000",
-        fontWeight: "600",
-        fontSize: 14,
-        marginBottom: 12,
-    },
 });

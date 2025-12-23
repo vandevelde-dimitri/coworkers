@@ -1,59 +1,78 @@
 import { supabase } from "../../../utils/supabase";
 import { StatusNotification } from "../../types/enum/statusNotification.enum";
-import { Notification } from "../../types/notification.interface";
+import { NotificationResponse } from "../../types/notification.interface";
 
-export async function getAllNotificationByUser(): Promise<Notification[]> {
+export async function getAllNotificationByUser(): Promise<
+    NotificationResponse[]
+> {
+    // 🔹 Récupération session
     const {
         data: { session },
         error: sessionError,
     } = await supabase.auth.getSession();
 
-    if (sessionError) {
+    if (sessionError || !session) {
         console.error("❌ Session error:", sessionError);
-        throw sessionError;
-    }
-
-    if (!session) {
-        console.error("❌ No active session");
         return [];
     }
 
-    const { data, error } = await supabase
-        .from("user_annonces")
-        .select(`annonce_id, user_id, status`)
-        .eq("user_id", session.user.id);
+    // 🔹 Requête notifications pour le propriétaire
+    const { data, error } = await supabase.rpc("get_my_notifications");
 
     if (error) {
         console.error("Error fetching notifications:", error);
         throw error;
     }
 
-    // 🔥 Transforme les données pour ton écran
-    const formatted = data.map((item, index) => ({
-        id: item.annonce_id.toString(),
-        annonceId: item.annonce_id,
-        userId: item.user_id,
-        status: item.status,
-        type:
-            item.status === StatusNotification.PENDING
-                ? ("application" as const)
-                : ("status" as const),
-        message: getMessageByStatus(item.status),
-        date: "Il y a 2h", // TODO : mettre la vraie date si tu l'ajoutes en BDD
-    }));
+    console.log("✅ notification", data);
+
+    // 🔹 Transformation pour l’écran
+    const formatted: NotificationResponse[] = (data ?? []).map(
+        (item: NotificationResponse) => {
+            const user = {
+                firstname: item.candidate_firstname,
+                lastname: item.candidate_lastname,
+            };
+
+            return {
+                id: item.id,
+                annonceId: item.annonce_id,
+                annonceTitle: item.annonce_title,
+                userId: item.candidate_id,
+                status: item.status,
+                message: getMessageByStatus(
+                    item.status,
+                    item.annonce_title,
+                    user
+                ),
+                created_at: item.created_at,
+            };
+        }
+    );
 
     return formatted;
 }
 
-function getMessageByStatus(status: string) {
+// 🔹 Génération message
+function getMessageByStatus(
+    status: string,
+    annonce_title: string,
+    user: {
+        firstname: string;
+        lastname: string;
+    }
+) {
     switch (status) {
         case StatusNotification.PENDING:
-            return "Un utilisateur a postulé à votre annonce 🚗";
+            return `${user.firstname} ${user.lastname} a postulé à votre annonce "${annonce_title}"`;
+
         case StatusNotification.ACCEPTED:
-            return "Votre candidature a été acceptée ✅";
+            return `Vous avez accepté une candidature pour "${annonce_title}"`;
+
         case StatusNotification.REJECTED:
-            return "Votre candidature a été refusée ❌";
+            return `Vous avez refusé une candidature pour "${annonce_title}"`;
+
         default:
-            return "Nouvelle notification";
+            return "Aucune notification disponible.";
     }
 }

@@ -11,7 +11,7 @@ export default function ConversationItem({
     unread: boolean;
     onPress: () => void;
 }) {
-    console.log("✔ item", item);
+    console.log("Conversation ✔ item", item);
 
     return (
         <TouchableOpacity style={styles.row} onPress={onPress}>

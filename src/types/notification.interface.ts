@@ -1,11 +1,14 @@
 import { StatusNotification } from "./enum/statusNotification.enum";
 
-export interface Notification {
+export interface NotificationResponse {
     id: string;
-    annonceId: string;
-    userId: string;
-    status: StatusNotification; // enum
-    type: "application" | "status";
+    annonce_id: string;
+    candidate_firstname: string;
+    candidate_id: string;
+    candidate_image: string | null;
+    candidate_lastname: string;
+    created_at: string;
     message: string;
-    date: string;
+    status: StatusNotification;
+    annonce_title: string;
 }
