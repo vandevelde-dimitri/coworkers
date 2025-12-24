@@ -1,6 +1,5 @@
-import { useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useRef, useState } from "react";
-import { FlatList, StyleSheet } from "react-native";
+import { FlatList, StyleSheet, Text } from "react-native";
 import { supabase } from "../../../utils/supabase";
 import ChatInput from "../../components/ChatInput";
 import MessageBubble from "../../components/MessageBubble";
@@ -12,12 +11,17 @@ export default function ChatScreen({ route }: any) {
     const { conversationId, title } = route.params;
     const { session } = useAuth();
     const { markConversationRead } = useMessageStatus();
-    const queryClient = useQueryClient();
-
     const flatListRef = useRef<FlatList>(null);
-    const [messages, setMessages] = useState<any[]>([]);
 
+    const [messages, setMessages] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    // ---------------------------
+    // Charger messages initiaux
+    // ---------------------------
     const loadMessages = async () => {
+        if (!conversationId) return;
+
         const { data } = await supabase
             .from("messages")
             .select("id, sender_id, content, created_at")
@@ -32,14 +36,23 @@ export default function ChatScreen({ route }: any) {
                 }))
             );
         }
+        setLoading(false);
     };
 
+    // ---------------------------
+    // Load + mark read au montage
+    // ---------------------------
     useEffect(() => {
         loadMessages();
         markConversationRead(conversationId);
     }, [conversationId]);
 
+    // ---------------------------
+    // Realtime pour nouveaux messages
+    // ---------------------------
     useEffect(() => {
+        if (!conversationId) return;
+
         const channel = supabase
             .channel(`chat-${conversationId}`)
             .on(
@@ -52,7 +65,6 @@ export default function ChatScreen({ route }: any) {
                 },
                 (payload) => {
                     const msg = payload.new;
-
                     setMessages((prev) => [
                         ...prev,
                         {
@@ -69,6 +81,9 @@ export default function ChatScreen({ route }: any) {
         };
     }, [conversationId]);
 
+    // ---------------------------
+    // Envoyer un message
+    // ---------------------------
     const onSend = async (text: string) => {
         if (!text.trim()) return;
 
@@ -77,12 +92,22 @@ export default function ChatScreen({ route }: any) {
             sender_id: session?.user.id,
             content: text,
         });
-
-        // 🔥 refresh preview
-        queryClient.invalidateQueries({
-            queryKey: ["user-conversations", session?.user.id],
-        });
     };
+
+    // ---------------------------
+    // Scroll auto à la fin
+    // ---------------------------
+    useEffect(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+    }, [messages]);
+
+    if (loading)
+        return (
+            <SafeScreen backBtn title={title ?? "Conversation"}>
+                {/* Ici tu peux mettre un loader si tu veux */}
+                <Text>Loading messages...</Text>
+            </SafeScreen>
+        );
 
     return (
         <SafeScreen backBtn title={title ?? "Conversation"}>
@@ -92,10 +117,8 @@ export default function ChatScreen({ route }: any) {
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => <MessageBubble message={item} />}
                 contentContainerStyle={styles.list}
-                onContentSizeChange={() =>
-                    flatListRef.current?.scrollToEnd({ animated: true })
-                }
             />
+
             <ChatInput onSend={onSend} />
         </SafeScreen>
     );
