@@ -1,12 +1,15 @@
 import React from "react";
 import {
+    Alert,
     FlatList,
     StyleSheet,
     Text,
     TouchableOpacity,
     View,
 } from "react-native";
+import { supabase } from "../../../utils/supabase";
 import SafeScreen from "../../components/SafeScreen";
+import { useAuth } from "../../contexts/authContext";
 import {
     useCandidateNotifications,
     useOwnerNotifications,
@@ -15,6 +18,8 @@ import { StatusNotification } from "../../types/enum/statusNotification.enum";
 import { NotificationResponse } from "../../types/notification.interface";
 
 export default function NotificationsScreen() {
+    const { session } = useAuth();
+
     const {
         data: ownerNotifications,
         isLoading: loadingOwner,
@@ -55,6 +60,50 @@ export default function NotificationsScreen() {
         );
     }
 
+    const onAccept = async (annonceId: string) => {
+        if (!session) {
+            Alert.alert("Connexion requise");
+            return;
+        }
+
+        try {
+            // 🔹 1. Mettre à jour la candidature
+            const { error: updateError } = await supabase
+                .from("participant_requests")
+                .update({ status: "accepted" })
+                .eq("annonce_id", annonceId);
+
+            if (updateError) throw updateError;
+
+            // 🔹 2. Décrémenter le nombre de places
+            await supabase.rpc("decrement_places", { annonce: annonceId });
+
+            Alert.alert(
+                "Succès",
+                "Tu as validé la candidature et la place a été déduite !"
+            );
+        } catch (e: any) {
+            Alert.alert("Erreur", e.message ?? "Impossible de valider");
+        }
+    };
+    const onReject = async (annonceId: string) => {
+        if (!session) {
+            Alert.alert("Connexion requise");
+            return;
+        }
+        try {
+            const { error } = await supabase
+                .from("participant_requests")
+                .update({ status: "refused" })
+                .eq("annonce_id", annonceId);
+
+            if (error) throw error;
+            Alert.alert("Succès", "Tu as refusé la candidature !");
+        } catch (e: any) {
+            Alert.alert("Erreur", e.message ?? "Impossible de refuser");
+        }
+    };
+
     const renderItem = ({ item }: { item: NotificationResponse }) => {
         const isOwnerAction = item.status === StatusNotification.PENDING;
 
@@ -69,17 +118,18 @@ export default function NotificationsScreen() {
                     })}
                 </Text>
 
-                {/* Actions UNIQUEMENT pour le proprio */}
                 {isOwnerAction && (
                     <View style={styles.actions}>
                         <TouchableOpacity
                             style={[styles.actionBtn, styles.accept]}
+                            onPress={() => onAccept(item.annonceId)}
                         >
                             <Text style={styles.actionText}>Accepter</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
                             style={[styles.actionBtn, styles.reject]}
+                            onPress={() => onReject(item.annonceId)}
                         >
                             <Text style={styles.actionText}>Refuser</Text>
                         </TouchableOpacity>
