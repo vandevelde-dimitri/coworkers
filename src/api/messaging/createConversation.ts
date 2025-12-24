@@ -3,7 +3,7 @@ import { Conversation } from "../../types/conversation.interface";
 
 export async function createConversation(
     announcementId: string
-): Promise<Conversation> {
+): Promise<string> {
     const { data, error } = await supabase
         .from("conversations")
         .upsert({ annonce_id: announcementId })

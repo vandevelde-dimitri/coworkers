@@ -8,6 +8,7 @@ import {
     View,
 } from "react-native";
 import { supabase } from "../../../utils/supabase";
+import { addUserConversation } from "../../api/messaging/addUserConversation";
 import SafeScreen from "../../components/SafeScreen";
 import { useAuth } from "../../contexts/authContext";
 import {
@@ -20,24 +21,15 @@ import { NotificationResponse } from "../../types/notification.interface";
 export default function NotificationsScreen() {
     const { session } = useAuth();
 
-    const {
-        data: ownerNotifications,
-        isLoading: loadingOwner,
-        error: errorOwner,
-    } = useOwnerNotifications();
+    const ownerQuery = useOwnerNotifications();
+    const candidateQuery = useCandidateNotifications();
 
-    const {
-        data: candidateNotifications,
-        isLoading: loadingCandidate,
-        error: errorCandidate,
-    } = useCandidateNotifications();
-
-    const isLoading = loadingOwner || loadingCandidate;
-    const error = errorOwner || errorCandidate;
+    const isLoading = ownerQuery.isLoading || candidateQuery.isLoading;
+    const error = ownerQuery.error || candidateQuery.error;
 
     const notifications: NotificationResponse[] = [
-        ...(ownerNotifications ?? []),
-        ...(candidateNotifications ?? []),
+        ...(ownerQuery.data ?? []),
+        ...(candidateQuery.data ?? []),
     ].sort(
         (a, b) =>
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -52,13 +44,15 @@ export default function NotificationsScreen() {
     }
 
     if (error) {
-        console.log("RQ ERROR:", error);
+        console.error("Notifications error:", error);
         return (
             <SafeScreen backBtn title="Notifications">
                 <Text>Erreur lors du chargement des notifications.</Text>
             </SafeScreen>
         );
     }
+
+    /* ===================== ACTIONS ===================== */
 
     const onAccept = async (annonceId: string) => {
         if (!session) {
@@ -67,30 +61,36 @@ export default function NotificationsScreen() {
         }
 
         try {
-            // 🔹 1. Mettre à jour la candidature
-            const { error: updateError } = await supabase
+            // 1️⃣ Accepter la candidature
+            const { data, error } = await supabase
                 .from("participant_requests")
                 .update({ status: "accepted" })
-                .eq("annonce_id", annonceId);
+                .eq("annonce_id", annonceId)
+                .select("user_id")
+                .maybeSingle();
 
-            if (updateError) throw updateError;
+            if (error || !data?.user_id) {
+                throw error ?? new Error("Candidature introuvable");
+            }
 
-            // 🔹 2. Décrémenter le nombre de places
+            // 2️⃣ Décrémenter les places
             await supabase.rpc("decrement_places", { annonce: annonceId });
 
-            Alert.alert(
-                "Succès",
-                "Tu as validé la candidature et la place a été déduite !"
-            );
+            // 3️⃣ Ajouter le candidat à la conversation
+            await addUserConversation(data.user_id, annonceId);
+
+            Alert.alert("Succès", "Candidature acceptée");
         } catch (e: any) {
-            Alert.alert("Erreur", e.message ?? "Impossible de valider");
+            Alert.alert("Erreur", e.message ?? "Impossible d'accepter");
         }
     };
+
     const onReject = async (annonceId: string) => {
         if (!session) {
             Alert.alert("Connexion requise");
             return;
         }
+
         try {
             const { error } = await supabase
                 .from("participant_requests")
@@ -98,17 +98,20 @@ export default function NotificationsScreen() {
                 .eq("annonce_id", annonceId);
 
             if (error) throw error;
-            Alert.alert("Succès", "Tu as refusé la candidature !");
+
+            Alert.alert("Succès", "Candidature refusée");
         } catch (e: any) {
             Alert.alert("Erreur", e.message ?? "Impossible de refuser");
         }
     };
 
+    /* ===================== RENDER ===================== */
+
     const renderItem = ({ item }: { item: NotificationResponse }) => {
-        const isOwnerAction = item.status === StatusNotification.PENDING;
+        const isPending = item.status === StatusNotification.PENDING;
 
         return (
-            <View style={[styles.card, isOwnerAction && styles.cardHighlight]}>
+            <View style={[styles.card, isPending && styles.cardHighlight]}>
                 <Text style={styles.message}>{item.message}</Text>
 
                 <Text style={styles.date}>
@@ -118,7 +121,7 @@ export default function NotificationsScreen() {
                     })}
                 </Text>
 
-                {isOwnerAction && (
+                {isPending && (
                     <View style={styles.actions}>
                         <TouchableOpacity
                             style={[styles.actionBtn, styles.accept]}
@@ -150,6 +153,8 @@ export default function NotificationsScreen() {
         </SafeScreen>
     );
 }
+
+/* ===================== STYLES ===================== */
 
 const styles = StyleSheet.create({
     card: {
