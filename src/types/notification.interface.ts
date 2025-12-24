@@ -12,3 +12,7 @@ export interface NotificationResponse {
     status: StatusNotification;
     annonce_title: string;
 }
+
+export interface NotificationPreview extends NotificationResponse {
+    message: string;
+}

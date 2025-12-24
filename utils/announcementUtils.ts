@@ -66,8 +66,6 @@ export const canApplyToAnnouncement = async (
  * Vérifie si l'utilisateur a déjà postulé à cette annonce
  */
 export const hasAlreadyApplied = async (announcementId: string) => {
-    console.log("announcementId", announcementId);
-
     const { data: sessionData } = await supabase.auth.getSession();
     if (!sessionData.session) return false;
 

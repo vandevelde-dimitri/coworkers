@@ -31,7 +31,6 @@ export async function getAnnouncementById(
         console.error("Error fetching announcement:", error);
         throw error;
     }
-    console.log("✅  Fetched announcement:", annonce);
 
     return annonce;
 }

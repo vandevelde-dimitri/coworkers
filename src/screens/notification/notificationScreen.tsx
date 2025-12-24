@@ -7,16 +7,36 @@ import {
     View,
 } from "react-native";
 import SafeScreen from "../../components/SafeScreen";
-import { useAllNotificationByUser } from "../../hooks/notification/useNotification";
+import {
+    useCandidateNotifications,
+    useOwnerNotifications,
+} from "../../hooks/notification/useNotification";
 import { StatusNotification } from "../../types/enum/statusNotification.enum";
-import { FormattedNotification } from "../../types/notification.interface";
+import { NotificationResponse } from "../../types/notification.interface";
 
 export default function NotificationsScreen() {
     const {
-        data: notifications,
-        isLoading,
-        error,
-    } = useAllNotificationByUser();
+        data: ownerNotifications,
+        isLoading: loadingOwner,
+        error: errorOwner,
+    } = useOwnerNotifications();
+
+    const {
+        data: candidateNotifications,
+        isLoading: loadingCandidate,
+        error: errorCandidate,
+    } = useCandidateNotifications();
+
+    const isLoading = loadingOwner || loadingCandidate;
+    const error = errorOwner || errorCandidate;
+
+    const notifications: NotificationResponse[] = [
+        ...(ownerNotifications ?? []),
+        ...(candidateNotifications ?? []),
+    ].sort(
+        (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
 
     if (isLoading) {
         return (
@@ -35,41 +55,44 @@ export default function NotificationsScreen() {
         );
     }
 
-    const renderItem = ({ item }: { item: FormattedNotification }) => (
-        <View
-            style={[
-                styles.card,
-                item.status === StatusNotification.PENDING &&
-                    styles.cardHighlight,
-            ]}
-        >
-            <Text style={styles.message}>{item.message}</Text>
-            <Text style={styles.date}>
-                {new Date(item.created_at).toLocaleString("fr-FR", {
-                    dateStyle: "short",
-                    timeStyle: "short",
-                })}
-            </Text>
+    const renderItem = ({ item }: { item: NotificationResponse }) => {
+        const isOwnerAction = item.status === StatusNotification.PENDING;
 
-            {/* Si le statut = pending → afficher boutons Accepter / Refuser */}
-            {item.status === StatusNotification.PENDING && (
-                <View style={styles.actions}>
-                    <TouchableOpacity style={[styles.actionBtn, styles.accept]}>
-                        <Text style={styles.actionText}>Accepter</Text>
-                    </TouchableOpacity>
+        return (
+            <View style={[styles.card, isOwnerAction && styles.cardHighlight]}>
+                <Text style={styles.message}>{item.message}</Text>
 
-                    <TouchableOpacity style={[styles.actionBtn, styles.reject]}>
-                        <Text style={styles.actionText}>Refuser</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
-        </View>
-    );
+                <Text style={styles.date}>
+                    {new Date(item.created_at).toLocaleString("fr-FR", {
+                        dateStyle: "short",
+                        timeStyle: "short",
+                    })}
+                </Text>
+
+                {/* Actions UNIQUEMENT pour le proprio */}
+                {isOwnerAction && (
+                    <View style={styles.actions}>
+                        <TouchableOpacity
+                            style={[styles.actionBtn, styles.accept]}
+                        >
+                            <Text style={styles.actionText}>Accepter</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={[styles.actionBtn, styles.reject]}
+                        >
+                            <Text style={styles.actionText}>Refuser</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+            </View>
+        );
+    };
 
     return (
         <SafeScreen backBtn title="Notifications">
             <FlatList
-                data={notifications ?? []}
+                data={notifications}
                 keyExtractor={(item) => item.id}
                 renderItem={renderItem}
                 contentContainerStyle={{ paddingBottom: 20 }}
@@ -91,8 +114,15 @@ const styles = StyleSheet.create({
         borderColor: "#10B981",
         backgroundColor: "#ECFDF5",
     },
-    message: { fontSize: 16, color: "#111827", marginBottom: 6 },
-    date: { fontSize: 13, color: "#6B7280" },
+    message: {
+        fontSize: 16,
+        color: "#111827",
+        marginBottom: 6,
+    },
+    date: {
+        fontSize: 13,
+        color: "#6B7280",
+    },
     actions: {
         flexDirection: "row",
         marginTop: 12,
@@ -104,7 +134,14 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         alignItems: "center",
     },
-    accept: { backgroundColor: "#10B981" },
-    reject: { backgroundColor: "#EF4444" },
-    actionText: { color: "#fff", fontWeight: "600" },
+    accept: {
+        backgroundColor: "#10B981",
+    },
+    reject: {
+        backgroundColor: "#EF4444",
+    },
+    actionText: {
+        color: "#fff",
+        fontWeight: "600",
+    },
 });

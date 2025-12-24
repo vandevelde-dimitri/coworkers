@@ -37,7 +37,6 @@ export async function getAnnouncementByCurrentUser(): Promise<AnnouncementDetail
         console.error("Error fetching announcement:", error);
         throw error;
     }
-    console.log("✅  Fetched announcement:", annonce);
 
     return annonce;
 }

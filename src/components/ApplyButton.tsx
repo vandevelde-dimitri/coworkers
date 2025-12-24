@@ -20,7 +20,7 @@ export default function ApplyButton({ annonce }: { annonce: any }) {
                 .select("*")
                 .eq("annonce_id", annonceId)
                 .eq("user_id", session.user.id)
-                .eq("status", "pending")
+                // .eq("status", "pending")
                 .maybeSingle();
 
             setRequest(data);
@@ -63,7 +63,8 @@ export default function ApplyButton({ annonce }: { annonce: any }) {
                 if (error) throw error;
 
                 setRequest(data);
-                Alert.alert("Succès", "Tu postules à l'annonce !");
+
+                Alert.alert("Succès", "Tu as postulé à l'annonce !");
             }
         } catch (e: any) {
             Alert.alert(
@@ -84,6 +85,8 @@ export default function ApplyButton({ annonce }: { annonce: any }) {
         );
     }
 
+    console.log("requests:", request);
+
     // ✅ Affichage du bouton selon l'état
     return (
         <TouchableOpacity
@@ -94,8 +97,12 @@ export default function ApplyButton({ annonce }: { annonce: any }) {
             <Text style={styles.buttonPrimaryText}>
                 {loading
                     ? "En cours..."
-                    : request
+                    : request?.status === "accepted"
+                    ? "Vous participez au covoiturage ✅"
+                    : request?.status === "pending"
                     ? "Annuler la candidature"
+                    : request?.status === "refused"
+                    ? "Candidature refusée"
                     : "Postuler"}
             </Text>
         </TouchableOpacity>
