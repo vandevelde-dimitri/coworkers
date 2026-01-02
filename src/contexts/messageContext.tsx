@@ -28,33 +28,39 @@ export const MessageProvider = ({
         Record<string, boolean>
     >({});
 
-    // ---------------------------
-    // Chargement initial (BDD)
-    // ---------------------------
+    // ----------------------------------
+    // 🔹 LOAD INITIAL UNREAD (BDD)
+    // ----------------------------------
     const loadUnreadConversations = async () => {
         if (!userId) return;
 
-        const { data } = await supabase.rpc("get_unread_conversations", {
+        const { data, error } = await supabase.rpc("get_unread_conversations", {
             p_user_id: userId,
         });
 
-        if (data) {
-            const map: Record<string, boolean> = {};
-            data.forEach((row: any) => {
-                map[row.conversation_id] = true;
-            });
-            setUnreadConversations(map);
+        if (error) {
+            console.error("❌ get_unread_conversations:", error);
+            return;
         }
+
+        const map: Record<string, boolean> = {};
+        data?.forEach((row: any) => {
+            map[row.conversation_id] = true;
+        });
+
+        setUnreadConversations(map);
     };
 
-    // ---------------------------
-    // Realtime messages
-    // ---------------------------
+    // ----------------------------------
+    // 🔹 REALTIME LISTENER
+    // ----------------------------------
     useEffect(() => {
         if (!userId) return;
 
+        // 🔥 1. Load unread on connect
         loadUnreadConversations();
 
+        // 🔥 2. Realtime new messages
         const channel = supabase
             .channel("messages-global")
             .on(
@@ -67,16 +73,16 @@ export const MessageProvider = ({
                 (payload) => {
                     const msg = payload.new;
 
-                    // ignorer mes propres messages
+                    // ❌ ignore my own messages
                     if (msg.sender_id === userId) return;
 
-                    // badge non-lu
+                    // 🔴 mark conversation as unread
                     setUnreadConversations((prev) => ({
                         ...prev,
                         [msg.conversation_id]: true,
                     }));
 
-                    // 🔥 refresh preview conversations
+                    // 🔄 refresh conversation previews
                     queryClient.invalidateQueries({
                         queryKey: ["user-conversations", userId],
                     });
@@ -89,17 +95,19 @@ export const MessageProvider = ({
         };
     }, [userId]);
 
-    // ---------------------------
-    // Marquer une conversation comme lue
-    // ---------------------------
+    // ----------------------------------
+    // 🔹 MARK CONVERSATION AS READ
+    // ----------------------------------
     const markConversationRead = async (conversationId: string) => {
         if (!userId) return;
 
-        await supabase.from("conversation_reads").upsert({
-            conversation_id: conversationId,
-            user_id: userId,
-            last_read_at: new Date().toISOString(),
-        });
+        await supabase
+            .from("conversation_participants")
+            .update({
+                last_read_at: new Date().toISOString(),
+            })
+            .eq("conversation_id", conversationId)
+            .eq("user_id", userId);
 
         setUnreadConversations((prev) => {
             const copy = { ...prev };
