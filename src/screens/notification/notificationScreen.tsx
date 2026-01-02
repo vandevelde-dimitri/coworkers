@@ -11,6 +11,7 @@ import { supabase } from "../../../utils/supabase";
 import { addUserConversation } from "../../api/messaging/addUserConversation";
 import SafeScreen from "../../components/SafeScreen";
 import { useAuth } from "../../contexts/authContext";
+import { useAcceptRequest } from "../../hooks/candidate/useCandidate";
 import {
     useCandidateNotifications,
     useOwnerNotifications,
@@ -23,6 +24,7 @@ export default function NotificationsScreen() {
 
     const ownerQuery = useOwnerNotifications();
     const candidateQuery = useCandidateNotifications();
+    const { mutateAsync: acceptRequest, isPending } = useAcceptRequest();
 
     const isLoading = ownerQuery.isLoading || candidateQuery.isLoading;
     const error = ownerQuery.error || candidateQuery.error;
@@ -54,7 +56,9 @@ export default function NotificationsScreen() {
 
     /* ===================== ACTIONS ===================== */
 
-    const onAccept = async (annonceId: string) => {
+    const onAccept = async (annonceId: string, candidate_id: string) => {
+        console.log("onAccept", annonceId, candidate_id);
+
         if (!session) {
             Alert.alert("Connexion requise");
             return;
@@ -62,26 +66,19 @@ export default function NotificationsScreen() {
 
         try {
             // 1️⃣ Accepter la candidature
-            const { data, error } = await supabase
-                .from("participant_requests")
-                .update({ status: "accepted" })
-                .eq("annonce_id", annonceId)
-                .select("user_id")
-                .maybeSingle();
 
-            if (error || !data?.user_id) {
-                throw error ?? new Error("Candidature introuvable");
-            }
+            await acceptRequest({ candidate_id, annonce_id: annonceId });
 
             // 2️⃣ Décrémenter les places
             await supabase.rpc("decrement_places", { annonce: annonceId });
 
             // 3️⃣ Ajouter le candidat à la conversation
-            await addUserConversation(data.user_id, annonceId);
+            await addUserConversation(candidate_id, annonceId);
 
             Alert.alert("Succès", "Candidature acceptée");
         } catch (e: any) {
-            Alert.alert("Erreur", e.message ?? "Impossible d'accepter");
+            console.error("❌ ACCEPT ERROR:", e);
+            Alert.alert("Erreur", JSON.stringify(e, null, 2));
         }
     };
 
@@ -109,6 +106,7 @@ export default function NotificationsScreen() {
 
     const renderItem = ({ item }: { item: NotificationResponse }) => {
         const isPending = item.status === StatusNotification.PENDING;
+        console.log("render item", item);
 
         return (
             <View style={[styles.card, isPending && styles.cardHighlight]}>
@@ -124,8 +122,11 @@ export default function NotificationsScreen() {
                 {isPending && (
                     <View style={styles.actions}>
                         <TouchableOpacity
+                            // disabled={isPending}
                             style={[styles.actionBtn, styles.accept]}
-                            onPress={() => onAccept(item.annonceId)}
+                            onPress={() =>
+                                onAccept(item.annonceId, item.userId)
+                            }
                         >
                             <Text style={styles.actionText}>Accepter</Text>
                         </TouchableOpacity>

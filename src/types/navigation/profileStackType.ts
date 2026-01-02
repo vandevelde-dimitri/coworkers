@@ -11,4 +11,5 @@ export type ProfileStackParamList = {
     FavoriteScreen: undefined;
     AvatarRegistrationScreen: undefined;
     NotificationsScreen: undefined;
+    CandidateProfile: undefined;
 };

@@ -1,4 +1,8 @@
-import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+    NavigationProp,
+    useNavigation,
+    useRoute,
+} from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import {
     Image,
@@ -23,10 +27,11 @@ import {
     useDeleteAnnouncement,
 } from "../../hooks/announcement/useAnnouncement";
 import { Contract } from "../../types/enum/contract.enum";
+import { HomeStackParamList } from "../../types/navigation/homeStackType";
 
 export default function AnnouncementDetailScreen() {
     const route = useRoute();
-    const navigation = useNavigation();
+    const navigation = useNavigation<NavigationProp<HomeStackParamList>>();
     const [canApply, setCanApply] = useState<boolean>(false);
     const [hasApplied, setHasApplied] = useState<boolean>(false);
     const { id } = route.params as { id: string };

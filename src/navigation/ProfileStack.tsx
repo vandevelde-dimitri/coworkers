@@ -1,9 +1,12 @@
 import FeatherIcon from "@expo/vector-icons/Feather";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
+import NotificationsScreen from "../screens/notification/notificationScreen";
 import EditProfileScreen from "../screens/profile/EditProfileScreen";
 import ProfileScreen from "../screens/profile/ProfileScreen";
 import SettingsScreen from "../screens/profile/SettingsScreen";
+import AvatarRegistrationScreen from "../screens/profile/avatarScreen";
+import CandidateProfile from "../screens/profile/candidateProfile";
 import ContractRegistrationScreen from "../screens/profile/contract";
 import EmailRegistrationScreen from "../screens/profile/email";
 import FavoriteScreen from "../screens/profile/favoriteScreen";
@@ -12,8 +15,6 @@ import LocationRegistrationScreen from "../screens/profile/location";
 import TeamRegistrationScreen from "../screens/profile/team";
 import UsernameRegisterScreen from "../screens/profile/username";
 import { ProfileStackParamList } from "../types/navigation/profileStackType";
-import AvatarRegistrationScreen from "../screens/profile/avatarScreen";
-import NotificationsScreen from "../screens/notification/notificationScreen";
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
 
@@ -92,6 +93,11 @@ export default function ProfileStack() {
                 name="NotificationsScreen"
                 component={NotificationsScreen}
                 options={{ title: "Mes Notifications" }}
+            />
+            <Stack.Screen
+                name="CandidateProfile"
+                component={CandidateProfile}
+                options={{ title: "Mes candidatures" }}
             />
         </Stack.Navigator>
     );

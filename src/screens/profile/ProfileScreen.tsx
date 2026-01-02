@@ -1,4 +1,5 @@
 import FeatherIcon from "@expo/vector-icons/Feather";
+import type { NavigationProp } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import {
@@ -14,11 +15,12 @@ import SafeScreen from "../../components/SafeScreen";
 import { useAuth } from "../../contexts/authContext";
 import { useCurrentUser } from "../../hooks/user/useUsers";
 import { accountStyles } from "../../styles/account.styles";
+import { ProfileStackParamList } from "../../types/navigation/profileStackType";
 
 export default function ProfileScreen() {
     const { data: user } = useCurrentUser();
     const { session } = useAuth();
-    const navigation = useNavigation();
+    const navigation = useNavigation<NavigationProp<ProfileStackParamList>>();
     const formatedDate = formatDate(session?.user.created_at || "");
 
     console.log("user profile data:", user);
@@ -92,7 +94,12 @@ export default function ProfileScreen() {
                                 color="#bcbcbc"
                             />
                         </TouchableOpacity>
-                        <TouchableOpacity style={accountStyles.row}>
+                        <TouchableOpacity
+                            style={accountStyles.row}
+                            onPress={() =>
+                                navigation.navigate("CandidateProfile")
+                            }
+                        >
                             <Text style={accountStyles.rowLabel}>
                                 Mes candidatures
                             </Text>

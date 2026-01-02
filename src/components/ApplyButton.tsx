@@ -73,7 +73,20 @@ export default function ApplyButton({ annonce }: { annonce: any }) {
                 }
 
                 setRequest(null);
-                Alert.alert("Succès", "Ta candidature a été annulée");
+                // 🎯 Alert selon le statut
+                if (request.status === "refused") {
+                    Alert.alert(
+                        "Candidature refusée",
+                        "Tu as été refusé pour cette annonce, candidature annulée."
+                    );
+                } else if (request.status === "accepted") {
+                    Alert.alert(
+                        "Candidature acceptée",
+                        "Ta candidature acceptée a été annulée."
+                    );
+                } else {
+                    Alert.alert("Succès", "Ta candidature a été annulée");
+                }
             } else {
                 // ➕ Postuler
                 const { data, error } = await supabase
@@ -128,7 +141,7 @@ export default function ApplyButton({ annonce }: { annonce: any }) {
                     : request?.status === "pending"
                     ? "Annuler la candidature"
                     : request?.status === "refused"
-                    ? "Candidature refusée"
+                    ? "Postuler à nouveau"
                     : "Postuler"}
             </Text>
         </TouchableOpacity>
