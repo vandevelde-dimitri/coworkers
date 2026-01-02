@@ -1,11 +1,20 @@
+import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import {
+    FlatList,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
 import { supabase } from "../../../utils/supabase";
 import ApplyButton from "../../components/ApplyButton";
 import SafeScreen from "../../components/SafeScreen";
 import { useAuth } from "../../contexts/authContext";
 
 export default function CandidateProfile() {
+    const navigation = useNavigation();
+
     const { session } = useAuth();
     const [applications, setApplications] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -73,6 +82,25 @@ export default function CandidateProfile() {
         </View>
     );
 
+    const renderEmptyComponent = () => (
+        <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>
+                Vous avez postuler à aucune annonce.
+            </Text>
+
+            <TouchableOpacity
+                style={styles.buttonPrimary}
+                onPress={() =>
+                    (navigation as any).navigate("HomeStack", {
+                        screen: "HomeScreen",
+                    })
+                }
+            >
+                <Text style={styles.buttonPrimaryText}>Voir les annonces</Text>
+            </TouchableOpacity>
+        </View>
+    );
+
     return (
         <SafeScreen backBtn title="Mes candidatures">
             {loading ? (
@@ -80,6 +108,7 @@ export default function CandidateProfile() {
             ) : (
                 <FlatList
                     data={applications}
+                    ListEmptyComponent={renderEmptyComponent}
                     keyExtractor={(item) => item.id}
                     renderItem={renderItem}
                     contentContainerStyle={{ paddingBottom: 20 }}
@@ -115,4 +144,18 @@ const styles = StyleSheet.create({
         marginBottom: 12,
         color: "#10B981",
     },
+    emptyContainer: {
+        padding: 16,
+        alignItems: "center",
+        justifyContent: "center",
+        flex: 1,
+    },
+    emptyText: { fontSize: 16, marginBottom: 12 },
+    buttonPrimary: {
+        backgroundColor: "#10B981",
+        padding: 12,
+        borderRadius: 8,
+        alignItems: "center",
+    },
+    buttonPrimaryText: { color: "#fff", fontWeight: "600" },
 });
