@@ -41,10 +41,36 @@ export default function ApplyButton({ annonce }: { annonce: any }) {
 
             if (request) {
                 // 🗑 Annuler sa candidature
-                await supabase
+                const { error } = await supabase
                     .from("participant_requests")
                     .delete()
-                    .eq("id", request.id);
+                    .eq("annonce_id", annonceId)
+                    .eq("user_id", session.user.id);
+
+                if (error) throw error;
+
+                // ❌ Supprimer de conversation si déjà validé
+                if (request.status === "accepted") {
+                    // 🔎 Récupérer la conversation liée à l'annonce
+                    const { data: conversation, error: convError } =
+                        await supabase
+                            .from("conversations")
+                            .select("id")
+                            .eq("annonce_id", annonceId)
+                            .maybeSingle();
+
+                    if (convError || !conversation)
+                        throw (
+                            convError ?? new Error("Conversation introuvable")
+                        );
+
+                    // ❌ Supprimer de la conversation
+                    await supabase
+                        .from("conversation_participants")
+                        .delete()
+                        .eq("conversation_id", conversation.id)
+                        .eq("user_id", session.user.id);
+                }
 
                 setRequest(null);
                 Alert.alert("Succès", "Ta candidature a été annulée");
@@ -98,7 +124,7 @@ export default function ApplyButton({ annonce }: { annonce: any }) {
                 {loading
                     ? "En cours..."
                     : request?.status === "accepted"
-                    ? "Vous participez au covoiturage ✅"
+                    ? "Annuler la participation"
                     : request?.status === "pending"
                     ? "Annuler la candidature"
                     : request?.status === "refused"
