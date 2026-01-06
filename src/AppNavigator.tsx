@@ -4,7 +4,7 @@ import React from "react";
 import { useAuth } from "./contexts/authContext"; // 👈 ton hook
 import AppTabs from "./navigation/AppTabs";
 import AuthStack from "./navigation/AuthStack";
-import OnboardingStack from "./navigation/OnboardingStack";
+import OnboardingScreen from "./screens/auth/OnboardingScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -21,8 +21,8 @@ export default function AppNavigator() {
                 ) : !profileCompleted ? (
                     // si tu veux gérer un onboarding ou profil incomplet
                     <Stack.Screen
-                        name="Onboarding"
-                        component={OnboardingStack} // ou ton propre écran d'onboarding
+                        name="AuthStack"
+                        component={OnboardingScreen} // ou ton propre écran d'onboarding
                     />
                 ) : (
                     <Stack.Screen name="AppTabs" component={AppTabs} />

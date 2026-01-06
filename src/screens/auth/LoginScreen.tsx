@@ -2,13 +2,18 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as SecureStore from "expo-secure-store";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+    Alert,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from "react-native";
 import * as yup from "yup";
 import { supabase } from "../../../utils/supabase";
-import SafeScreen from "../../components/SafeScreen";
-import { formAuthStyles } from "../../styles/form.styles";
 
-const LoginScreen = () => {
+export default function LoginScreen() {
     const schema = yup.object({
         email: yup.string().email("Email invalide").required("Email requis"),
         password: yup.string().required("Mot de passe requis"),
@@ -43,72 +48,117 @@ const LoginScreen = () => {
     };
 
     return (
-        <SafeScreen backBtn>
-            <View style={formAuthStyles.container}>
-                <Text style={formAuthStyles.title}>Se connecter</Text>
-                <View style={formAuthStyles.form}>
-                    <Controller
-                        control={control}
-                        name="email"
-                        render={({ field: { onChange, onBlur, value } }) => (
-                            <TextInput
-                                autoCapitalize="none"
-                                autoCorrect={false}
-                                clearButtonMode="while-editing"
-                                keyboardType="email-address"
-                                onChangeText={onChange}
-                                placeholder="john@example.com"
-                                placeholderTextColor="#6b7280"
-                                style={formAuthStyles.input}
-                                value={value}
-                                onBlur={onBlur}
-                            />
-                        )}
-                    />
-                    {errors.email && (
-                        <Text style={formAuthStyles.error}>
-                            {errors.email.message}
-                        </Text>
-                    )}
-                    <Controller
-                        control={control}
-                        name="password"
-                        render={({ field: { onChange, onBlur, value } }) => (
-                            <TextInput
-                                autoCorrect={false}
-                                clearButtonMode="while-editing"
-                                value={value}
-                                onBlur={onBlur}
-                                onChangeText={onChange}
-                                placeholder="********"
-                                placeholderTextColor="#6b7280"
-                                style={formAuthStyles.input}
-                                secureTextEntry={true}
-                            />
-                        )}
-                    />
-                    {errors.password && (
-                        <Text style={formAuthStyles.error}>
-                            {errors.password.message}
-                        </Text>
-                    )}
-                    <TouchableOpacity
-                        onPress={handleSubmit(handleLogin)}
-                        style={formAuthStyles.buttonPrimary}
-                    >
-                        <Text style={formAuthStyles.buttonText}>Connexion</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                    // onPress={() => router.push("/(public)/register")}
-                    >
-                        <Text style={formAuthStyles.link}>
-                            Pas encore de compte ? S'inscrire
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-        </SafeScreen>
-    );
-};
+        <ScrollView
+            style={{ flex: 1, padding: 16, backgroundColor: "#f3f4f6" }}
+        >
+            <Text
+                style={{
+                    fontSize: 28,
+                    fontWeight: "700",
+                    marginBottom: 32,
+                    textAlign: "center",
+                }}
+            >
+                Se connecter
+            </Text>
 
-export default LoginScreen;
+            <View
+                style={{
+                    backgroundColor: "#fff",
+                    borderRadius: 18,
+                    padding: 16,
+                    marginBottom: 24,
+                    shadowColor: "#000",
+                    shadowOpacity: 0.05,
+                    shadowRadius: 6,
+                }}
+            >
+                <Controller
+                    control={control}
+                    name="email"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                        <TextInput
+                            placeholder="Email"
+                            value={value}
+                            onBlur={onBlur}
+                            onChangeText={onChange}
+                            keyboardType="email-address"
+                            style={{
+                                borderBottomWidth: 1,
+                                borderBottomColor: "#e5e7eb",
+                                marginBottom: 16,
+                                fontSize: 16,
+                                paddingVertical: 8,
+                            }}
+                        />
+                    )}
+                />
+                {errors.email && <Text>{errors.email.message}</Text>}
+                <Controller
+                    control={control}
+                    name="password"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                        <TextInput
+                            placeholder="Mot de passe"
+                            value={value}
+                            onBlur={onBlur}
+                            onChangeText={onChange}
+                            secureTextEntry
+                            style={{
+                                borderBottomWidth: 1,
+                                borderBottomColor: "#e5e7eb",
+                                marginBottom: 16,
+                                fontSize: 16,
+                                paddingVertical: 8,
+                            }}
+                        />
+                    )}
+                />
+                {errors.password && <Text>{errors.password.message}</Text>}
+
+                <TouchableOpacity
+                    onPress={handleSubmit(handleLogin)}
+                    style={{
+                        backgroundColor: "#2563eb",
+                        paddingVertical: 14,
+                        borderRadius: 18,
+                        alignItems: "center",
+                        marginTop: 8,
+                    }}
+                >
+                    <Text
+                        style={{
+                            color: "#fff",
+                            fontWeight: "700",
+                            fontSize: 16,
+                        }}
+                    >
+                        Se connecter
+                    </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={{ marginTop: 16, alignItems: "center" }}
+                >
+                    <Text style={{ color: "#2563eb", fontWeight: "600" }}>
+                        Créer un compte
+                    </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    onPress={() =>
+                        Alert.alert(
+                            "Mot de passe oublié",
+                            "Fonctionnalité à implémenter"
+                        )
+                    }
+                    style={{ marginTop: 8, alignItems: "center" }}
+                >
+                    <Text style={{ color: "#6b7280" }}>
+                        Mot de passe oublié ?
+                    </Text>
+                </TouchableOpacity>
+            </View>
+        </ScrollView>
+    );
+}

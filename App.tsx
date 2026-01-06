@@ -2,7 +2,8 @@ import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NavigationContainer } from "@react-navigation/native";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
 import {
     Alert,
@@ -21,6 +22,9 @@ import {
     SafeAreaView,
     useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import AppNavigator from "./src/AppNavigator";
+import { AuthProvider } from "./src/contexts/authContext";
+import { MessageProvider } from "./src/contexts/messageContext";
 
 /* ---------------- UI COMPONENTS ---------------- */
 const Card = ({ children }) => (
@@ -218,7 +222,6 @@ function HomeScreen() {
             to: "Amazon Lauwin-Planque",
             date: "2026-01-12T08:00",
             seats: 2,
-            popularity: 3,
             user: {
                 name: "Jean Dupont",
                 avatar: "https://i.pravatar.cc/150?img=12",
@@ -231,7 +234,6 @@ function HomeScreen() {
             to: "Amazon Lauwin-Planque",
             date: "2026-01-11T18:00",
             seats: 3,
-            popularity: 1,
             user: {
                 name: "Alice Martin",
                 avatar: "https://i.pravatar.cc/150?img=32",
@@ -244,7 +246,6 @@ function HomeScreen() {
             to: "Amazon Lauwin-Planque",
             date: "2026-01-13T12:00",
             seats: 1,
-            popularity: 2,
             user: {
                 name: "Marc Leroy",
                 avatar: "https://i.pravatar.cc/150?img=45",
@@ -257,7 +258,6 @@ function HomeScreen() {
             to: "Amazon Lauwin-Planque",
             date: "2026-01-14T18:30",
             seats: 4,
-            popularity: 5,
             user: {
                 name: "Sophie Dubois",
                 avatar: "https://i.pravatar.cc/150?img=56",
@@ -270,7 +270,6 @@ function HomeScreen() {
             to: "Amazon Lauwin-Planque",
             date: "2026-01-15T08:00",
             seats: 2,
-            popularity: 3,
             user: {
                 name: "Paul Martin",
                 avatar: "https://i.pravatar.cc/150?img=21",
@@ -283,7 +282,6 @@ function HomeScreen() {
             to: "Amazon Lauwin-Planque",
             date: "2026-01-16T18:00",
             seats: 3,
-            popularity: 4,
             user: {
                 name: "Laura Petit",
                 avatar: "https://i.pravatar.cc/150?img=33",
@@ -303,7 +301,6 @@ function HomeScreen() {
     const sortedRides = [...filteredRides].sort((a, b) => {
         if (sortBy === "date") return new Date(a.date) - new Date(b.date);
         if (sortBy === "seats") return b.seats - a.seats;
-        if (sortBy === "popularity") return b.popularity - a.popularity;
         if (sortBy === "from") return a.from.localeCompare(b.from);
         return 0;
     });
@@ -345,9 +342,9 @@ function HomeScreen() {
                 }}
             >
                 {[
-                    { label: "Date", value: "date" },
+                    { label: "Plus récent", value: "date" },
                     { label: "Places", value: "seats" },
-                    { label: "Popularité", value: "popularity" },
+                    // { label: "Popularité", value: "popularity" },
                     { label: "Près de moi", value: "from" },
                 ].map((option) => (
                     <TouchableOpacity
@@ -2083,42 +2080,51 @@ function ProfileScreen() {
 /* ---------------- NAVIGATION ---------------- */
 const Tab = createBottomTabNavigator();
 export default function App() {
+    const queryClient = new QueryClient();
     return (
-        <NavigationContainer>
-            <Tab.Navigator
-                screenOptions={({ route }) => ({
-                    headerShown: false,
-                    tabBarIcon: ({ color, size }) => {
-                        const icons = {
-                            Home: "home",
-                            Notifications: "notifications",
-                            Trajets: "car",
-                            Messages: "chatbubble",
-                            Profile: "person",
-                        };
-                        return (
-                            <Ionicons
-                                name={icons[route.name]}
-                                size={size}
-                                color={color}
-                            />
-                        );
-                    },
-                    tabBarActiveTintColor: "#2563eb",
-                })}
-            >
-                <Tab.Screen name="Home" component={HomeScreen} />
-                {/* <Tab.Screen name="Onboarding" component={OnboardingScreen} /> */}
-                {/* <Tab.Screen name="login" component={LoginScreen} /> */}
-                {/* <Tab.Screen name="Register" component={RegisterScreen} /> */}
-                <Tab.Screen name="Trajets" component={ProfileScreen} />
-                <Tab.Screen name="ajouter" component={AddRideScreen} />
-                <Tab.Screen name="Message" component={ConversationsScreen} />
-                <Tab.Screen name="Profile" component={ProfileScreen} />
-                {/* <Tab.Screen name="Welcome" component={WelcomeScreen} /> */}
-                {/* <Tab.Screen name="Sethings" component={SettingsScreen} /> */}
-            </Tab.Navigator>
-        </NavigationContainer>
+        // <NavigationContainer>
+        //     <Tab.Navigator
+        //         screenOptions={({ route }) => ({
+        //             headerShown: false,
+        //             tabBarIcon: ({ color, size }) => {
+        //                 const icons = {
+        //                     Home: "home",
+        //                     Notifications: "notifications",
+        //                     Trajets: "car",
+        //                     Messages: "chatbubble",
+        //                     Profile: "person",
+        //                 };
+        //                 return (
+        //                     <Ionicons
+        //                         name={icons[route.name]}
+        //                         size={size}
+        //                         color={color}
+        //                     />
+        //                 );
+        //             },
+        //             tabBarActiveTintColor: "#2563eb",
+        //         })}
+        //     >
+        //         <Tab.Screen name="Home" component={HomeScreen} />
+        //         {/* <Tab.Screen name="Onboarding" component={OnboardingScreen} /> */}
+        //         {/* <Tab.Screen name="login" component={LoginScreen} /> */}
+        //         {/* <Tab.Screen name="Register" component={RegisterScreen} /> */}
+        //         <Tab.Screen name="Trajets" component={ProfileScreen} />
+        //         <Tab.Screen name="ajouter" component={AddRideScreen} />
+        //         <Tab.Screen name="Message" component={ConversationsScreen} />
+        //         <Tab.Screen name="Profile" component={ProfileScreen} />
+        //         {/* <Tab.Screen name="Welcome" component={WelcomeScreen} /> */}
+        //         {/* <Tab.Screen name="Sethings" component={SettingsScreen} /> */}
+        //     </Tab.Navigator>
+        // </NavigationContainer>
+        <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+                <MessageProvider>
+                    <StatusBar style="auto" />
+                    <AppNavigator />
+                </MessageProvider>
+            </AuthProvider>
+        </QueryClientProvider>
     );
 }
 

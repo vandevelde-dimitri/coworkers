@@ -4,6 +4,7 @@ import React from "react";
 import { Text, TouchableOpacity } from "react-native";
 import ForgotPasswordScreen from "../screens/auth/ForgotPasswordScreen";
 import LoginScreen from "../screens/auth/LoginScreen";
+import OnboardingScreen from "../screens/auth/OnboardingScreen";
 import RegisterScreen from "../screens/auth/RegisterScreen";
 import WelcomeScreen from "../screens/welcome";
 import { AuthStackParamList } from "../types/navigation/authStackType";
@@ -49,6 +50,11 @@ export default function AuthStack() {
                 name="ForgotPassword"
                 component={ForgotPasswordScreen}
                 options={{ title: "Mot de passe oublié" }}
+            />
+            <Stack.Screen
+                name="Onboarding"
+                component={OnboardingScreen}
+                options={{ title: "Onboarding" }}
             />
         </Stack.Navigator>
     );

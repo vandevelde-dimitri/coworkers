@@ -1,18 +1,21 @@
+import { useNavigation } from "@react-navigation/native";
 import { useMemo, useState } from "react";
 import {
-    FlatList,
-    StyleSheet,
+    ScrollView,
     Text,
     TextInput,
     TouchableOpacity,
     View,
 } from "react-native";
-import AnnouncementCardList from "../../components/AnnouncementCardList";
-import SafeScreen from "../../components/SafeScreen";
+import { Avatar } from "../../components/ui/Avatar";
+import { Card } from "../../components/ui/Card";
 import { useAnnouncementByFc } from "../../hooks/announcement/useAnnouncement";
 
 export default function HomeScreen() {
     const { data: announcements, isLoading, error } = useAnnouncementByFc();
+    const [sortBy, setSortBy] = useState("date");
+    const navigation = useNavigation();
+
     const [search, setSearch] = useState("");
     const [availableOnly, setAvailableOnly] = useState(false);
     const [sortOrder, setSortOrder] = useState<"recent" | "places">("recent");
@@ -42,9 +45,16 @@ export default function HomeScreen() {
         return data;
     }, [search, availableOnly, sortOrder, announcements]);
 
+    // Tri selon sortBy
+    const sortedRides = [...filtered].sort((a, b) => {
+        if (sortBy === "date") return new Date(a.date) - new Date(b.date);
+        if (sortBy === "seats") return b.number_of_places - a.number_of_places;
+        if (sortBy === "from") return a.city.localeCompare(b.city);
+        return 0;
+    });
     if (isLoading) {
         return (
-            <View style={styles.loadingContainer}>
+            <View>
                 <Text>Loading...</Text>
             </View>
         );
@@ -53,129 +63,221 @@ export default function HomeScreen() {
     if (error) {
         console.error("Error fetching announcements:", error);
         return (
-            <View style={styles.loadingContainer}>
+            <View>
                 <Text>Error loading announcements</Text>
             </View>
         );
     }
 
     return (
-        <SafeScreen title="Annonce pour Lil1">
+        <ScrollView style={{ padding: 16 }}>
+            <Text style={{ fontSize: 24, fontWeight: "700", marginBottom: 16 }}>
+                Coworkers
+            </Text>
+
+            {/* Input de recherche */}
             <TextInput
-                style={styles.searchInput}
                 placeholder="Rechercher une annonce..."
                 value={search}
                 onChangeText={setSearch}
+                style={{
+                    backgroundColor: "#f3f4f6",
+                    borderRadius: 16,
+                    paddingHorizontal: 16,
+                    paddingVertical: 10,
+                    fontSize: 15,
+                    marginBottom: 16,
+                    borderWidth: 1,
+                    borderColor: "#e5e7eb",
+                }}
             />
 
-            <View style={styles.buttonsRow}>
-                <TouchableOpacity
-                    style={[
-                        styles.button,
-                        availableOnly && styles.buttonActive,
-                    ]}
-                    onPress={() => setAvailableOnly(!availableOnly)}
-                >
-                    <Text
-                        style={[
-                            styles.buttonText,
-                            availableOnly && styles.buttonTextActive,
-                        ]}
+            {/* Boutons de tri */}
+            <View
+                style={{
+                    flexDirection: "row",
+                    marginBottom: 16,
+                    flexWrap: "wrap",
+                }}
+            >
+                {[
+                    { label: "Plus récent", value: "date" },
+                    { label: "Places", value: "seats" },
+                    // { label: "Popularité", value: "popularity" },
+                    { label: "Près de moi", value: "from" },
+                ].map((option) => (
+                    <TouchableOpacity
+                        key={option.value}
+                        onPress={() => setSortBy(option.value)}
+                        style={{
+                            backgroundColor:
+                                sortBy === option.value ? "#2563eb" : "#e5e7eb",
+                            paddingVertical: 8,
+                            paddingHorizontal: 12,
+                            borderRadius: 12,
+                            marginRight: 8,
+                            marginBottom: 8,
+                        }}
                     >
-                        Disponible
-                    </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={[
-                        styles.button,
-                        sortOrder === "recent" && styles.buttonActive,
-                    ]}
-                    onPress={() => setSortOrder("recent")}
-                >
-                    <Text
-                        style={[
-                            styles.buttonText,
-                            sortOrder === "recent" && styles.buttonTextActive,
-                        ]}
-                    >
-                        Plus récentes
-                    </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={[
-                        styles.button,
-                        sortOrder === "places" && styles.buttonActive,
-                    ]}
-                    onPress={() => setSortOrder("places")}
-                >
-                    <Text
-                        style={[
-                            styles.buttonText,
-                            sortOrder === "places" && styles.buttonTextActive,
-                        ]}
-                    >
-                        Plus de places
-                    </Text>
-                </TouchableOpacity>
+                        <Text
+                            style={{
+                                color:
+                                    sortBy === option.value
+                                        ? "#fff"
+                                        : "#374151",
+                                fontWeight: "600",
+                            }}
+                        >
+                            {option.label}
+                        </Text>
+                    </TouchableOpacity>
+                ))}
             </View>
 
-            {!announcements || announcements.length === 0 ? (
-                <View style={styles.loadingContainer}>
-                    <Text>Aucune annonce disponible.</Text>
-                </View>
-            ) : (
-                <FlatList
-                    data={filtered}
-                    keyExtractor={(item) => item.id.toString()}
-                    renderItem={({ item, index }) => (
-                        <AnnouncementCardList
-                            data={item}
-                            key={index}
-                            index={index}
-                        />
-                    )}
-                    contentContainerStyle={{ paddingBottom: 40 }}
-                    style={{ flex: 1, width: "100%" }}
-                />
-            )}
-        </SafeScreen>
+            {sortedRides.map((ride) => (
+                <Card key={ride.id}>
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            marginBottom: 8,
+                        }}
+                    >
+                        <Avatar uri={""} />
+                        <View style={{ marginLeft: 12 }}>
+                            <Text style={{ fontWeight: "600" }}>
+                                {ride.user_name}
+                            </Text>
+                            <Text style={{ fontSize: 12, color: "#6b7280" }}>
+                                {new Date(ride.date_start).toLocaleString()}
+                            </Text>
+                        </View>
+                    </View>
+                    <Text style={{ fontSize: 16, fontWeight: "700" }}>
+                        {ride.title}
+                    </Text>
+                    <Text style={{ marginTop: 4, color: "#374151" }}>
+                        {"ride.from"} → {"ride.to"}
+                    </Text>
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            marginTop: 12,
+                        }}
+                    >
+                        <Text>Places: {ride.number_of_places}</Text>
+                        <TouchableOpacity
+                            onPress={() => {
+                                navigation.navigate("HomeStack", {
+                                    screen: "AnnouncementDetail",
+                                    params: { id: sortedRides.id },
+                                });
+                            }}
+                        >
+                            <Text
+                                style={{ color: "#2563eb", fontWeight: "600" }}
+                            >
+                                Voir détails
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                </Card>
+            ))}
+            {/* Pagination avec flèches */}
+            {/* <View
+                style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    marginTop: 12,
+                    marginBottom: 24,
+                    flexWrap: "wrap",
+                    alignItems: "center",
+                }}
+            >
+                <TouchableOpacity
+                    onPress={() => setPage((prev) => Math.max(prev - 1, 1))}
+                    style={{
+                        padding: 10,
+                        margin: 4,
+                        borderRadius: 12,
+                        backgroundColor: "#e5e7eb",
+                    }}
+                >
+                    <Text style={{ fontWeight: "600" }}>{"<"}</Text>
+                </TouchableOpacity>
+                {Array.from({ length: totalPages }, (_, i) => (
+                    <TouchableOpacity
+                        key={i + 1}
+                        onPress={() => setPage(i + 1)}
+                        style={{
+                            padding: 10,
+                            margin: 4,
+                            borderRadius: 12,
+                            backgroundColor:
+                                page === i + 1 ? "#2563eb" : "#e5e7eb",
+                        }}
+                    >
+                        <Text
+                            style={{
+                                color: page === i + 1 ? "#fff" : "#374151",
+                                fontWeight: "600",
+                            }}
+                        >
+                            {i + 1}
+                        </Text>
+                    </TouchableOpacity>
+                ))}
+                <TouchableOpacity
+                    onPress={() =>
+                        setPage((prev) => Math.min(prev + 1, totalPages))
+                    }
+                    style={{
+                        padding: 10,
+                        margin: 4,
+                        borderRadius: 12,
+                        backgroundColor: "#e5e7eb",
+                    }}
+                >
+                    <Text style={{ fontWeight: "600" }}>{">"}</Text>
+                </TouchableOpacity>
+            </View> */}
+        </ScrollView>
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-        backgroundColor: "#fff",
-    },
-    loadingContainer: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    searchInput: {
-        height: 44,
-        backgroundColor: "#f3f4f6",
-        borderRadius: 12,
-        paddingHorizontal: 12,
-        fontSize: 16,
-        marginBottom: 12,
-    },
-    buttonsRow: {
-        flexDirection: "row",
-        flexWrap: "wrap",
-        gap: 8,
-        marginBottom: 12,
-    },
-    button: {
-        paddingVertical: 10,
-        paddingHorizontal: 14,
-        borderRadius: 12,
-        backgroundColor: "#f3f4f6",
-    },
-    buttonActive: { backgroundColor: "#10B981" },
-    buttonText: { fontSize: 14, color: "#111827", fontWeight: "500" },
-    buttonTextActive: { color: "#fff" },
-});
+//
+//     container: {
+//         flex: 1,
+//         padding: 16,
+//         backgroundColor: "#fff",
+//     },
+//     loadingContainer: {
+//         flex: 1,
+//         alignItems: "center",
+//         justifyContent: "center",
+//     },
+//     searchInput: {
+//         height: 44,
+//         backgroundColor: "#f3f4f6",
+//         borderRadius: 12,
+//         paddingHorizontal: 12,
+//         fontSize: 16,
+//         marginBottom: 12,
+//     },
+//     buttonsRow: {
+//         flexDirection: "row",
+//         flexWrap: "wrap",
+//         gap: 8,
+//         marginBottom: 12,
+//     },
+//     button: {
+//         paddingVertical: 10,
+//         paddingHorizontal: 14,
+//         borderRadius: 12,
+//         backgroundColor: "#f3f4f6",
+//     },
+//     buttonActive: { backgroundColor: "#10B981" },
+//     buttonText: { fontSize: 14, color: "#111827", fontWeight: "500" },
+//     buttonTextActive: { color: "#fff" },
+// });
