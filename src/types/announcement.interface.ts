@@ -35,16 +35,29 @@ export interface Announcement {
     user_id: string;
 }
 
-export interface AnnouncementDetail extends Announcement {
-    users: {
-        firstname: string;
-        image_profile: string;
-        contract: Contract;
-        team: Team;
-        city: string;
-        to_convey: boolean;
-        fc: {
-            name: string;
-        };
-    };
+export interface User {
+    id: string;
+    firstname: string;
+    image_profile: string | null;
+    city: string;
+}
+
+export interface ParticipantRequest {
+    id: string;
+    user_id: string;
+    status: "pending" | "accepted" | "refused";
+    users: User; // les infos du participant
+}
+
+export interface AnnonceDetail {
+    id: string;
+    title: string;
+    content?: string;
+    number_of_places: number;
+    created_at: string;
+    updated_at: string;
+    owner: User;
+    conversation_id: string;
+    participant_requests: ParticipantRequest[];
+    myStatus: "pending" | "accepted" | "refused" | null; // status de l'utilisateur connecté
 }

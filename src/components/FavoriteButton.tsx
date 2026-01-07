@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { Text, TouchableOpacity } from "react-native";
 import { supabase } from "../../utils/supabase";
 import { useAuth } from "../contexts/authContext";
 
@@ -49,38 +49,24 @@ export default function FavoriteButton({ annonceId }: { annonceId: string }) {
     };
 
     return (
-        <TouchableOpacity style={styles.buttonPrimary} onPress={toggleFavorite}>
-            <Text style={styles.buttonPrimaryText}>
+        <TouchableOpacity
+            style={{
+                backgroundColor: "#2563eb",
+                padding: 16,
+                borderRadius: 16,
+                marginBottom: 10,
+            }}
+            onPress={toggleFavorite}
+        >
+            <Text
+                style={{
+                    color: "#fff",
+                    textAlign: "center",
+                    fontWeight: "600",
+                }}
+            >
                 {isFavorite ? "Retirer" : "Ajouter"} favoris
             </Text>
         </TouchableOpacity>
     );
 }
-
-const styles = StyleSheet.create({
-    buttonPrimary: {
-        flex: 1,
-        backgroundColor: "#10B981",
-        padding: 12,
-        borderRadius: 8,
-        alignItems: "center",
-    },
-    buttonPrimaryText: {
-        color: "#fff",
-        fontWeight: "600",
-    },
-    buttonSecondary: {
-        flex: 1,
-        flexDirection: "row",
-        backgroundColor: "#F3F4F6",
-        padding: 12,
-        borderRadius: 8,
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 6,
-    },
-    buttonSecondaryText: {
-        color: "#10B981",
-        fontWeight: "600",
-    },
-});

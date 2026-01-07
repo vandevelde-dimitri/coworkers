@@ -3,7 +3,6 @@ import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import {
     Alert,
-    Image,
     ScrollView,
     StyleSheet,
     Text,
@@ -12,11 +11,12 @@ import {
 } from "react-native";
 import { formatDate } from "../../../utils/formatedDate";
 import SafeScreen from "../../components/SafeScreen";
+import { Avatar } from "../../components/ui/Avatar";
+import { Card } from "../../components/ui/Card";
 import {
     useAnnouncementCurrentUser,
     useDeleteAnnouncement,
 } from "../../hooks/announcement/useAnnouncement";
-import { Contract } from "../../types/enum/contract.enum";
 
 export default function TravelScreen() {
     const navigation = useNavigation();
@@ -116,94 +116,134 @@ export default function TravelScreen() {
 
     // ---------- RENDER ----------
     return (
-        <SafeScreen title="Mon annonce">
-            <ScrollView contentContainerStyle={styles.content}>
-                <View style={styles.card}>
-                    {/* Titre */}
-                    <Text style={styles.title}>{announcement.title}</Text>
+        <ScrollView style={{ padding: 16 }}>
+            <Card>
+                <Text
+                    style={{ fontSize: 20, fontWeight: "700", marginBottom: 6 }}
+                >
+                    {announcement.title}
+                </Text>
+                <Text style={{ color: "#374151" }}>{announcement.content}</Text>
+                {/* <Text style={{ marginTop: 6, color: "#6b7280" }}>
+                            Départ : 12 Jan · 08:00
+                        </Text> */}
+                <Text style={{ marginTop: 6 }}>
+                    Places disponibles : {announcement.number_of_places}
+                </Text>
+            </Card>
 
-                    {/* USER */}
-                    <View style={styles.userSection}>
-                        <Image
-                            source={{
-                                uri:
-                                    announcement.users.image_profile ||
-                                    "https://images.unsplash.com/photo-1633332755192-727a05c4013d",
-                            }}
-                            style={[
-                                styles.avatar,
-                                announcement.users.contract === Contract.CDI
-                                    ? { borderColor: "#1D4ED8" }
-                                    : { borderColor: "#10B981" },
-                            ]}
-                        />
-
-                        <View style={{ marginLeft: 12 }}>
-                            <Text style={styles.userName}>
-                                {announcement.users.firstname}
-                            </Text>
-                            <Text style={styles.city}>
-                                {announcement.users.city}
-                            </Text>
-                        </View>
-                    </View>
-
-                    {/* DESCRIPTION */}
-                    <Text style={styles.contentText}>
-                        {announcement.content}
-                    </Text>
-
-                    {/* DATES */}
-                    {announcement.date_start && (
-                        <Text style={styles.dates}>
-                            {dateEnd
-                                ? `Du ${dateStart} au ${dateEnd}`
-                                : `À partir du ${dateStart}`}
+            <Card>
+                <Text style={{ fontWeight: "600", marginBottom: 10 }}>
+                    Annonce de
+                </Text>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <Avatar uri="https://i.pravatar.cc/150?img=12" />
+                    <View style={{ marginLeft: 12 }}>
+                        <Text style={{ fontWeight: "600" }}>
+                            {announcement.users.firstname}
                         </Text>
-                    )}
-
-                    {/* PLACES */}
-                    <Text
-                        style={[
-                            styles.places,
-                            announcement.number_of_places === 0 && {
-                                color: "#ff0000",
-                            },
-                        ]}
-                    >
-                        {announcement.number_of_places} place
-                        {announcement.number_of_places > 1 ? "s" : ""}{" "}
-                        disponible
-                    </Text>
-
-                    {/* NO VEHICLE */}
-                    {!announcement.users.to_convey && (
-                        <Text style={styles.noVehicle}>🚫 Pas de véhicule</Text>
-                    )}
-
-                    {/* ACTIONS */}
-                    <View style={styles.actions}>
-                        <TouchableOpacity
-                            style={styles.buttonPrimary}
-                            onPress={handleEdit}
-                        >
-                            <Text style={styles.buttonPrimaryText}>
-                                Modifier
-                            </Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={styles.buttonDelete}
-                            onPress={handleDelete}
-                        >
-                            <Text style={styles.buttonDeleteText}>
-                                Supprimer
-                            </Text>
-                        </TouchableOpacity>
+                        <Text style={{ fontSize: 12, color: "#6b7280" }}>
+                            {announcement.users.city}
+                        </Text>
                     </View>
                 </View>
-            </ScrollView>
-        </SafeScreen>
+            </Card>
+
+            <Card>
+                <Text style={{ fontWeight: "600", marginBottom: 10 }}>
+                    Participants
+                </Text>
+                {[1, 2].map((p) => (
+                    <View
+                        key={p}
+                        style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            marginBottom: 12,
+                        }}
+                    >
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                            }}
+                        >
+                            <Avatar
+                                uri={`https://i.pravatar.cc/150?img=${30 + p}`}
+                            />
+                            <View style={{ marginLeft: 12 }}>
+                                <Text style={{ fontWeight: "500" }}>
+                                    Participant {p}
+                                </Text>
+                                <Text
+                                    style={{ fontSize: 12, color: "#22c55e" }}
+                                >
+                                    Accepté
+                                </Text>
+                            </View>
+                        </View>
+                        <TouchableOpacity
+                            style={{
+                                backgroundColor: "#fee2e2",
+                                paddingHorizontal: 12,
+                                paddingVertical: 6,
+                                borderRadius: 10,
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    color: "#ef4444",
+                                    fontSize: 12,
+                                    fontWeight: "600",
+                                }}
+                            >
+                                Retirer
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                ))}
+            </Card>
+
+            <TouchableOpacity
+                onPress={handleEdit}
+                style={{
+                    backgroundColor: "#f59e0b",
+                    padding: 16,
+                    borderRadius: 16,
+                    marginBottom: 10,
+                }}
+            >
+                <Text
+                    style={{
+                        color: "#fff",
+                        textAlign: "center",
+                        fontWeight: "600",
+                    }}
+                >
+                    Modifier
+                </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+                onPress={handleDelete}
+                style={{
+                    backgroundColor: "#ef4444",
+                    padding: 16,
+                    borderRadius: 16,
+                }}
+            >
+                <Text
+                    style={{
+                        color: "#fff",
+                        textAlign: "center",
+                        fontWeight: "600",
+                    }}
+                >
+                    Supprimer
+                </Text>
+            </TouchableOpacity>
+        </ScrollView>
     );
 }
 

@@ -1,75 +1,39 @@
 import { supabase } from "../../../utils/supabase";
-import { AnnouncementDetail } from "../../types/announcement.interface";
+import {
+    AnnonceDetail,
+    ParticipantRequest,
+} from "../../types/announcement.interface";
 
 export async function getAnnouncementById(
-    id: string
-): Promise<AnnouncementDetail> {
-    const { error: sessionError } = await supabase.auth.getSession();
+    annonce_id: string
+): Promise<AnnonceDetail> {
+    const { data, error: sessionError } = await supabase.auth.getSession();
     if (sessionError) throw sessionError;
 
     const { data: annonce, error } = await supabase
         .from("annonces")
         .select(
             `
-    *,
-    users:users (
+  *,
+  owner:users (
+    firstname,
+    image_profile,
+    city
+  ),
+  participant_requests (
+  id,
+    status,
+    user_id,
+    users (
+      id,
       firstname,
       image_profile,
-      contract,
-      team,
-      city,
-      to_convey,
-      fc:fc_id ( 
-        name
-      )
+      city
     )
-  `
+  )
+`
         )
-        .eq("id", id)
-        .single();
-    if (error) {
-        console.error("Error fetching announcement:", error);
-        throw error;
-    }
-
-    return annonce;
-}
-
-//! se que je voudrais
-/*
-export async function getAnnouncementById(
-    id: string
-): Promise<AnnouncementDetail> {
-    const { error: sessionError } = await supabase.auth.getSession();
-    if (sessionError) throw sessionError;
-
-    const { data: annonce, error } = await supabase
-        .from("annonces")
-        .select(`
-            *,
-            users:users (
-                firstname,
-                image_profile,
-                contract,
-                team,
-                city,
-                to_convey,
-                fc:fc_id ( 
-                    name
-                )
-            ),
-            participants:participant_requests (
-                id,
-                status,
-                user:users (
-                    id,
-                    firstname,
-                    image_profile
-                )
-            )
-        `)
-        .eq("id", id)
-        .eq("participants.status", "accepted") // 🔥 seulement les acceptés
+        .eq("id", annonce_id)
         .single();
 
     if (error) {
@@ -77,6 +41,9 @@ export async function getAnnouncementById(
         throw error;
     }
 
-    return annonce;
+    const myRequest = annonce.participant_requests.find(
+        (r: ParticipantRequest) => r.user_id === data.session?.user.id
+    );
+
+    return { ...annonce, myStatus: myRequest?.status ?? null };
 }
-*/

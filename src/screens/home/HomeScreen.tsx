@@ -7,9 +7,9 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
-import { Avatar } from "../../components/ui/Avatar";
-import { Card } from "../../components/ui/Card";
+import AnnouncementCardList from "../../components/AnnouncementCardList";
 import { useAnnouncementByFc } from "../../hooks/announcement/useAnnouncement";
+import { AnnouncementWithUser } from "../../types/announcement.interface";
 
 type SortBy = "date" | "seats" | "from";
 
@@ -55,61 +55,8 @@ export default function HomeScreen() {
     }, [announcements, search, sortBy]);
 
     const renderItem = useCallback(
-        ({ item: ride }) => (
-            <Card>
-                <View
-                    style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        marginBottom: 8,
-                    }}
-                >
-                    <Avatar uri={ride.user_avatar ?? ""} />
-                    <View style={{ marginLeft: 12 }}>
-                        <Text style={{ fontWeight: "600" }}>
-                            {ride.user_name}
-                        </Text>
-                        <Text style={{ fontSize: 12, color: "#6b7280" }}>
-                            {new Date(ride.date_start).toLocaleString()}
-                        </Text>
-                    </View>
-                </View>
-
-                <Text style={{ fontSize: 16, fontWeight: "700" }}>
-                    {ride.title}
-                </Text>
-
-                <Text style={{ marginTop: 4, color: "#374151" }}>
-                    {ride.content}
-                </Text>
-
-                <View
-                    style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        marginTop: 12,
-                    }}
-                >
-                    <Text>Places: {ride.number_of_places}</Text>
-                    <TouchableOpacity
-                        onPress={() =>
-                            navigation.navigate("HomeStack", {
-                                screen: "AnnouncementDetail",
-                                params: { id: ride.id },
-                            })
-                        }
-                    >
-                        <Text
-                            style={{
-                                color: "#2563eb",
-                                fontWeight: "600",
-                            }}
-                        >
-                            Voir détails
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-            </Card>
+        ({ item: announcements }: { item: AnnouncementWithUser }) => (
+            <AnnouncementCardList data={announcements} key={announcements.id} />
         ),
         [navigation]
     );

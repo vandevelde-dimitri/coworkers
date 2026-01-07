@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Alert, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { Alert, Text, TouchableOpacity } from "react-native";
 import { supabase } from "../../utils/supabase";
 import { useAuth } from "../contexts/authContext";
+import { AnnonceDetail } from "../types/announcement.interface";
 
-export default function ApplyButton({ annonce }: { annonce: any }) {
+export default function ApplyButton({ annonce }: { annonce: AnnonceDetail }) {
     const { session } = useAuth();
     const [request, setRequest] = useState<any>(null);
     const [loading, setLoading] = useState(false);
+
+    console.log("annonce", annonce);
 
     const annonceId = annonce.id;
 
@@ -118,8 +121,24 @@ export default function ApplyButton({ annonce }: { annonce: any }) {
     // 🚫 Plus de place
     if (annonce.number_of_places <= 0) {
         return (
-            <TouchableOpacity style={styles.buttonPrimary} disabled>
-                <Text style={styles.buttonPrimaryText}>Complet</Text>
+            <TouchableOpacity
+                style={{
+                    backgroundColor: "#2563eb",
+                    padding: 16,
+                    borderRadius: 16,
+                    marginBottom: 10,
+                }}
+                disabled
+            >
+                <Text
+                    style={{
+                        color: "#fff",
+                        textAlign: "center",
+                        fontWeight: "600",
+                    }}
+                >
+                    Complet
+                </Text>
             </TouchableOpacity>
         );
     }
@@ -129,11 +148,22 @@ export default function ApplyButton({ annonce }: { annonce: any }) {
     // ✅ Affichage du bouton selon l'état
     return (
         <TouchableOpacity
-            style={styles.buttonPrimary}
+            style={{
+                backgroundColor: "#2563eb",
+                padding: 16,
+                borderRadius: 16,
+                marginBottom: 10,
+            }}
             onPress={handleApplyToggle}
             disabled={loading}
         >
-            <Text style={styles.buttonPrimaryText}>
+            <Text
+                style={{
+                    color: "#fff",
+                    textAlign: "center",
+                    fontWeight: "600",
+                }}
+            >
                 {loading
                     ? "En cours..."
                     : request?.status === "accepted"
@@ -147,14 +177,3 @@ export default function ApplyButton({ annonce }: { annonce: any }) {
         </TouchableOpacity>
     );
 }
-
-const styles = StyleSheet.create({
-    buttonPrimary: {
-        flex: 1,
-        backgroundColor: "#10B981",
-        padding: 12,
-        borderRadius: 8,
-        alignItems: "center",
-    },
-    buttonPrimaryText: { color: "#fff", fontWeight: "600" },
-});
