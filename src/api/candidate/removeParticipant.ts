@@ -19,7 +19,7 @@ export async function removeParticipant({
     // 2️⃣ Marquer la candidature comme supprimée
     await supabase
         .from("participant_requests")
-        .update({ status: "removed" })
+        .update({ status: "refused" })
         .eq("annonce_id", annonceId)
         .eq("user_id", participantId);
 

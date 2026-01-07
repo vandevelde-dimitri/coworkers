@@ -124,64 +124,74 @@ export default function AnnouncementDetailScreen() {
                 <Text style={{ fontWeight: "600", marginBottom: 10 }}>
                     Participants
                 </Text>
-                {announcement.participant_requests.map((p) => (
-                    <View
-                        key={p.id}
-                        style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            marginBottom: 12,
-                        }}
-                    >
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                            }}
-                        >
-                            <Avatar
-                                uri={
-                                    p.users.image_profile ||
-                                    "https://i.pravatar.cc/150?img=12"
-                                }
-                            />
-                            <View style={{ marginLeft: 12 }}>
-                                <Text style={{ fontWeight: "500" }}>
-                                    {p.users.firstname}
-                                </Text>
-                                <Text
-                                    style={{ fontSize: 12, color: "#6b7280" }}
-                                >
-                                    {p.users.city}
-                                </Text>
-                            </View>
-                        </View>
-                        {isOwner && (
-                            <TouchableOpacity
+
+                {announcement.participant_requests.filter(
+                    (p) => p.status === "accepted"
+                ).length === 0 ? (
+                    <Text style={{ color: "#6b7280", fontStyle: "italic" }}>
+                        Aucun participant pour le moment.
+                    </Text>
+                ) : (
+                    announcement.participant_requests
+                        .filter((p) => p.status === "accepted")
+                        .map((p) => (
+                            <View
+                                key={p.user_id}
                                 style={{
-                                    backgroundColor: "#fee2e2",
-                                    paddingHorizontal: 12,
-                                    paddingVertical: 6,
-                                    borderRadius: 10,
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    marginBottom: 12,
                                 }}
-                                onPress={() =>
-                                    handleRemoveParticipant(p.user_id)
-                                }
                             >
-                                <Text
+                                <View
                                     style={{
-                                        color: "#ef4444",
-                                        fontSize: 12,
-                                        fontWeight: "600",
+                                        flexDirection: "row",
+                                        alignItems: "center",
                                     }}
                                 >
-                                    Retirer
-                                </Text>
-                            </TouchableOpacity>
-                        )}
-                    </View>
-                ))}
+                                    <Avatar uri={p.users.image_profile} />
+                                    <View style={{ marginLeft: 12 }}>
+                                        <Text style={{ fontWeight: "500" }}>
+                                            {p.users.firstname}
+                                        </Text>
+                                        <Text
+                                            style={{
+                                                fontSize: 12,
+                                                color: "#6b7280",
+                                            }}
+                                        >
+                                            {p.users.city}
+                                        </Text>
+                                    </View>
+                                </View>
+
+                                {isOwner && (
+                                    <TouchableOpacity
+                                        style={{
+                                            backgroundColor: "#fee2e2",
+                                            paddingHorizontal: 12,
+                                            paddingVertical: 6,
+                                            borderRadius: 10,
+                                        }}
+                                        onPress={() =>
+                                            handleRemoveParticipant(p.users.id)
+                                        }
+                                    >
+                                        <Text
+                                            style={{
+                                                color: "#ef4444",
+                                                fontSize: 12,
+                                                fontWeight: "600",
+                                            }}
+                                        >
+                                            Retirer
+                                        </Text>
+                                    </TouchableOpacity>
+                                )}
+                            </View>
+                        ))
+                )}
             </Card>
 
             {/* Actions */}

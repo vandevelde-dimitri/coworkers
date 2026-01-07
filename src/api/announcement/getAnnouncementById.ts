@@ -16,6 +16,7 @@ export async function getAnnouncementById(
             `
   *,
   owner:users (
+  id,
     firstname,
     image_profile,
     city
