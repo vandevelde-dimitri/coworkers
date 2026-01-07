@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { FlatList, StyleSheet, Text } from "react-native";
+import { FlatList, Text } from "react-native";
 import { supabase } from "../../../utils/supabase";
 import ChatInput from "../../components/ChatInput";
 import MessageBubble from "../../components/MessageBubble";
 import SafeScreen from "../../components/SafeScreen";
+import ScreenWrapper from "../../components/ui/CustomHeader";
 import { useAuth } from "../../contexts/authContext";
 import { useMessageStatus } from "../../contexts/messageContext";
 
@@ -126,22 +127,16 @@ export default function ChatScreen({ route }: any) {
     console.log("RAW DATA", messages);
 
     return (
-        <SafeScreen backBtn title={title ?? "Conversation"}>
+        <ScreenWrapper title={title} back>
             <FlatList
                 ref={flatListRef}
                 data={messages}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => <MessageBubble message={item} />}
-                contentContainerStyle={styles.list}
+                showsVerticalScrollIndicator={false}
             />
 
             <ChatInput onSend={onSend} />
-        </SafeScreen>
+        </ScreenWrapper>
     );
 }
-
-const styles = StyleSheet.create({
-    list: {
-        padding: 16,
-    },
-});

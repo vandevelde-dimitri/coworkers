@@ -13,6 +13,7 @@ import { formatDate } from "../../../utils/formatedDate";
 import SafeScreen from "../../components/SafeScreen";
 import { Avatar } from "../../components/ui/Avatar";
 import { Card } from "../../components/ui/Card";
+import ScreenWrapper from "../../components/ui/CustomHeader";
 import RemoveParticipantButton from "../../components/ui/RemoveParticipantButton";
 import {
     useAnnouncementCurrentUser,
@@ -117,135 +118,145 @@ export default function TravelScreen() {
 
     // ---------- RENDER ----------
     return (
-        <ScrollView style={{ padding: 16 }}>
-            {/* Détail annonce */}
-            <Card>
-                <Text
-                    style={{ fontSize: 20, fontWeight: "700", marginBottom: 6 }}
-                >
-                    {announcement.title}
-                </Text>
-                <Text style={{ color: "#374151" }}>{announcement.content}</Text>
-                <Text style={{ marginTop: 6 }}>
-                    Places disponibles : {announcement.number_of_places}
-                </Text>
-            </Card>
-
-            {/* Propriétaire */}
-            <Card>
-                <Text style={{ fontWeight: "600", marginBottom: 10 }}>
-                    Annonce de
-                </Text>
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <Avatar uri={announcement.owner.image_profile} />
-                    <View style={{ marginLeft: 12 }}>
-                        <Text style={{ fontWeight: "600" }}>
-                            {announcement.owner.firstname}
-                        </Text>
-                        <Text style={{ fontSize: 12, color: "#6b7280" }}>
-                            {announcement.owner.city}
-                        </Text>
-                    </View>
-                </View>
-            </Card>
-
-            {/* Participants */}
-            <Card>
-                <Text style={{ fontWeight: "600", marginBottom: 10 }}>
-                    Participants
-                </Text>
-
-                {announcement.participant_requests.filter(
-                    (p) => p.status === "accepted"
-                ).length === 0 ? (
-                    <Text style={{ color: "#6b7280", fontStyle: "italic" }}>
-                        Aucun participant pour le moment.
+        <ScreenWrapper title="Mon annonce">
+            <ScrollView>
+                {/* Détail annonce */}
+                <Card>
+                    <Text
+                        style={{
+                            fontSize: 20,
+                            fontWeight: "700",
+                            marginBottom: 6,
+                        }}
+                    >
+                        {announcement.title}
                     </Text>
-                ) : (
-                    announcement.participant_requests
-                        .filter((p) => p.status === "accepted")
-                        .map((p) => (
-                            <View
-                                key={p.user_id}
-                                style={{
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    justifyContent: "space-between",
-                                    marginBottom: 12,
-                                }}
-                            >
+                    <Text style={{ color: "#374151" }}>
+                        {announcement.content}
+                    </Text>
+                    <Text style={{ marginTop: 6 }}>
+                        Places disponibles : {announcement.number_of_places}
+                    </Text>
+                </Card>
+
+                {/* Propriétaire */}
+                <Card>
+                    <Text style={{ fontWeight: "600", marginBottom: 10 }}>
+                        Annonce de
+                    </Text>
+                    <View
+                        style={{ flexDirection: "row", alignItems: "center" }}
+                    >
+                        <Avatar uri={announcement.owner.image_profile} />
+                        <View style={{ marginLeft: 12 }}>
+                            <Text style={{ fontWeight: "600" }}>
+                                {announcement.owner.firstname}
+                            </Text>
+                            <Text style={{ fontSize: 12, color: "#6b7280" }}>
+                                {announcement.owner.city}
+                            </Text>
+                        </View>
+                    </View>
+                </Card>
+
+                {/* Participants */}
+                <Card>
+                    <Text style={{ fontWeight: "600", marginBottom: 10 }}>
+                        Participants
+                    </Text>
+
+                    {announcement.participant_requests.filter(
+                        (p) => p.status === "accepted"
+                    ).length === 0 ? (
+                        <Text style={{ color: "#6b7280", fontStyle: "italic" }}>
+                            Aucun participant pour le moment.
+                        </Text>
+                    ) : (
+                        announcement.participant_requests
+                            .filter((p) => p.status === "accepted")
+                            .map((p) => (
                                 <View
+                                    key={p.user_id}
                                     style={{
                                         flexDirection: "row",
                                         alignItems: "center",
+                                        justifyContent: "space-between",
+                                        marginBottom: 12,
                                     }}
                                 >
-                                    <Avatar uri={p.users.image_profile} />
-                                    <View style={{ marginLeft: 12 }}>
-                                        <Text style={{ fontWeight: "500" }}>
-                                            {p.users.firstname}
-                                        </Text>
-                                        <Text
-                                            style={{
-                                                fontSize: 12,
-                                                color: "#6b7280",
-                                            }}
-                                        >
-                                            {p.users.city}
-                                        </Text>
+                                    <View
+                                        style={{
+                                            flexDirection: "row",
+                                            alignItems: "center",
+                                        }}
+                                    >
+                                        <Avatar uri={p.users.image_profile} />
+                                        <View style={{ marginLeft: 12 }}>
+                                            <Text style={{ fontWeight: "500" }}>
+                                                {p.users.firstname}
+                                            </Text>
+                                            <Text
+                                                style={{
+                                                    fontSize: 12,
+                                                    color: "#6b7280",
+                                                }}
+                                            >
+                                                {p.users.city}
+                                            </Text>
+                                        </View>
                                     </View>
+
+                                    <RemoveParticipantButton
+                                        annonce={announcement}
+                                        participant={p}
+                                    />
                                 </View>
+                            ))
+                    )}
+                </Card>
 
-                                <RemoveParticipantButton
-                                    annonce={announcement}
-                                    participant={p}
-                                />
-                            </View>
-                        ))
-                )}
-            </Card>
+                {/* Actions */}
 
-            {/* Actions */}
-
-            <TouchableOpacity
-                onPress={handleEdit}
-                style={{
-                    backgroundColor: "#f59e0b",
-                    padding: 16,
-                    borderRadius: 16,
-                    marginBottom: 10,
-                }}
-            >
-                <Text
+                <TouchableOpacity
+                    onPress={handleEdit}
                     style={{
-                        color: "#fff",
-                        textAlign: "center",
-                        fontWeight: "600",
+                        backgroundColor: "#f59e0b",
+                        padding: 16,
+                        borderRadius: 16,
+                        marginBottom: 10,
                     }}
                 >
-                    Modifier
-                </Text>
-            </TouchableOpacity>
+                    <Text
+                        style={{
+                            color: "#fff",
+                            textAlign: "center",
+                            fontWeight: "600",
+                        }}
+                    >
+                        Modifier
+                    </Text>
+                </TouchableOpacity>
 
-            <TouchableOpacity
-                onPress={handleDelete}
-                style={{
-                    backgroundColor: "#ef4444",
-                    padding: 16,
-                    borderRadius: 16,
-                }}
-            >
-                <Text
+                <TouchableOpacity
+                    onPress={handleDelete}
                     style={{
-                        color: "#fff",
-                        textAlign: "center",
-                        fontWeight: "600",
+                        backgroundColor: "#ef4444",
+                        padding: 16,
+                        borderRadius: 16,
                     }}
                 >
-                    Supprimer
-                </Text>
-            </TouchableOpacity>
-        </ScrollView>
+                    <Text
+                        style={{
+                            color: "#fff",
+                            textAlign: "center",
+                            fontWeight: "600",
+                        }}
+                    >
+                        Supprimer
+                    </Text>
+                </TouchableOpacity>
+            </ScrollView>
+        </ScreenWrapper>
     );
 }
 

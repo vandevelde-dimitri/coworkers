@@ -1,7 +1,8 @@
 import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback } from "react";
-import { ScrollView, Text } from "react-native";
+import { FlatList } from "react-native";
 import ConversationItem from "../../components/ConversationItem";
+import ScreenWrapper from "../../components/ui/CustomHeader";
 import { useMessageStatus } from "../../contexts/messageContext";
 import { useUserConversations } from "../../hooks/conversation/useConversationUser";
 
@@ -18,23 +19,24 @@ export default function ConversationsListScreen({ navigation }: any) {
     if (isLoading) return null;
 
     return (
-        <ScrollView style={{ padding: 16 }}>
-            <Text style={{ fontSize: 22, fontWeight: "700", marginBottom: 16 }}>
-                Messages
-            </Text>
-            {conversations.map((c) => (
-                <ConversationItem
-                    key={c.conversation_id}
-                    item={c}
-                    unread={!!unreadConversations[c.conversation_id]}
-                    onPress={() =>
-                        navigation.navigate("ChatScreen", {
-                            conversationId: c.conversation_id,
-                            title: c.annonce_title,
-                        })
-                    }
-                />
-            ))}
-        </ScrollView>
+        <ScreenWrapper title="Mes conversations">
+            <FlatList
+                data={conversations}
+                keyExtractor={(item) => item.conversation_id}
+                renderItem={({ item }) => (
+                    <ConversationItem
+                        item={item}
+                        unread={!!unreadConversations[item.conversation_id]}
+                        onPress={() =>
+                            navigation.navigate("ChatScreen", {
+                                conversationId: item.conversation_id,
+                                title: item.annonce_title,
+                            })
+                        }
+                    />
+                )}
+                showsVerticalScrollIndicator={false}
+            />
+        </ScreenWrapper>
     );
 }

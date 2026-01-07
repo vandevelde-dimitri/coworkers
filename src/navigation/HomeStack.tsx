@@ -12,7 +12,9 @@ export default function HomeStack() {
             <Stack.Screen
                 name="Home"
                 component={HomeScreen}
-                options={{ title: "Accueil" }}
+                options={{
+                    title: "Accueil",
+                }}
             />
             <Stack.Screen
                 name="AnnouncementDetail"
