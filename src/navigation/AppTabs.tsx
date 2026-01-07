@@ -19,7 +19,7 @@ export default function AppTabs() {
         <Tab.Navigator
             screenOptions={{
                 headerShown: false,
-                tabBarActiveTintColor: "#10B981",
+                tabBarActiveTintColor: "#2563eb",
                 tabBarInactiveTintColor: "#9CA3AF",
                 tabBarButton: HapticTab,
                 tabBarStyle: Platform.select({
@@ -75,7 +75,7 @@ export default function AppTabs() {
                                 width: 60,
                                 height: 60,
                                 borderRadius: 30,
-                                backgroundColor: "#10B981",
+                                backgroundColor: "#2563eb",
                                 justifyContent: "center",
                                 alignItems: "center",
                                 marginBottom: 20,

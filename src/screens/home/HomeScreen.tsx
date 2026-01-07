@@ -79,7 +79,7 @@ export default function HomeScreen() {
     }
 
     return (
-        <ScreenWrapper title="Annonce pour coworking">
+        <ScreenWrapper title="Annonce pour Lil1">
             <View>
                 <TextInput
                     placeholder="Rechercher une annonce..."

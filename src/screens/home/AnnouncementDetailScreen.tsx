@@ -166,7 +166,7 @@ export default function AnnouncementDetailScreen() {
                         <TouchableOpacity
                             onPress={handleEdit}
                             style={{
-                                backgroundColor: "#f59e0b",
+                                backgroundColor: "#2563eb",
                                 padding: 16,
                                 borderRadius: 16,
                                 marginBottom: 10,
