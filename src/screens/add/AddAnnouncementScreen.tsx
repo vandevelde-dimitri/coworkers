@@ -14,7 +14,7 @@ import * as yup from "yup";
 
 import { supabase } from "../../../utils/supabase";
 import { createConversation } from "../../api/messaging/createConversation";
-import SafeScreen from "../../components/SafeScreen";
+import ScreenWrapper from "../../components/ui/CustomHeader";
 import { FormDatePicker } from "../../components/ui/DatePicker";
 import { FormInput } from "../../components/ui/FormInput";
 import {
@@ -189,8 +189,8 @@ export default function FormAnnouncementScreen() {
     };
 
     return (
-        <SafeScreen title="Ajouter une annonce">
-            <ScrollView contentContainerStyle={styles.container}>
+        <ScreenWrapper title="Ajouter une annonce">
+            <ScrollView showsVerticalScrollIndicator={false}>
                 <FormInput
                     name="title"
                     control={control}
@@ -242,7 +242,7 @@ export default function FormAnnouncementScreen() {
                     </Text>
                 </TouchableOpacity>
             </ScrollView>
-        </SafeScreen>
+        </ScreenWrapper>
     );
 }
 
@@ -256,11 +256,11 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     button: {
-        backgroundColor: "#10B981",
-        padding: 16,
-        borderRadius: 12,
+        backgroundColor: "#2563eb",
+        paddingVertical: 16,
+        borderRadius: 18,
         alignItems: "center",
-        marginTop: 16,
+        marginTop: 24,
     },
     buttonDisabled: {
         backgroundColor: "#9CA3AF",
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: "#fff",
-        fontWeight: "600",
+        fontWeight: "700",
         fontSize: 16,
     },
 });

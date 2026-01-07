@@ -2,7 +2,6 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import React, { useState } from "react";
 import { Control, Controller } from "react-hook-form";
 import { Platform, Text, TouchableOpacity, View } from "react-native";
-import { formAuthStyles } from "../../styles/form.styles";
 
 interface FormDatePickerProps {
     name: string;
@@ -41,10 +40,9 @@ export const FormDatePicker: React.FC<FormDatePickerProps> = ({
                     <View style={{ marginBottom: 16 }}>
                         <Text
                             style={{
-                                fontSize: 16,
                                 fontWeight: "600",
-                                marginBottom: 8,
-                                color: "#111827",
+                                marginBottom: 6,
+                                color: "#374151",
                             }}
                         >
                             {label}
@@ -52,7 +50,14 @@ export const FormDatePicker: React.FC<FormDatePickerProps> = ({
 
                         <TouchableOpacity
                             onPress={() => setShow(true)}
-                            style={formAuthStyles.input}
+                            style={{
+                                borderWidth: 1,
+                                borderColor: error ? "red" : "#e5e7eb",
+                                borderRadius: 12,
+                                padding: 14,
+                                backgroundColor: "#f9fafb",
+                                marginBottom: 16,
+                            }}
                         >
                             <Text style={{ color: "#111827" }}>
                                 {value

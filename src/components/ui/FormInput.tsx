@@ -1,7 +1,6 @@
 import React from "react";
 import { Control, Controller } from "react-hook-form";
 import { Text, TextInput } from "react-native";
-import { formAuthStyles } from "../../styles/form.styles";
 
 type InputType = "text" | "number" | "textarea";
 
@@ -34,10 +33,9 @@ export const FormInput: React.FC<FormInputProps> = ({
                 <>
                     <Text
                         style={{
-                            fontSize: 16,
                             fontWeight: "600",
-                            marginBottom: 8,
-                            color: "#111827",
+                            marginBottom: 6,
+                            color: "#374151",
                         }}
                     >
                         {label}
@@ -45,9 +43,14 @@ export const FormInput: React.FC<FormInputProps> = ({
 
                     <TextInput
                         style={[
-                            formAuthStyles.input,
                             {
-                                borderColor: error ? "red" : "#d1d5db",
+                                borderWidth: 1,
+                                borderRadius: 12,
+                                padding: 12,
+                                backgroundColor: "#f9fafb",
+                                marginBottom: 16,
+                                fontSize: 16,
+                                borderColor: error ? "red" : "#e5e7eb",
                                 minHeight: type === "textarea" ? 100 : 40,
                             },
                         ]}
