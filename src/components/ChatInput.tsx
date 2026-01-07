@@ -6,16 +6,39 @@ export default function ChatInput({ onSend }: any) {
     const [text, setText] = useState("");
 
     return (
-        <View style={styles.container}>
+        <View
+            style={{
+                flexDirection: "row",
+                alignItems: "center",
+                padding: 10,
+                borderTopWidth: 1,
+                borderTopColor: "#e5e7eb",
+                backgroundColor: "#ffffff",
+            }}
+        >
             <TextInput
-                style={styles.input}
+                style={{
+                    flex: 1,
+                    backgroundColor: "#f9fafb",
+                    borderRadius: 24,
+                    paddingHorizontal: 16,
+                    paddingVertical: 12,
+                    fontSize: 15,
+                    borderWidth: 1,
+                    borderColor: "#e5e7eb",
+                }}
                 placeholder="Écrire un message…"
                 value={text}
                 onChangeText={setText}
                 multiline
             />
             <TouchableOpacity
-                style={styles.sendBtn}
+                style={{
+                    marginLeft: 8,
+                    backgroundColor: "#2563eb",
+                    padding: 12,
+                    borderRadius: 24,
+                }}
                 onPress={() => {
                     if (!text.trim()) return;
                     onSend(text.trim());

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { FlatList, StyleSheet, Text } from "react-native";
 import { supabase } from "../../../utils/supabase";
 import ChatInput from "../../components/ChatInput";
@@ -11,36 +11,57 @@ export default function ChatScreen({ route }: any) {
     const { conversationId, title } = route.params;
     const { session } = useAuth();
     const { markConversationRead } = useMessageStatus();
+
     const flatListRef = useRef<FlatList>(null);
 
     const [messages, setMessages] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     // ---------------------------
-    // Charger messages initiaux
+    // Charger les messages
     // ---------------------------
-    const loadMessages = async () => {
+    const loadMessages = useCallback(async () => {
         if (!conversationId) return;
 
-        const { data } = await supabase
+        const { data, error } = await supabase
             .from("messages")
-            .select("id, sender_id, content, created_at")
+            .select(
+                `
+        id,
+        sender_id,
+        content,
+        created_at,
+        users (
+          id,
+          image_profile
+        )
+      `
+            )
             .eq("conversation_id", conversationId)
             .order("created_at", { ascending: true });
+
+        if (error) {
+            console.error(error);
+            return;
+        }
 
         if (data) {
             setMessages(
                 data.map((m) => ({
-                    ...m,
+                    id: m.id,
+                    content: m.content,
+                    created_at: m.created_at,
                     isMine: m.sender_id === session?.user.id,
+                    avatar: m.users?.image_profile ?? null,
                 }))
             );
         }
+
         setLoading(false);
-    };
+    }, [conversationId, session?.user.id]);
 
     // ---------------------------
-    // Load + mark read au montage
+    // Init
     // ---------------------------
     useEffect(() => {
         loadMessages();
@@ -48,7 +69,7 @@ export default function ChatScreen({ route }: any) {
     }, [conversationId]);
 
     // ---------------------------
-    // Realtime pour nouveaux messages
+    // Realtime
     // ---------------------------
     useEffect(() => {
         if (!conversationId) return;
@@ -63,15 +84,9 @@ export default function ChatScreen({ route }: any) {
                     table: "messages",
                     filter: `conversation_id=eq.${conversationId}`,
                 },
-                (payload) => {
-                    const msg = payload.new;
-                    setMessages((prev) => [
-                        ...prev,
-                        {
-                            ...msg,
-                            isMine: msg.sender_id === session?.user.id,
-                        },
-                    ]);
+                () => {
+                    // Recharger pour récupérer avatar + données complètes
+                    loadMessages();
                 }
             )
             .subscribe();
@@ -79,10 +94,10 @@ export default function ChatScreen({ route }: any) {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [conversationId]);
+    }, [conversationId, loadMessages]);
 
     // ---------------------------
-    // Envoyer un message
+    // Envoyer message
     // ---------------------------
     const onSend = async (text: string) => {
         if (!text.trim()) return;
@@ -95,19 +110,20 @@ export default function ChatScreen({ route }: any) {
     };
 
     // ---------------------------
-    // Scroll auto à la fin
+    // Scroll auto
     // ---------------------------
     useEffect(() => {
         flatListRef.current?.scrollToEnd({ animated: true });
     }, [messages]);
 
-    if (loading)
+    if (loading) {
         return (
             <SafeScreen backBtn title={title ?? "Conversation"}>
-                {/* Ici tu peux mettre un loader si tu veux */}
-                <Text>Loading messages...</Text>
+                <Text>Chargement…</Text>
             </SafeScreen>
         );
+    }
+    console.log("RAW DATA", messages);
 
     return (
         <SafeScreen backBtn title={title ?? "Conversation"}>
@@ -125,5 +141,7 @@ export default function ChatScreen({ route }: any) {
 }
 
 const styles = StyleSheet.create({
-    list: { paddingVertical: 10 },
+    list: {
+        padding: 16,
+    },
 });

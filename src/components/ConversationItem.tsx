@@ -1,5 +1,6 @@
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
+import { formatDate } from "../../utils/formatedDate";
 import { ConversationPreview } from "../api/user/getUserConversations";
 import { Avatar } from "./ui/Avatar";
 import { Card } from "./ui/Card";
@@ -14,6 +15,8 @@ export default function ConversationItem({
     onPress: () => void;
 }) {
     console.log("Conversation ✔ item", item);
+
+    const date_formatted = formatDate(item.last_message_time);
 
     return (
         <TouchableOpacity key={item.conversation_id} onPress={onPress}>
@@ -38,16 +41,17 @@ export default function ConversationItem({
                     </View>
                     <View style={{ alignItems: "flex-end" }}>
                         <Text style={{ fontSize: 12, color: "#6b7280" }}>
-                            {item.last_message_time}
+                            {date_formatted}
                         </Text>
                         {unread && (
                             <View
                                 style={{
                                     backgroundColor: "#2563eb",
-                                    borderRadius: 5,
-                                    minWidth: 10,
-                                    minHeight: 10,
-                                    paddingHorizontal: 6,
+                                    width: 10,
+                                    height: 10,
+                                    borderRadius: 8,
+                                    alignItems: "center",
+                                    justifyContent: "center",
                                     marginTop: 6,
                                 }}
                             />

@@ -24,6 +24,7 @@ export default function ConversationsListScreen({ navigation }: any) {
             </Text>
             {conversations.map((c) => (
                 <ConversationItem
+                    key={c.conversation_id}
                     item={c}
                     unread={!!unreadConversations[c.conversation_id]}
                     onPress={() =>
