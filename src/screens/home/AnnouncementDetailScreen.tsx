@@ -10,12 +10,12 @@ import ApplyButton from "../../components/ApplyButton";
 import FavoriteButton from "../../components/FavoriteButton";
 import { Avatar } from "../../components/ui/Avatar";
 import { Card } from "../../components/ui/Card";
+import RemoveParticipantButton from "../../components/ui/RemoveParticipantButton";
 import { useAuth } from "../../contexts/authContext";
 import {
     useAnnouncementById,
     useDeleteAnnouncement,
 } from "../../hooks/announcement/useAnnouncement";
-import { useRemoveParticipant } from "../../hooks/candidate/useCandidate";
 import { HomeStackParamList } from "../../types/navigation/homeStackType";
 
 export default function AnnouncementDetailScreen() {
@@ -26,7 +26,6 @@ export default function AnnouncementDetailScreen() {
 
     const { data: announcement, isLoading, error } = useAnnouncementById(id);
     const { mutate: deleteAnnouncement } = useDeleteAnnouncement();
-    const { mutate: removeParticipant } = useRemoveParticipant();
     const isOwner = isMyAnnouncement(announcement, session?.user.id);
 
     if (isLoading) return <Text>Loading...</Text>;
@@ -54,32 +53,6 @@ export default function AnnouncementDetailScreen() {
                     onPress: () => {
                         deleteAnnouncement(id);
                         navigation.popToTop();
-                    },
-                },
-            ]
-        );
-    };
-
-    const handleRemoveParticipant = (participantId: string) => {
-        if (!isOwner) return;
-        const participant = announcement.participant_requests.find(
-            (p) => p.user_id === participantId
-        );
-        if (!participant) return;
-        Alert.alert(
-            "Confirmation",
-            `Voulez-vous vraiment retirer ${participant.users.firstname} de cette annonce ?`,
-            [
-                { text: "Annuler", style: "cancel" },
-                {
-                    text: "Retirer",
-                    style: "destructive",
-                    onPress: () => {
-                        removeParticipant({
-                            annonceId: announcement.id,
-                            participantId,
-                            conversationId: announcement.conversation_id,
-                        });
                     },
                 },
             ]
@@ -167,27 +140,10 @@ export default function AnnouncementDetailScreen() {
                                 </View>
 
                                 {isOwner && (
-                                    <TouchableOpacity
-                                        style={{
-                                            backgroundColor: "#fee2e2",
-                                            paddingHorizontal: 12,
-                                            paddingVertical: 6,
-                                            borderRadius: 10,
-                                        }}
-                                        onPress={() =>
-                                            handleRemoveParticipant(p.users.id)
-                                        }
-                                    >
-                                        <Text
-                                            style={{
-                                                color: "#ef4444",
-                                                fontSize: 12,
-                                                fontWeight: "600",
-                                            }}
-                                        >
-                                            Retirer
-                                        </Text>
-                                    </TouchableOpacity>
+                                    <RemoveParticipantButton
+                                        annonce={announcement}
+                                        participant={p}
+                                    />
                                 )}
                             </View>
                         ))

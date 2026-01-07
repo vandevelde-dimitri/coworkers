@@ -13,6 +13,7 @@ import { formatDate } from "../../../utils/formatedDate";
 import SafeScreen from "../../components/SafeScreen";
 import { Avatar } from "../../components/ui/Avatar";
 import { Card } from "../../components/ui/Card";
+import RemoveParticipantButton from "../../components/ui/RemoveParticipantButton";
 import {
     useAnnouncementCurrentUser,
     useDeleteAnnouncement,
@@ -195,27 +196,10 @@ export default function TravelScreen() {
                                     </View>
                                 </View>
 
-                                <TouchableOpacity
-                                    style={{
-                                        backgroundColor: "#fee2e2",
-                                        paddingHorizontal: 12,
-                                        paddingVertical: 6,
-                                        borderRadius: 10,
-                                    }}
-                                    onPress={() =>
-                                        handleRemoveParticipant(p.users.id)
-                                    }
-                                >
-                                    <Text
-                                        style={{
-                                            color: "#ef4444",
-                                            fontSize: 12,
-                                            fontWeight: "600",
-                                        }}
-                                    >
-                                        Retirer
-                                    </Text>
-                                </TouchableOpacity>
+                                <RemoveParticipantButton
+                                    annonce={announcement}
+                                    participant={p}
+                                />
                             </View>
                         ))
                 )}
