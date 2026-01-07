@@ -117,6 +117,7 @@ export default function TravelScreen() {
     // ---------- RENDER ----------
     return (
         <ScrollView style={{ padding: 16 }}>
+            {/* Détail annonce */}
             <Card>
                 <Text
                     style={{ fontSize: 20, fontWeight: "700", marginBottom: 6 }}
@@ -124,86 +125,103 @@ export default function TravelScreen() {
                     {announcement.title}
                 </Text>
                 <Text style={{ color: "#374151" }}>{announcement.content}</Text>
-                {/* <Text style={{ marginTop: 6, color: "#6b7280" }}>
-                            Départ : 12 Jan · 08:00
-                        </Text> */}
                 <Text style={{ marginTop: 6 }}>
                     Places disponibles : {announcement.number_of_places}
                 </Text>
             </Card>
 
+            {/* Propriétaire */}
             <Card>
                 <Text style={{ fontWeight: "600", marginBottom: 10 }}>
                     Annonce de
                 </Text>
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <Avatar uri="https://i.pravatar.cc/150?img=12" />
+                    <Avatar uri={announcement.owner.image_profile} />
                     <View style={{ marginLeft: 12 }}>
                         <Text style={{ fontWeight: "600" }}>
-                            {announcement.users.firstname}
+                            {announcement.owner.firstname}
                         </Text>
                         <Text style={{ fontSize: 12, color: "#6b7280" }}>
-                            {announcement.users.city}
+                            {announcement.owner.city}
                         </Text>
                     </View>
                 </View>
             </Card>
 
+            {/* Participants */}
             <Card>
                 <Text style={{ fontWeight: "600", marginBottom: 10 }}>
                     Participants
                 </Text>
-                {[1, 2].map((p) => (
-                    <View
-                        key={p}
-                        style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            marginBottom: 12,
-                        }}
-                    >
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                            }}
-                        >
-                            <Avatar
-                                uri={`https://i.pravatar.cc/150?img=${30 + p}`}
-                            />
-                            <View style={{ marginLeft: 12 }}>
-                                <Text style={{ fontWeight: "500" }}>
-                                    Participant {p}
-                                </Text>
-                                <Text
-                                    style={{ fontSize: 12, color: "#22c55e" }}
-                                >
-                                    Accepté
-                                </Text>
-                            </View>
-                        </View>
-                        <TouchableOpacity
-                            style={{
-                                backgroundColor: "#fee2e2",
-                                paddingHorizontal: 12,
-                                paddingVertical: 6,
-                                borderRadius: 10,
-                            }}
-                        >
-                            <Text
+
+                {announcement.participant_requests.filter(
+                    (p) => p.status === "accepted"
+                ).length === 0 ? (
+                    <Text style={{ color: "#6b7280", fontStyle: "italic" }}>
+                        Aucun participant pour le moment.
+                    </Text>
+                ) : (
+                    announcement.participant_requests
+                        .filter((p) => p.status === "accepted")
+                        .map((p) => (
+                            <View
+                                key={p.user_id}
                                 style={{
-                                    color: "#ef4444",
-                                    fontSize: 12,
-                                    fontWeight: "600",
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    marginBottom: 12,
                                 }}
                             >
-                                Retirer
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                ))}
+                                <View
+                                    style={{
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    <Avatar uri={p.users.image_profile} />
+                                    <View style={{ marginLeft: 12 }}>
+                                        <Text style={{ fontWeight: "500" }}>
+                                            {p.users.firstname}
+                                        </Text>
+                                        <Text
+                                            style={{
+                                                fontSize: 12,
+                                                color: "#6b7280",
+                                            }}
+                                        >
+                                            {p.users.city}
+                                        </Text>
+                                    </View>
+                                </View>
+
+                                <TouchableOpacity
+                                    style={{
+                                        backgroundColor: "#fee2e2",
+                                        paddingHorizontal: 12,
+                                        paddingVertical: 6,
+                                        borderRadius: 10,
+                                    }}
+                                    onPress={() =>
+                                        handleRemoveParticipant(p.users.id)
+                                    }
+                                >
+                                    <Text
+                                        style={{
+                                            color: "#ef4444",
+                                            fontSize: 12,
+                                            fontWeight: "600",
+                                        }}
+                                    >
+                                        Retirer
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        ))
+                )}
             </Card>
+
+            {/* Actions */}
 
             <TouchableOpacity
                 onPress={handleEdit}

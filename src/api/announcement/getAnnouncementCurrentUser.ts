@@ -1,7 +1,7 @@
 import { supabase } from "../../../utils/supabase";
-import { AnnouncementDetail } from "../../types/announcement.interface";
+import { AnnonceDetail } from "../../types/announcement.interface";
 
-export async function getAnnouncementByCurrentUser(): Promise<AnnouncementDetail> {
+export async function getAnnouncementByCurrentUser(): Promise<AnnonceDetail> {
     const {
         data: { session },
         error: sessionError,
@@ -18,21 +18,27 @@ export async function getAnnouncementByCurrentUser(): Promise<AnnouncementDetail
         .select(
             `
     *,
-    users:users (
+    owner:users (
+      id,
       firstname,
       image_profile,
-      contract,
-      team,
-      city,
-      to_convey,
-      fc:fc_id ( 
-        name
+      city
+    ),
+    participant_requests (
+      id,
+      status,
+      user_id,
+      users (
+        id,
+        firstname,
+        image_profile,
+        city
       )
     )
   `
         )
         .eq("user_id", userId)
-        .maybeSingle();
+        .maybeSingle(); // <-- ici on filtre sur le propriétaire
     if (error) {
         console.error("Error fetching announcement:", error);
         throw error;
