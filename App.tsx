@@ -647,14 +647,25 @@ function NotificationsScreen() {
             type: "request",
             title: "Demande de participation",
             name: "Jean Dupont",
-            avatar: "https://i.pravatar.cc/150?img=12",
+            candidate_image: "https://i.pravatar.cc/150?img=12",
         },
         {
             id: "2",
             type: "info",
             title: "Nouvelle annonce disponible",
             name: "Alice Martin",
-            avatar: "https://i.pravatar.cc/150?img=32",
+            candidate_image: "https://i.pravatar.cc/150?img=32",
+        },
+        {
+            annonce_id: "2a7a57ec-f745-4640-ab6d-4b826f7d4dff",
+            annonce_title: "Annonce de john doe",
+            candidate_firstname: "dim",
+            candidate_id: "0a70e947-cdde-4379-a545-def6f5078afd",
+            candidate_image: null,
+            candidate_lastname: "Vandevelde ",
+            created_at: "2026-01-07T17:29:34.119265+00:00",
+            id: "0114718f-6113-4b30-b0ef-1d487301adc0",
+            status: "accepted",
         },
     ];
     return (
@@ -667,7 +678,7 @@ function NotificationsScreen() {
                     <View
                         style={{ flexDirection: "row", alignItems: "center" }}
                     >
-                        <Avatar uri={r.avatar} />
+                        <Avatar uri={r.candidate_image} />
                         <View style={{ flex: 1, marginLeft: 12 }}>
                             <Text style={{ fontWeight: "600" }}>{r.name}</Text>
                             <Text style={{ fontSize: 12, color: "#6b7280" }}>

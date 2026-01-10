@@ -39,7 +39,13 @@ export default function ConversationItem({
                             {item.last_message}
                         </Text>
                     </View>
-                    <View style={{ alignItems: "flex-end" }}>
+                    <View
+                        style={{
+                            alignItems: "flex-end",
+                            flexDirection: "row",
+                            gap: 8,
+                        }}
+                    >
                         <Text style={{ fontSize: 12, color: "#6b7280" }}>
                             {date_formatted}
                         </Text>

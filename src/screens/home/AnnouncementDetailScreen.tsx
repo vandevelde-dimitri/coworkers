@@ -62,7 +62,7 @@ export default function AnnouncementDetailScreen() {
 
     return (
         <ScreenWrapper title="Détails de l'annonce" back>
-            <ScrollView>
+            <ScrollView showsVerticalScrollIndicator={false}>
                 {/* Détail annonce */}
                 <Card>
                     <Text

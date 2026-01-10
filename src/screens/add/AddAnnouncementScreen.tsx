@@ -25,7 +25,6 @@ import {
 import { AnnouncementFormValues } from "../../types/announcement.interface";
 
 export default function FormAnnouncementScreen() {
-    type RouteParams = { id?: string };
     const navigation = useNavigation();
     const route = useRoute();
     const { id } = route.params ?? {}; // params peut être undefined
@@ -191,38 +190,46 @@ export default function FormAnnouncementScreen() {
     return (
         <ScreenWrapper title="Ajouter une annonce">
             <ScrollView showsVerticalScrollIndicator={false}>
-                <FormInput
-                    name="title"
-                    control={control}
-                    label="Titre"
-                    placeholder="Entrez un titre"
-                    type="text"
-                />
-                <FormInput
-                    name="content"
-                    control={control}
-                    label="Description"
-                    placeholder="Décris ton trajet"
-                    type="textarea"
-                />
-                <FormInput
-                    name="number_of_places"
-                    control={control}
-                    label="Nombre de places"
-                    placeholder="Ex: 3"
-                    type="number"
-                />
-                <FormDatePicker
-                    name="date_start"
-                    control={control}
-                    label="Date de début"
-                />
-                <FormDatePicker
-                    name="date_end"
-                    control={control}
-                    label="Date de fin (optionnel)"
-                />
-
+                <View
+                    style={{
+                        backgroundColor: "#fff",
+                        borderRadius: 18,
+                        padding: 16,
+                        marginBottom: 16,
+                    }}
+                >
+                    <FormInput
+                        name="title"
+                        control={control}
+                        label="Titre"
+                        placeholder="Entrez un titre"
+                        type="text"
+                    />
+                    <FormInput
+                        name="content"
+                        control={control}
+                        label="Description"
+                        placeholder="Décris ton trajet"
+                        type="textarea"
+                    />
+                    <FormInput
+                        name="number_of_places"
+                        control={control}
+                        label="Nombre de places"
+                        placeholder="Ex: 3"
+                        type="number"
+                    />
+                    <FormDatePicker
+                        name="date_start"
+                        control={control}
+                        label="Date de début"
+                    />
+                    <FormDatePicker
+                        name="date_end"
+                        control={control}
+                        label="Date de fin (optionnel)"
+                    />
+                </View>
                 <TouchableOpacity
                     style={[
                         styles.button,

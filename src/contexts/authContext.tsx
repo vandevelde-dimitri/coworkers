@@ -60,9 +60,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }, []);
 
     const refreshSession = async () => {
-        const { data } = await supabase.auth.getSession();
+        const { data, error } = await supabase.auth.refreshSession();
+
+        if (error) {
+            console.error("refreshSession error", error);
+            return;
+        }
+
         setSession(data.session);
     };
+
     const profileCompleted = useMemo(() => {
         return session?.user?.user_metadata?.profile_completed === true;
     }, [session]);

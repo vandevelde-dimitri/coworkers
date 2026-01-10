@@ -5,7 +5,6 @@ import NotificationsScreen from "../screens/notification/notificationScreen";
 import EditProfileScreen from "../screens/profile/EditProfileScreen";
 import ProfileScreen from "../screens/profile/ProfileScreen";
 import SettingsScreen from "../screens/profile/SettingsScreen";
-import AvatarRegistrationScreen from "../screens/profile/avatarScreen";
 import CandidateProfile from "../screens/profile/candidateProfile";
 import ContractRegistrationScreen from "../screens/profile/contract";
 import EmailRegistrationScreen from "../screens/profile/email";
@@ -13,6 +12,7 @@ import FavoriteScreen from "../screens/profile/favoriteScreen";
 import FloorRegistrationScreen from "../screens/profile/floor";
 import LocationRegistrationScreen from "../screens/profile/location";
 import TeamRegistrationScreen from "../screens/profile/team";
+import UpdateAvatarScreen from "../screens/profile/updateAvatarScreen";
 import UsernameRegisterScreen from "../screens/profile/username";
 import { ProfileStackParamList } from "../types/navigation/profileStackType";
 
@@ -86,7 +86,7 @@ export default function ProfileStack() {
             />
             <Stack.Screen
                 name="AvatarRegistrationScreen"
-                component={AvatarRegistrationScreen}
+                component={UpdateAvatarScreen}
                 options={{ title: "Mes favoris" }}
             />
             <Stack.Screen

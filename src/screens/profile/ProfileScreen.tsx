@@ -1,20 +1,17 @@
 import FeatherIcon from "@expo/vector-icons/Feather";
 import type { NavigationProp } from "@react-navigation/native";
+
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
-import {
-    Linking,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import { Linking, ScrollView, TouchableOpacity } from "react-native";
 import { formatDate } from "../../../utils/formatedDate";
 import { ProfileCard } from "../../components/ProfileCard";
-import SafeScreen from "../../components/SafeScreen";
+import { ActionRow } from "../../components/ui/ActionRaw";
+import ScreenWrapper from "../../components/ui/CustomHeader";
+import { Section } from "../../components/ui/CustomSection";
+import { InfoRow } from "../../components/ui/InfoRaw";
 import { useAuth } from "../../contexts/authContext";
 import { useCurrentUser } from "../../hooks/user/useUsers";
-import { accountStyles } from "../../styles/account.styles";
 import { ProfileStackParamList } from "../../types/navigation/profileStackType";
 
 export default function ProfileScreen() {
@@ -24,156 +21,82 @@ export default function ProfileScreen() {
     const formatedDate = formatDate(session?.user.created_at || "");
 
     console.log("user profile data:", user);
-
-    return (
-        <SafeScreen title="Profil">
-            <ScrollView
-                contentContainerStyle={accountStyles.content}
-                style={{ flex: 1 }}
-                showsVerticalScrollIndicator={false}
+    const right_buttons = (
+        <>
+            <TouchableOpacity
+                onPress={() => navigation.navigate("NotificationsScreen")}
             >
+                <FeatherIcon name="bell" size={22} color="#1D2A32" />
+            </TouchableOpacity>
+            <TouchableOpacity
+                onPress={() => navigation.navigate("SettingsScreen")}
+            >
+                <FeatherIcon name="settings" size={22} color="#1D2A32" />
+            </TouchableOpacity>
+        </>
+    );
+    return (
+        <ScreenWrapper title="Mon profil" rightActions={right_buttons}>
+            <ScrollView showsVerticalScrollIndicator={false}>
+                {/* Carte utilisateur */}
                 <ProfileCard />
 
-                {/* Section Informations */}
-                <View style={accountStyles.section}>
-                    <Text style={accountStyles.sectionTitle}>Informations</Text>
-                    <View style={accountStyles.sectionBody}>
-                        <View style={accountStyles.row}>
-                            <Text style={accountStyles.rowLabel}>
-                                Centre Amazon
-                            </Text>
-                            <Text style={accountStyles.rowValue}>
-                                {user?.fc.name}
-                            </Text>
-                        </View>
-                        <View style={accountStyles.row}>
-                            <Text style={accountStyles.rowLabel}>Équipe</Text>
-                            <Text style={accountStyles.rowValue}>
-                                {user?.team}
-                            </Text>
-                        </View>
-                        <View style={accountStyles.row}>
-                            <Text style={accountStyles.rowLabel}>Contrat</Text>
-                            <Text style={accountStyles.rowValue}>
-                                {user?.contract}
-                            </Text>
-                        </View>
-                        <View style={accountStyles.row}>
-                            <Text style={accountStyles.rowLabel}>Ville</Text>
-                            <Text style={accountStyles.rowValue}>
-                                {user?.city}
-                            </Text>
-                        </View>
-                        <View style={accountStyles.row}>
-                            <Text style={accountStyles.rowLabel}>
-                                Date d'inscription
-                            </Text>
-                            <Text style={accountStyles.rowValue}>
-                                {formatedDate}
-                            </Text>
-                        </View>
-                    </View>
-                </View>
+                {/* 🔹 Informations */}
+                <Section title="Informations">
+                    <InfoRow label="Centre Amazon" value={user?.fc.name} />
+                    <InfoRow label="Équipe" value={user?.team} />
+                    <InfoRow label="Contrat" value={user?.contract} />
+                    <InfoRow label="Ville" value={user?.city} />
+                    <InfoRow
+                        label="Membre depuis"
+                        value={formatedDate}
+                        isLast
+                    />
+                </Section>
 
-                {/* Section Actions */}
-                <View style={accountStyles.section}>
-                    <Text style={accountStyles.sectionTitle}>Actions</Text>
-                    <View style={accountStyles.sectionBody}>
-                        <TouchableOpacity
-                            style={accountStyles.row}
-                            onPress={() =>
-                                navigation.navigate("FavoriteScreen")
-                            }
-                        >
-                            <Text style={accountStyles.rowLabel}>
-                                Mes favoris
-                            </Text>
-                            <FeatherIcon
-                                name="chevron-right"
-                                size={20}
-                                color="#bcbcbc"
-                            />
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={accountStyles.row}
-                            onPress={() =>
-                                navigation.navigate("CandidateProfile")
-                            }
-                        >
-                            <Text style={accountStyles.rowLabel}>
-                                Mes candidatures
-                            </Text>
-                            <FeatherIcon
-                                name="chevron-right"
-                                size={20}
-                                color="#bcbcbc"
-                            />
-                        </TouchableOpacity>
-                    </View>
-                </View>
+                {/* 🔹 Actions */}
+                <Section title="Actions">
+                    <ActionRow
+                        label="Mes favoris"
+                        onPress={() => navigation.navigate("FavoriteScreen")}
+                    />
+                    <ActionRow
+                        label="Mes candidatures"
+                        onPress={() => navigation.navigate("CandidateProfile")}
+                        isLast
+                    />
+                </Section>
 
-                {/* 🧾 Section Mentions légales */}
-                <View style={accountStyles.section}>
-                    <Text style={accountStyles.sectionTitle}>
-                        Mentions légales
-                    </Text>
-                    <View style={accountStyles.sectionBody}>
-                        <TouchableOpacity
-                            style={accountStyles.row}
-                            onPress={() =>
-                                Linking.openURL(
-                                    "https://dimdev.notion.site/politique-de-confidentialite-coworkers-XXXXXXXXXXXX"
-                                )
-                            }
-                        >
-                            <Text style={accountStyles.rowLabel}>
-                                Politique de confidentialité
-                            </Text>
-                            <FeatherIcon
-                                name="external-link"
-                                size={18}
-                                color="#bcbcbc"
-                            />
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={accountStyles.row}
-                            onPress={() =>
-                                Linking.openURL(
-                                    "https://dimdev.notion.site/conditions-utilisation-coworkers-XXXXXXXXXXXX"
-                                )
-                            }
-                        >
-                            <Text style={accountStyles.rowLabel}>
-                                Conditions d’utilisation
-                            </Text>
-                            <FeatherIcon
-                                name="external-link"
-                                size={18}
-                                color="#bcbcbc"
-                            />
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={accountStyles.row}
-                            onPress={() =>
-                                Linking.openURL(
-                                    "mailto:vandevdimitri@gmail.com"
-                                )
-                            }
-                        >
-                            <Text style={accountStyles.rowLabel}>
-                                Contacter le développeur
-                            </Text>
-                            <FeatherIcon
-                                name="mail"
-                                size={18}
-                                color="#bcbcbc"
-                            />
-                        </TouchableOpacity>
-                    </View>
-                </View>
+                {/* 🔹 Mentions légales */}
+                <Section title="Informations légales">
+                    <ActionRow
+                        label="Politique de confidentialité"
+                        icon="external-link"
+                        onPress={() =>
+                            Linking.openURL(
+                                "https://dimdev.notion.site/politique-de-confidentialite-coworkers-XXXXXXXXXXXX"
+                            )
+                        }
+                    />
+                    <ActionRow
+                        label="Conditions d’utilisation"
+                        icon="external-link"
+                        onPress={() =>
+                            Linking.openURL(
+                                "https://dimdev.notion.site/conditions-utilisation-coworkers-XXXXXXXXXXXX"
+                            )
+                        }
+                    />
+                    <ActionRow
+                        label="Contacter le développeur"
+                        icon="mail"
+                        onPress={() =>
+                            Linking.openURL("mailto:vandevdimitri@gmail.com")
+                        }
+                        isLast
+                    />
+                </Section>
             </ScrollView>
-        </SafeScreen>
+        </ScreenWrapper>
     );
 }

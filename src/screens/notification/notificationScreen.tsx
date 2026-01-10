@@ -2,6 +2,7 @@ import React from "react";
 import {
     Alert,
     FlatList,
+    Image,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -10,6 +11,7 @@ import {
 import { supabase } from "../../../utils/supabase";
 import { addUserConversation } from "../../api/messaging/addUserConversation";
 import SafeScreen from "../../components/SafeScreen";
+import ScreenWrapper from "../../components/ui/CustomHeader";
 import { useAuth } from "../../contexts/authContext";
 import { useAcceptRequest } from "../../hooks/candidate/useCandidate";
 import {
@@ -106,12 +108,49 @@ export default function NotificationsScreen() {
 
     const renderItem = ({ item }: { item: NotificationResponse }) => {
         const isPending = item.status === StatusNotification.PENDING;
-        console.log("render item", item);
 
         return (
-            <View style={[styles.card, isPending && styles.cardHighlight]}>
+            <View style={styles.card}>
+                {/* Header notif */}
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <Image
+                        source={{
+                            uri:
+                                item.userAvatar ??
+                                "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y",
+                        }}
+                        style={{
+                            width: 42,
+                            height: 42,
+                            borderRadius: 21,
+                            marginRight: 12,
+                        }}
+                    />
+
+                    <View style={{ flex: 1 }}>
+                        <Text style={styles.name}>
+                            {item.userFirstname} {item.userLastname}
+                        </Text>
+                        <Text style={styles.title} numberOfLines={1}>
+                            {item.annonceTitle}
+                        </Text>
+                    </View>
+
+                    {isPending ? (
+                        <View style={styles.badgePending}>
+                            <Text style={styles.badgeText}>Demande</Text>
+                        </View>
+                    ) : (
+                        <View style={styles.badgePending}>
+                            <Text style={styles.badgeText}>Information</Text>
+                        </View>
+                    )}
+                </View>
+
+                {/* Message */}
                 <Text style={styles.message}>{item.message}</Text>
 
+                {/* Date */}
                 <Text style={styles.date}>
                     {new Date(item.created_at).toLocaleString("fr-FR", {
                         dateStyle: "short",
@@ -119,10 +158,10 @@ export default function NotificationsScreen() {
                     })}
                 </Text>
 
+                {/* Actions */}
                 {isPending && (
                     <View style={styles.actions}>
                         <TouchableOpacity
-                            // disabled={isPending}
                             style={[styles.actionBtn, styles.accept]}
                             onPress={() =>
                                 onAccept(item.annonceId, item.userId)
@@ -144,14 +183,15 @@ export default function NotificationsScreen() {
     };
 
     return (
-        <SafeScreen backBtn title="Notifications">
+        <ScreenWrapper back title="Notifications">
             <FlatList
                 data={notifications}
                 keyExtractor={(item) => item.id}
                 renderItem={renderItem}
-                contentContainerStyle={{ paddingBottom: 20 }}
+                contentContainerStyle={{ paddingBottom: 32 }}
+                showsVerticalScrollIndicator={false}
             />
-        </SafeScreen>
+        </ScreenWrapper>
     );
 }
 
@@ -159,35 +199,53 @@ export default function NotificationsScreen() {
 
 const styles = StyleSheet.create({
     card: {
-        backgroundColor: "#F9FAFB",
+        backgroundColor: "#fff",
+        borderRadius: 18,
         padding: 16,
-        borderRadius: 12,
-        marginBottom: 12,
-        borderWidth: 1,
-        borderColor: "#E5E7EB",
+        marginBottom: 16,
+        shadowColor: "#000",
+        shadowOpacity: 0.05,
+        shadowRadius: 6,
     },
-    cardHighlight: {
-        borderColor: "#10B981",
-        backgroundColor: "#ECFDF5",
+    name: {
+        fontSize: 15,
+        fontWeight: "700",
+        color: "#111827",
+    },
+    title: {
+        fontSize: 13,
+        color: "#6b7280",
     },
     message: {
-        fontSize: 16,
+        marginTop: 12,
+        fontSize: 15,
         color: "#111827",
-        marginBottom: 6,
     },
     date: {
-        fontSize: 13,
-        color: "#6B7280",
+        marginTop: 6,
+        fontSize: 12,
+        color: "#9ca3af",
+    },
+    badgePending: {
+        backgroundColor: "#FEF3C7",
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 999,
+    },
+    badgeText: {
+        fontSize: 11,
+        fontWeight: "700",
+        color: "#92400E",
     },
     actions: {
         flexDirection: "row",
-        marginTop: 12,
-        gap: 8,
+        gap: 12,
+        marginTop: 16,
     },
     actionBtn: {
         flex: 1,
-        padding: 10,
-        borderRadius: 10,
+        paddingVertical: 14,
+        borderRadius: 14,
         alignItems: "center",
     },
     accept: {
@@ -198,6 +256,6 @@ const styles = StyleSheet.create({
     },
     actionText: {
         color: "#fff",
-        fontWeight: "600",
+        fontWeight: "700",
     },
 });

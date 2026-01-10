@@ -12,7 +12,7 @@ type ScreenWrapperProps = {
     back?: boolean;
     children: ReactNode;
     style?: object;
-    rightButtons?: ReactNode; // boutons optionnels à droite
+    rightActions?: ReactNode;
 };
 
 export default function ScreenWrapper({
@@ -20,7 +20,7 @@ export default function ScreenWrapper({
     back = false,
     children,
     style = {},
-    rightButtons,
+    rightActions,
 }: ScreenWrapperProps) {
     const navigation = useNavigation();
     const insets = useSafeAreaInsets();
@@ -29,6 +29,7 @@ export default function ScreenWrapper({
         <SafeAreaView
             style={{
                 flex: 1,
+                // backgroundColor: "#0977e6ff",
                 backgroundColor: "#F9FAFB",
                 paddingTop: 0,
                 paddingBottom: -insets.bottom,
@@ -84,24 +85,32 @@ export default function ScreenWrapper({
                     </Text>
 
                     {/* Boutons à droite */}
-                    {rightButtons && (
+                    {rightActions && (
                         <View
                             style={{
                                 position: "absolute",
                                 right: 16,
                                 top: "50%",
                                 flexDirection: "row",
-                                alignItems: "center",
+                                gap: 16,
                             }}
                         >
-                            {rightButtons}
+                            {rightActions}
                         </View>
                     )}
                 </View>
             )}
 
             {/* Contenu de l’écran */}
-            <View style={{ flex: 1, padding: 16, ...style }}>{children}</View>
+            <View
+                style={{
+                    flex: 1,
+                    paddingHorizontal: 16,
+                    ...style,
+                }}
+            >
+                {children}
+            </View>
         </SafeAreaView>
     );
 }

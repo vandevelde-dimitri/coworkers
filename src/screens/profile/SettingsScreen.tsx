@@ -1,242 +1,197 @@
 import FeatherIcon from "@expo/vector-icons/Feather";
-import { useNavigation } from "@react-navigation/native";
-import React, { useState } from "react";
-import { ScrollView, Switch, Text, TouchableOpacity, View } from "react-native";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import * as yup from "yup";
 import { supabase } from "../../../utils/supabase";
-import { ProfileCard } from "../../components/ProfileCard";
-import SafeScreen from "../../components/SafeScreen";
-import { accountStyles } from "../../styles/account.styles";
+import { onUpdateEmail } from "../../../utils/updateEmail";
+import { onUpdatePassword } from "../../../utils/updatePassword";
+import ScreenWrapper from "../../components/ui/CustomHeader";
+import { Section } from "../../components/ui/CustomSection";
+import { FormInput } from "../../components/ui/FormInput";
+import { useAuth } from "../../contexts/authContext";
+import { ProfileStackParamList } from "../../types/navigation/profileStackType";
 
 export default function SettingsScreen() {
-    const navigation = useNavigation();
+    const { session } = useAuth();
+    const user = session?.user;
+    const navigation = useNavigation<NavigationProp<ProfileStackParamList>>();
 
-    const onLogout = async () => {
-        const { error } = await supabase.auth.signOut();
-        if (error) console.error("Error signing out:", error.message);
-    };
-
-    const [form, setForm] = useState({
-        emailNotifications: true,
-        pushNotifications: false,
-        vacationNotification: false,
-        to_convey: true,
+    const emailSchema = yup.object({
+        email: yup.string().email("Email invalide").required("Email requis"),
     });
 
+    const passwordSchema = yup.object({
+        password: yup
+            .string()
+            .min(6, "6 caractères minimum")
+            .required("Mot de passe requis"),
+    });
+
+    const emailForm = useForm({
+        resolver: yupResolver(emailSchema),
+        defaultValues: {
+            email: user?.email ?? "",
+        },
+    });
+
+    const passwordForm = useForm({
+        resolver: yupResolver(passwordSchema),
+        defaultValues: {
+            password: "",
+        },
+    });
+
+    const logout = async () => {
+        await supabase.auth.signOut();
+    };
+
+    /* ===================== UI ===================== */
+
     return (
-        <SafeScreen backBtn title="Paramètres">
-            <View style={accountStyles.container}>
-                <ScrollView
-                    contentContainerStyle={accountStyles.content}
-                    showsVerticalScrollIndicator={false}
-                    style={{ flex: 1 }}
-                >
-                    <ProfileCard />
-
-                    <View style={accountStyles.section}>
-                        <Text style={accountStyles.sectionTitle}>
-                            Mon compte
+        <ScreenWrapper back title="Paramètres">
+            <ScrollView showsVerticalScrollIndicator={false}>
+                {/* SECTION PROFIL */}
+                <Section title="Informations du profil">
+                    <TouchableOpacity
+                        style={{
+                            backgroundColor: "#fff",
+                            padding: 16,
+                            borderRadius: 18,
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 12,
+                        }}
+                        onPress={() => navigation.navigate("EditProfileScreen")}
+                    >
+                        <FeatherIcon
+                            name={"airplay"}
+                            size={18}
+                            color="#111827"
+                        />
+                        <Text
+                            style={{
+                                flex: 1,
+                                fontSize: 15,
+                                fontWeight: "600",
+                            }}
+                        >
+                            Modifier mon profil
                         </Text>
-                        <View style={accountStyles.sectionBody}>
-                            <TouchableOpacity
-                                style={accountStyles.row}
-                                onPress={() =>
-                                    navigation.navigate("EditProfileScreen")
-                                }
+                        <FeatherIcon
+                            name="chevron-right"
+                            size={18}
+                            color="#9ca3af"
+                        />
+                    </TouchableOpacity>
+                </Section>
+
+                {/* SECTION SÉCURITÉ */}
+                <Section title="Sécurité">
+                    {/* EMAIL */}
+                    <View
+                        style={{
+                            backgroundColor: "#fff",
+                            borderRadius: 18,
+                            padding: 16,
+                            marginBottom: 16,
+                        }}
+                    >
+                        <FormInput
+                            name="email"
+                            control={emailForm.control}
+                            label="Email"
+                            placeholder="ex: prenom.nom@amazon.com"
+                            type="text"
+                        />
+                        <TouchableOpacity
+                            onPress={emailForm.handleSubmit(onUpdateEmail)}
+                            disabled={emailForm.formState.isSubmitting}
+                            style={{
+                                backgroundColor: "#2563eb",
+                                padding: 16,
+                                borderRadius: 16,
+                                marginBottom: 10,
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    color: "#fff",
+                                    textAlign: "center",
+                                    fontWeight: "600",
+                                }}
                             >
-                                <Text style={accountStyles.rowLabel}>
-                                    Modifier mes informations
-                                </Text>
-                                <FeatherIcon
-                                    name="chevron-right"
-                                    size={20}
-                                    color="#bcbcbc"
-                                />
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={accountStyles.row}
-                                onPress={() =>
-                                    navigation.navigate(
-                                        "EmailRegistrationScreen"
-                                    )
-                                }
-                            >
-                                <Text style={accountStyles.rowLabel}>
-                                    Changer l'email
-                                </Text>
-                                <FeatherIcon
-                                    name="chevron-right"
-                                    size={20}
-                                    color="#bcbcbc"
-                                />
-                            </TouchableOpacity>
-                            <TouchableOpacity style={accountStyles.row}>
-                                <Text style={accountStyles.rowLabel}>
-                                    Changer le mot de passe
-                                </Text>
-                                <FeatherIcon
-                                    name="chevron-right"
-                                    size={20}
-                                    color="#bcbcbc"
-                                />
-                            </TouchableOpacity>
-                        </View>
+                                Modifier l’email
+                            </Text>
+                        </TouchableOpacity>
                     </View>
 
-                    <View style={accountStyles.section}>
-                        <Text style={accountStyles.sectionTitle}>
-                            Notifications
+                    {/* PASSWORD */}
+                    <View
+                        style={{
+                            backgroundColor: "#fff",
+                            borderRadius: 18,
+                            padding: 16,
+                            marginBottom: 16,
+                        }}
+                    >
+                        <FormInput
+                            name="password"
+                            control={passwordForm.control}
+                            label="Nouveau mot de passe"
+                            placeholder="••••••••"
+                            type="text"
+                        />
+                        <TouchableOpacity
+                            onPress={passwordForm.handleSubmit(
+                                onUpdatePassword
+                            )}
+                            disabled={passwordForm.formState.isSubmitting}
+                            style={{
+                                backgroundColor: "#2563eb",
+                                padding: 16,
+                                borderRadius: 16,
+                                marginBottom: 10,
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    color: "#fff",
+                                    textAlign: "center",
+                                    fontWeight: "600",
+                                }}
+                            >
+                                Changer le mot de passe
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                </Section>
+
+                {/* SECTION DANGER */}
+                <Section title="Session">
+                    <TouchableOpacity
+                        style={{
+                            backgroundColor: "#f70505ff",
+                            padding: 16,
+                            borderRadius: 16,
+                            marginBottom: 10,
+                        }}
+                        onPress={logout}
+                    >
+                        <Text
+                            style={{
+                                color: "#fff",
+                                textAlign: "center",
+                                fontWeight: "600",
+                            }}
+                        >
+                            Se déconnecter
                         </Text>
-                        <View style={accountStyles.sectionBody}>
-                            <TouchableOpacity style={accountStyles.row}>
-                                <Text style={accountStyles.rowLabel}>
-                                    Notifications push
-                                </Text>
-
-                                <Switch
-                                    thumbColor={
-                                        form.pushNotifications
-                                            ? "#10B981"
-                                            : "#f4f3f4"
-                                    }
-                                    trackColor={{
-                                        false: "#76757780",
-                                        true: "#10b98186",
-                                    }}
-                                    onValueChange={(pushNotifications) =>
-                                        setForm({ ...form, pushNotifications })
-                                    }
-                                    style={{
-                                        transform: [
-                                            { scaleX: 0.95 },
-                                            { scaleY: 0.95 },
-                                        ],
-                                    }}
-                                    value={form.pushNotifications}
-                                />
-                            </TouchableOpacity>
-                            <TouchableOpacity style={accountStyles.row}>
-                                <Text style={accountStyles.rowLabel}>
-                                    Notifications email
-                                </Text>
-                                <Switch
-                                    thumbColor={
-                                        form.emailNotifications
-                                            ? "#10B981"
-                                            : "#f4f3f4"
-                                    }
-                                    trackColor={{
-                                        false: "#76757780",
-                                        true: "#10b98186",
-                                    }}
-                                    onValueChange={(emailNotifications) =>
-                                        setForm({ ...form, emailNotifications })
-                                    }
-                                    style={{
-                                        transform: [
-                                            { scaleX: 0.95 },
-                                            { scaleY: 0.95 },
-                                        ],
-                                    }}
-                                    value={form.emailNotifications}
-                                />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-
-                    <View style={accountStyles.section}>
-                        <Text style={accountStyles.sectionTitle}>
-                            Disponibilité
-                        </Text>
-                        <View style={accountStyles.sectionBody}>
-                            <TouchableOpacity style={accountStyles.row}>
-                                <Text style={accountStyles.rowLabel}>
-                                    Mode vacances
-                                </Text>
-                                <Switch
-                                    thumbColor={
-                                        form.vacationNotification
-                                            ? "#10B981"
-                                            : "#f4f3f4"
-                                    }
-                                    trackColor={{
-                                        false: "#76757780",
-                                        true: "#10b98186",
-                                    }}
-                                    onValueChange={(vacationNotification) =>
-                                        setForm({
-                                            ...form,
-                                            vacationNotification,
-                                        })
-                                    }
-                                    style={{
-                                        transform: [
-                                            { scaleX: 0.95 },
-                                            { scaleY: 0.95 },
-                                        ],
-                                    }}
-                                    value={form.vacationNotification}
-                                />
-                            </TouchableOpacity>
-                            <TouchableOpacity style={accountStyles.row}>
-                                <Text style={accountStyles.rowLabel}>
-                                    Vehiculer
-                                </Text>
-                                <Switch
-                                    thumbColor={
-                                        form.to_convey ? "#10B981" : "#f4f3f4"
-                                    }
-                                    trackColor={{
-                                        false: "#76757780",
-                                        true: "#10b98186",
-                                    }}
-                                    onValueChange={(to_convey) =>
-                                        setForm({
-                                            ...form,
-                                            to_convey,
-                                        })
-                                    }
-                                    style={{
-                                        transform: [
-                                            { scaleX: 0.95 },
-                                            { scaleY: 0.95 },
-                                        ],
-                                    }}
-                                    value={form.to_convey}
-                                />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-
-                    <View style={accountStyles.section}>
-                        <Text style={accountStyles.sectionTitle}>Sécurité</Text>
-                        <View style={accountStyles.sectionBody}>
-                            <TouchableOpacity
-                                style={accountStyles.row}
-                                onPress={onLogout}
-                            >
-                                <Text
-                                    style={[
-                                        accountStyles.rowLabel,
-                                        { color: "red" },
-                                    ]}
-                                >
-                                    Se déconnecter
-                                </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={accountStyles.row}>
-                                <Text
-                                    style={[
-                                        accountStyles.rowLabel,
-                                        { color: "red" },
-                                    ]}
-                                >
-                                    Supprimer mon compte
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </ScrollView>
-            </View>
-        </SafeScreen>
+                    </TouchableOpacity>
+                </Section>
+            </ScrollView>
+        </ScreenWrapper>
     );
 }

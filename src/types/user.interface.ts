@@ -18,3 +18,12 @@ export interface authUserUpdate {
     email?: string;
     password?: string;
 }
+
+export interface EditProfileFormValues {
+    firstname: string;
+    lastname: string;
+    city: string;
+    contract: Contract;
+    team: Team;
+    fc_id: string;
+}
