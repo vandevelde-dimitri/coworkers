@@ -1,8 +1,13 @@
 import { Text, View } from "react-native";
 
-export function Section({ title, children }) {
+type SectionProps = {
+    title?: string;
+    children: React.ReactNode;
+};
+
+export function Section({ title, children }: SectionProps) {
     return (
-        <View style={{ marginTop: 24 }}>
+        <View style={{ marginTop: 24, width: "100%" }}>
             <Text
                 style={{
                     fontSize: 16,

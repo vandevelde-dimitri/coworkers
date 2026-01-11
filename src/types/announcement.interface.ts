@@ -40,6 +40,8 @@ export interface User {
     firstname: string;
     image_profile: string | null;
     city: string;
+    avatar_updated_at: string | number;
+    contract: Contract;
 }
 
 export interface ParticipantRequest {

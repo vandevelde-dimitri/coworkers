@@ -2,7 +2,6 @@ import React from "react";
 import {
     Alert,
     FlatList,
-    Image,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -12,6 +11,7 @@ import { supabase } from "../../../utils/supabase";
 import { addUserConversation } from "../../api/messaging/addUserConversation";
 import SafeScreen from "../../components/SafeScreen";
 import ScreenWrapper from "../../components/ui/CustomHeader";
+import SmartImage from "../../components/ui/SmartImage";
 import { useAuth } from "../../contexts/authContext";
 import { useAcceptRequest } from "../../hooks/candidate/useCandidate";
 import {
@@ -113,18 +113,23 @@ export default function NotificationsScreen() {
             <View style={styles.card}>
                 {/* Header notif */}
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <Image
-                        source={{
-                            uri:
-                                item.userAvatar ??
-                                "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y",
-                        }}
-                        style={{
-                            width: 42,
-                            height: 42,
-                            borderRadius: 21,
-                            marginRight: 12,
-                        }}
+                    <SmartImage
+                        userData={item}
+                        // source={{
+                        //     uri:
+                        //         getAvatarUrl(
+                        //             item.userAvatar,
+                        //             user.avatar_updated_at
+                        //         ) ||
+                        //         item.userAvatar ||
+                        //         "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y",
+                        // }}
+                        // style={{
+                        //     width: 80,
+                        //     height: 80,
+                        //     borderRadius: 9999,
+                        //     marginRight: 12,
+                        // }}
                     />
 
                     <View style={{ flex: 1 }}>

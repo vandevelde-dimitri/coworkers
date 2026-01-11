@@ -1,12 +1,13 @@
 import React from "react";
 import { Text, View } from "react-native";
-import { Avatar } from "./ui/Avatar";
+import SmartImage from "./ui/SmartImage";
 
 type Message = {
     content: string;
     created_at: string;
     isMine: boolean;
     avatar?: string | null;
+    update_avatar?: string | null;
 };
 
 type Props = {
@@ -14,10 +15,11 @@ type Props = {
 };
 
 export default function MessageBubble({ message }: Props) {
-    const { isMine, content, created_at, avatar } = message;
-    const avatarUri =
-        avatar ??
-        "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
+    const { isMine, content, created_at, avatar, update_avatar, contract } =
+        message;
+
+    console.log("message => ", message);
+
     return (
         <View
             style={{
@@ -26,7 +28,16 @@ export default function MessageBubble({ message }: Props) {
                 marginBottom: 12,
             }}
         >
-            {!isMine && <Avatar uri={avatarUri} />}
+            {!isMine && (
+                <SmartImage
+                    size={44}
+                    userData={{
+                        image_profile: avatar,
+                        avatar_updated_at: update_avatar,
+                        contract: contract,
+                    }}
+                />
+            )}
 
             <View
                 style={{

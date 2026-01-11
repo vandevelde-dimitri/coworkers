@@ -11,10 +11,10 @@ import {
 } from "react-native";
 import { formatDate } from "../../../utils/formatedDate";
 import SafeScreen from "../../components/SafeScreen";
-import { Avatar } from "../../components/ui/Avatar";
 import { Card } from "../../components/ui/Card";
 import ScreenWrapper from "../../components/ui/CustomHeader";
 import RemoveParticipantButton from "../../components/ui/RemoveParticipantButton";
+import SmartImage from "../../components/ui/SmartImage";
 import {
     useAnnouncementCurrentUser,
     useDeleteAnnouncement,
@@ -147,7 +147,7 @@ export default function TravelScreen() {
                     <View
                         style={{ flexDirection: "row", alignItems: "center" }}
                     >
-                        <Avatar uri={announcement.owner.image_profile} />
+                        <SmartImage size={44} userData={announcement.owner} />
                         <View style={{ marginLeft: 12 }}>
                             <Text style={{ fontWeight: "600" }}>
                                 {announcement.owner.firstname}
@@ -190,7 +190,10 @@ export default function TravelScreen() {
                                             alignItems: "center",
                                         }}
                                     >
-                                        <Avatar uri={p.users.image_profile} />
+                                        <SmartImage
+                                            size={44}
+                                            userData={p.users}
+                                        />
                                         <View style={{ marginLeft: 12 }}>
                                             <Text style={{ fontWeight: "500" }}>
                                                 {p.users.firstname}

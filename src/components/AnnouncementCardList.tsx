@@ -2,8 +2,8 @@ import { useNavigation } from "@react-navigation/native";
 import { Text, TouchableOpacity, View } from "react-native";
 import { formatDate } from "../../utils/formatedDate";
 import { AnnouncementWithUser } from "../types/announcement.interface";
-import { Avatar } from "./ui/Avatar";
 import { Card } from "./ui/Card";
+import SmartImage from "./ui/SmartImage";
 
 type AnnouncementCardListProps = {
     data: AnnouncementWithUser;
@@ -16,7 +16,7 @@ export default function AnnouncementCardList({
     const date_end_formated = formatDate(data.date_end);
     const navigation = useNavigation();
 
-    // console.log("data", data);
+    console.log("data", data);
 
     return (
         <Card>
@@ -27,7 +27,7 @@ export default function AnnouncementCardList({
                     marginBottom: 8,
                 }}
             >
-                <Avatar uri={data.image_profile ?? ""} />
+                <SmartImage size={44} userData={data} />
                 <View style={{ marginLeft: 12 }}>
                     <Text style={{ fontWeight: "600" }}>{data.user_name}</Text>
                     <Text style={{ fontSize: 12, color: "#6b7280" }}>

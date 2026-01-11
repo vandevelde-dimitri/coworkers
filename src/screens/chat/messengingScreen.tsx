@@ -34,7 +34,9 @@ export default function ChatScreen({ route }: any) {
         created_at,
         users (
           id,
-          image_profile
+          image_profile, 
+          avatar_updated_at,
+            contract
         )
       `
             )
@@ -54,6 +56,8 @@ export default function ChatScreen({ route }: any) {
                     created_at: m.created_at,
                     isMine: m.sender_id === session?.user.id,
                     avatar: m.users?.image_profile ?? null,
+                    update_avatar: m.users?.avatar_updated_at ?? null,
+                    contract: m.users?.contract,
                 }))
             );
         }

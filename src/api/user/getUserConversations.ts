@@ -25,7 +25,9 @@ export async function getUserConversationsPreview(
         users:user_id (
           image_profile,
           firstname,
-          lastname
+          lastname,
+          contract,
+            avatar_updated_at
         )
       ),
       messages (
@@ -59,6 +61,8 @@ export async function getUserConversationsPreview(
             lastname: conv?.annonces?.users?.lastname ?? null,
             last_message: lastMessage?.content ?? null,
             last_message_time: lastMessage?.created_at ?? null,
+            avatar_updated_at: conv?.annonces?.users?.avatar_updated_at ?? null,
+            contract: conv?.annonces?.users?.contract ?? null,
         };
     });
 }

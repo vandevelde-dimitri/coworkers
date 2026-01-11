@@ -17,19 +17,17 @@ export function useCurrentUser() {
 
 export function useUploadAvatar() {
     const queryClient = useQueryClient();
-
+    const { session } = useAuth();
     return useMutation({
-        mutationFn: ({
-            imageUri,
-            userId,
-        }: {
-            imageUri: string;
-            userId: string;
-        }) => uploadUserAvatar(imageUri, userId),
+        mutationFn: ({ imageUri }: { imageUri: string }) =>
+            uploadUserAvatar(imageUri),
 
         onSuccess: () => {
             // Met à jour le cache du user actuel
             queryClient.invalidateQueries({ queryKey: ["current-user"] });
+            queryClient.invalidateQueries({
+                queryKey: ["currentUser", session?.user?.id],
+            });
         },
     });
 }

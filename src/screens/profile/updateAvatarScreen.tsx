@@ -1,30 +1,33 @@
 import FeatherIcon from "@expo/vector-icons/Feather";
-import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
-import React, { useState } from "react";
-import { Alert, Image, Text, TouchableOpacity, View } from "react-native";
+import React from "react";
+import { Alert, Text, TouchableOpacity, View } from "react-native";
+import { convertToWebp } from "../../../utils/convertToWebp";
+import { requestPermission } from "../../../utils/permission";
 import { supabase } from "../../../utils/supabase";
+import { uriToArrayBuffer } from "../../../utils/uriToArrayBuffer";
 import ScreenWrapper from "../../components/ui/CustomHeader";
+import SmartImage from "../../components/ui/SmartImage";
 import { useAuth } from "../../contexts/authContext";
+import { useCurrentUser, useUploadAvatar } from "../../hooks/user/useUsers";
 
 export default function UpdateAvatarScreen() {
     const { session } = useAuth();
+    const { data: user } = useCurrentUser();
+    const { mutate: updateAvatar } = useUploadAvatar();
+    if (!user) return null;
     const userId = session?.user.id;
 
-    const [loading, setLoading] = useState(false);
-    const avatarUrl = session?.user?.user_metadata?.avatar_url ?? null;
+    const avatarUrl = user?.image_profile ?? null;
 
     /* ===================== PICK IMAGE ===================== */
 
     const pickImage = async (fromCamera: boolean) => {
-        const permission = fromCamera
-            ? await ImagePicker.requestCameraPermissionsAsync()
-            : await ImagePicker.requestMediaLibraryPermissionsAsync();
+        const canUseCamera = await requestPermission("camera");
+        if (!canUseCamera) return;
 
-        if (!permission.granted) {
-            Alert.alert("Permission refusée");
-            return;
-        }
+        const canUseGallery = await requestPermission("mediaLibrary");
+        if (!canUseGallery) return;
 
         const result = fromCamera
             ? await ImagePicker.launchCameraAsync({
@@ -40,49 +43,39 @@ export default function UpdateAvatarScreen() {
 
         if (result.canceled) return;
 
-        uploadAvatar(result.assets[0].uri);
+        const imageWebp = await convertToWebp(result.assets[0].uri);
+        uploadAvatar(imageWebp);
     };
 
     /* ===================== UPLOAD ===================== */
 
     const uploadAvatar = async (uri: string) => {
+        console.log("Uploading avatar:", uri);
+        const fileExt = "webp";
+        const filePath = `${user.id}/avatar.${fileExt}`;
+        const arrayBuffer = await uriToArrayBuffer(uri);
         try {
-            setLoading(true);
-
-            const fileExt = uri.split(".").pop();
-            const filePath = `${userId}.${fileExt}`;
-
-            const fileBase64 = await FileSystem.readAsStringAsync(uri, {
-                encoding: FileSystem.EncodingType.Base64,
-            });
-
-            const buffer = Uint8Array.from(atob(fileBase64), (c) =>
-                c.charCodeAt(0)
-            );
-
             const { error: uploadError } = await supabase.storage
                 .from("avatars")
-                .upload(filePath, buffer, {
+                .upload(filePath, arrayBuffer, {
                     upsert: true,
-                    contentType: `image/${fileExt}`,
+                    contentType: `image/webp`,
                 });
 
             if (uploadError) throw uploadError;
 
-            const { data } = supabase.storage
+            const { data: publicUrlData } = supabase.storage
                 .from("avatars")
                 .getPublicUrl(filePath);
 
-            await supabase
-                .from("profiles")
-                .update({ avatar_url: data.publicUrl })
-                .eq("id", userId);
+            console.log("Public URL:", publicUrlData.publicUrl);
+
+            updateAvatar({ imageUri: publicUrlData.publicUrl });
 
             Alert.alert("Succès", "Photo mise à jour");
         } catch (e: any) {
             Alert.alert("Erreur", e.message);
         } finally {
-            setLoading(false);
         }
     };
 
@@ -119,13 +112,15 @@ export default function UpdateAvatarScreen() {
     return (
         <ScreenWrapper back title="Photo de profil">
             <View style={{ alignItems: "center", marginTop: 24 }}>
-                <Image
-                    source={
-                        avatarUrl
-                            ? { uri: avatarUrl }
-                            : require("../../../assets/avatar-placeholder.png")
-                    }
-                    style={avatar}
+                <SmartImage
+                    userData={user}
+                    size={120}
+                    // source={
+                    //     avatarUrl
+                    //         ? { uri: avatarUrl }
+                    //         : require("../../../assets/avatar-placeholder.png")
+                    // }
+                    // style={avatar}
                 />
 
                 <View style={{ width: "100%", marginTop: 32 }}>

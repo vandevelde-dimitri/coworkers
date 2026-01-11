@@ -19,7 +19,9 @@ export async function getAnnouncementById(
   id,
     firstname,
     image_profile,
-    city
+    city,
+    avatar_updated_at,
+    contract
   ),
   participant_requests (
   id,
@@ -29,7 +31,9 @@ export async function getAnnouncementById(
       id,
       firstname,
       image_profile,
-      city
+      city,
+        avatar_updated_at,
+        contract
     )
   )
 `

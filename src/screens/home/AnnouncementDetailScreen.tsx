@@ -8,10 +8,10 @@ import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { isMyAnnouncement } from "../../../utils/announcementUtils";
 import ApplyButton from "../../components/ApplyButton";
 import FavoriteButton from "../../components/FavoriteButton";
-import { Avatar } from "../../components/ui/Avatar";
 import { Card } from "../../components/ui/Card";
 import ScreenWrapper from "../../components/ui/CustomHeader";
 import RemoveParticipantButton from "../../components/ui/RemoveParticipantButton";
+import SmartImage from "../../components/ui/SmartImage";
 import { useAuth } from "../../contexts/authContext";
 import {
     useAnnouncementById,
@@ -33,6 +33,7 @@ export default function AnnouncementDetailScreen() {
     if (error) return <Text>Error loading announcement</Text>;
     if (!announcement) return <Text>Annonce introuvable</Text>;
 
+    console.log("Détail screen => ", announcement.participant_requests);
     const handleEdit = () => {
         if (!isOwner) return;
         navigation.navigate("FormStack", {
@@ -90,7 +91,7 @@ export default function AnnouncementDetailScreen() {
                     <View
                         style={{ flexDirection: "row", alignItems: "center" }}
                     >
-                        <Avatar uri={announcement.owner.image_profile} />
+                        <SmartImage size={44} userData={announcement.owner} />
                         <View style={{ marginLeft: 12 }}>
                             <Text style={{ fontWeight: "600" }}>
                                 {announcement.owner.firstname}
@@ -117,46 +118,60 @@ export default function AnnouncementDetailScreen() {
                     ) : (
                         announcement.participant_requests
                             .filter((p) => p.status === "accepted")
-                            .map((p) => (
-                                <View
-                                    key={p.user_id}
-                                    style={{
-                                        flexDirection: "row",
-                                        alignItems: "center",
-                                        justifyContent: "space-between",
-                                        marginBottom: 12,
-                                    }}
-                                >
-                                    <View
-                                        style={{
-                                            flexDirection: "row",
-                                            alignItems: "center",
-                                        }}
-                                    >
-                                        <Avatar uri={p.users.image_profile} />
-                                        <View style={{ marginLeft: 12 }}>
-                                            <Text style={{ fontWeight: "500" }}>
-                                                {p.users.firstname}
-                                            </Text>
-                                            <Text
+                            .map(
+                                (p) => (
+                                    console.log("participant => ", p.users),
+                                    (
+                                        <View
+                                            key={p.user_id}
+                                            style={{
+                                                flexDirection: "row",
+                                                alignItems: "center",
+                                                justifyContent: "space-between",
+                                                marginBottom: 12,
+                                            }}
+                                        >
+                                            <View
                                                 style={{
-                                                    fontSize: 12,
-                                                    color: "#6b7280",
+                                                    flexDirection: "row",
+                                                    alignItems: "center",
                                                 }}
                                             >
-                                                {p.users.city}
-                                            </Text>
-                                        </View>
-                                    </View>
+                                                <SmartImage
+                                                    size={44}
+                                                    userData={p.users}
+                                                />
+                                                <View
+                                                    style={{ marginLeft: 12 }}
+                                                >
+                                                    <Text
+                                                        style={{
+                                                            fontWeight: "500",
+                                                        }}
+                                                    >
+                                                        {p.users.firstname}
+                                                    </Text>
+                                                    <Text
+                                                        style={{
+                                                            fontSize: 12,
+                                                            color: "#6b7280",
+                                                        }}
+                                                    >
+                                                        {p.users.city}
+                                                    </Text>
+                                                </View>
+                                            </View>
 
-                                    {isOwner && (
-                                        <RemoveParticipantButton
-                                            annonce={announcement}
-                                            participant={p}
-                                        />
-                                    )}
-                                </View>
-                            ))
+                                            {isOwner && (
+                                                <RemoveParticipantButton
+                                                    annonce={announcement}
+                                                    participant={p}
+                                                />
+                                            )}
+                                        </View>
+                                    )
+                                )
+                            )
                     )}
                 </Card>
 

@@ -1,20 +1,31 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { useAuth } from "../contexts/authContext";
 import { useCurrentUser } from "../hooks/user/useUsers";
+import SmartImage from "./ui/SmartImage";
 
 export function ProfileCard() {
-    const { data: user } = useCurrentUser();
+    const { data: user, isLoading } = useCurrentUser();
     const { session } = useAuth();
+    if (isLoading) return <Text>Loading...</Text>;
+    console.log("user => ", user);
 
     return (
         <View style={styles.profileCard}>
-            <Image
-                style={styles.avatar}
-                source={{
-                    uri:
-                        user?.image_profile ||
-                        "https://randomuser.me/api/portraits/men/32.jpg",
-                }}
+            <SmartImage
+                userData={user}
+                // style={{
+                //     width: 80,
+                //     height: 80,
+                //     borderRadius: 9999,
+                //     marginBottom: 12,
+                // }}
+                // source={{
+                //     uri:
+                //         getAvatarUrl(
+                //             user?.image_profile,
+                //             user?.avatar_updated_at
+                //         ) || "https://randomuser.me/api/portraits/men/32.jpg",
+                // }}
             />
             <Text style={styles.name}>
                 {user?.firstname} {user?.lastname}
@@ -32,12 +43,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginBottom: 20,
         elevation: 2,
-    },
-    avatar: {
-        width: 80,
-        height: 80,
-        borderRadius: 9999,
-        marginBottom: 12,
     },
     name: {
         fontSize: 18,

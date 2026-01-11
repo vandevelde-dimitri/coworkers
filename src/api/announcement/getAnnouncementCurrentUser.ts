@@ -22,7 +22,9 @@ export async function getAnnouncementByCurrentUser(): Promise<AnnonceDetail> {
       id,
       firstname,
       image_profile,
-      city
+      city,
+        avatar_updated_at,
+        contract
     ),
     participant_requests (
       id,
@@ -32,7 +34,9 @@ export async function getAnnouncementByCurrentUser(): Promise<AnnonceDetail> {
         id,
         firstname,
         image_profile,
-        city
+        city,
+        avatar_updated_at,
+        contract
       )
     )
   `

@@ -2,8 +2,8 @@ import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { formatDate } from "../../utils/formatedDate";
 import { ConversationPreview } from "../api/user/getUserConversations";
-import { Avatar } from "./ui/Avatar";
 import { Card } from "./ui/Card";
+import SmartImage from "./ui/SmartImage";
 
 export default function ConversationItem({
     item,
@@ -27,7 +27,7 @@ export default function ConversationItem({
                         alignItems: "center",
                     }}
                 >
-                    <Avatar uri={item.image_profile} />
+                    <SmartImage size={44} userData={item} />
                     <View style={{ flex: 1, marginLeft: 12 }}>
                         <Text style={{ fontWeight: "600" }}>
                             {item.annonce_title}

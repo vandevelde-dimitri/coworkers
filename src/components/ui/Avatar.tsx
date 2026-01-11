@@ -6,7 +6,7 @@ export const Avatar = ({ uri }) => (
         style={{
             width: 44,
             height: 44,
-            borderRadius: 22,
+            borderRadius: 9999,
             backgroundColor: "#e5e7eb",
         }}
     />

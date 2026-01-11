@@ -9,9 +9,10 @@ export interface User {
     contract?: Contract;
     team?: Team;
     floor?: string;
-    image_profile?: string;
+    image_profile?: string | null;
     to_convey?: boolean;
     fc: { name: string };
+    avatar_updated_at?: string | Date;
 }
 
 export interface authUserUpdate {
