@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { supabase } from "../../../utils/supabase";
 import ApplyButton from "../../components/ApplyButton";
-import SafeScreen from "../../components/SafeScreen";
+import ScreenWrapper from "../../components/ui/CustomHeader";
 import EmptyState from "../../components/ui/EmptyComponent";
 import { useAuth } from "../../contexts/authContext";
 
@@ -78,7 +78,7 @@ export default function CandidateProfile() {
     );
 
     return (
-        <SafeScreen backBtn title="Mes candidatures">
+        <ScreenWrapper back title="Mes candidatures">
             {loading ? (
                 <Text>Chargement des candidatures...</Text>
             ) : (
@@ -106,7 +106,7 @@ export default function CandidateProfile() {
                     }
                 />
             )}
-        </SafeScreen>
+        </ScreenWrapper>
     );
 }
 

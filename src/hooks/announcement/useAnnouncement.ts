@@ -9,10 +9,11 @@ import updateAnnouncement from "../../api/announcement/updateAnnouncement";
 import { useAuth } from "../../contexts/authContext";
 import { AnnouncementFormValues } from "../../types/announcement.interface";
 
-export function useAnnouncementByFc() {
+export function useAnnouncementByFc(page: number, pageSize: number = 5) {
     return useQuery({
-        queryKey: ["announcements"],
-        queryFn: getAllAnnouncementByFc,
+        queryKey: ["announcements", page], // La page fait partie de la clé
+        queryFn: () => getAllAnnouncementByFc(page, pageSize),
+        placeholderData: (previousData) => previousData, // Garde les données affichées pendant le chargement
     });
 }
 
@@ -31,10 +32,11 @@ export function useAnnouncementCurrentUser() {
     });
 }
 
-export function useAnnouncementsFavorites() {
+export function useAnnouncementsFavorites(page: number, pageSize: number = 5) {
     return useQuery({
         queryKey: ["announcements", "favorites"],
-        queryFn: () => getAllAnnouncementFavorite(),
+        queryFn: () => getAllAnnouncementFavorite(page, pageSize),
+        placeholderData: (previousData) => previousData,
     });
 }
 

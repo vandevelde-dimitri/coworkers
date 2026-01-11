@@ -110,36 +110,17 @@ export default function NotificationsScreen() {
     const renderItem = ({ item }: { item: NotificationResponse }) => {
         const isPending = item.status === StatusNotification.PENDING;
 
+        console.log("item => ", item);
+
         return (
             <View style={styles.card}>
                 {/* Header notif */}
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <SmartImage
-                        size={44}
-                        userData={item}
-                        // source={{
-                        //     uri:
-                        //         getAvatarUrl(
-                        //             item.userAvatar,
-                        //             user.avatar_updated_at
-                        //         ) ||
-                        //         item.userAvatar ||
-                        //         "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y",
-                        // }}
-                        // style={{
-                        //     width: 80,
-                        //     height: 80,
-                        //     borderRadius: 9999,
-                        //     marginRight: 12,
-                        // }}
-                    />
+                    <SmartImage size={44} userData={item} />
 
-                    <View style={{ flex: 1 }}>
+                    <View style={{ flex: 1, marginLeft: 12 }}>
                         <Text style={styles.name}>
-                            {item.userFirstname} {item.userLastname}
-                        </Text>
-                        <Text style={styles.title} numberOfLines={1}>
-                            {item.annonceTitle}
+                            {item.candidate_firstname} {item.candidate_lastname}
                         </Text>
                     </View>
 

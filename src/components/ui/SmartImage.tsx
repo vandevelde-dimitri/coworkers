@@ -13,7 +13,6 @@ type SmartImageProps = {
 
 const SmartImage = ({ userData, size = 80 }: SmartImageProps) => {
     const { image_profile, avatar_updated_at, contract } = userData;
-    console.log("userData", userData);
 
     const imageSource = image_profile
         ? `${image_profile}?v=${new Date(avatar_updated_at).getTime()}`
@@ -43,7 +42,7 @@ const SmartImage = ({ userData, size = 80 }: SmartImageProps) => {
 function getColor(contract_type: Contract) {
     switch (contract_type) {
         case Contract.CDD:
-            return "#fd0202";
+            return "#2af501";
         case Contract.CDI:
             return "#60a5fa";
         default:

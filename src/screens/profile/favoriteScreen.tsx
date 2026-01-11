@@ -1,15 +1,21 @@
 import { useNavigation } from "@react-navigation/native";
-import React from "react";
+import React, { useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import AnnouncementCardList from "../../components/AnnouncementCardList";
 import ScreenWrapper from "../../components/ui/CustomHeader";
 import EmptyState from "../../components/ui/EmptyComponent";
+import Pagination from "../../components/ui/Pagination";
 import { useAnnouncementsFavorites } from "../../hooks/announcement/useAnnouncement";
+
+const PAGE_SIZE = 5;
 const FavoriteScreen = () => {
     // Simulated data fetching
-    const { data: announcements, isLoading } = useAnnouncementsFavorites();
-    const navigation = useNavigation();
+    const [page, setPage] = useState(1);
 
+    const { data, isLoading } = useAnnouncementsFavorites(page, PAGE_SIZE);
+    const navigation = useNavigation();
+    const favorites = data?.data || [];
+    const totalPages = Math.ceil((data?.totalCount || 0) / PAGE_SIZE);
     if (isLoading) {
         return (
             <View style={styles.loadingContainer}>
@@ -18,21 +24,18 @@ const FavoriteScreen = () => {
         );
     }
 
-    console.log("annonce en favori", announcements);
+    console.log("annonce en favori", favorites);
 
     return (
         <ScreenWrapper back title="Mes favoris">
             <View style={{ flex: 1 }}>
                 <FlatList
-                    data={announcements}
+                    data={favorites}
                     keyExtractor={(item) => item.id.toString()}
                     contentContainerStyle={{
-                        paddingBottom: 32,
                         flexGrow: 1,
                         justifyContent:
-                            announcements?.length === 0
-                                ? "center"
-                                : "flex-start",
+                            favorites?.length === 0 ? "center" : "flex-start",
                     }}
                     ListEmptyComponent={
                         <EmptyState
@@ -49,6 +52,14 @@ const FavoriteScreen = () => {
                     renderItem={({ item }) => (
                         <AnnouncementCardList data={item} key={item.id} />
                     )}
+                    showsVerticalScrollIndicator={false}
+                    ListFooterComponent={
+                        <Pagination
+                            currentPage={page}
+                            totalPages={totalPages}
+                            onPageChange={(newPage) => setPage(newPage)}
+                        />
+                    }
                 />
             </View>
         </ScreenWrapper>

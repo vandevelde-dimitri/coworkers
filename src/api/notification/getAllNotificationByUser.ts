@@ -40,6 +40,10 @@ export async function getAllNotificationByUser(): Promise<
                 annonceTitle: item.annonce_title,
                 userId: item.candidate_id,
                 status: item.status,
+                candidate_firstname: item.candidate_firstname,
+                candidate_lastname: item.candidate_lastname,
+                image_profile: item.candidate_image,
+                avatar_updated_at: item.created_at,
                 message: getMessageByStatus(
                     item.status,
                     item.annonce_title,

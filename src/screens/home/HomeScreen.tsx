@@ -2,7 +2,6 @@ import { useNavigation } from "@react-navigation/native";
 import { useCallback, useMemo, useState } from "react";
 import {
     FlatList,
-    StyleSheet,
     Text,
     TextInput,
     TouchableOpacity,
@@ -11,17 +10,25 @@ import {
 import AnnouncementCardList from "../../components/AnnouncementCardList";
 import ScreenWrapper from "../../components/ui/CustomHeader";
 import EmptyState from "../../components/ui/EmptyComponent";
+import Pagination from "../../components/ui/Pagination";
 import { useAnnouncementByFc } from "../../hooks/announcement/useAnnouncement";
 import { AnnouncementWithUser } from "../../types/announcement.interface";
 
 type SortBy = "date" | "seats" | "from";
+const PAGE_SIZE = 5;
 
 export default function HomeScreen() {
-    const { data: announcements, isLoading, error } = useAnnouncementByFc();
+    const [page, setPage] = useState(1);
+    const { data, isLoading, error } = useAnnouncementByFc(page, PAGE_SIZE);
     const navigation = useNavigation();
 
     const [search, setSearch] = useState("");
     const [sortBy, setSortBy] = useState<SortBy>("date");
+
+    // On extrait les données du nouvel objet de retour
+    const announcements = data?.data || [];
+    const totalCount = data?.totalCount || 0;
+    const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
     const rides = useMemo(() => {
         if (!announcements) return [];
@@ -163,16 +170,14 @@ export default function HomeScreen() {
                     />
                 }
                 showsVerticalScrollIndicator={false}
+                ListFooterComponent={
+                    <Pagination
+                        currentPage={page}
+                        totalPages={totalPages}
+                        onPageChange={(newPage) => setPage(newPage)}
+                    />
+                }
             />
         </ScreenWrapper>
     );
 }
-const styles = StyleSheet.create({
-    emptyContainer: {
-        padding: 16,
-        alignItems: "center",
-        justifyContent: "center",
-        flex: 1,
-    },
-    emptyText: { fontSize: 16, marginBottom: 12 },
-});
