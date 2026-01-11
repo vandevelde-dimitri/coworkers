@@ -12,7 +12,7 @@ export async function getAllAnnouncementByFc(
     const userId = sessionData?.session?.user?.id;
 
     const { data, error } = await supabase.rpc("get_annonces_for_user", {
-        p_user_id: userId,
+        p_user_id: userId ?? null,
         p_limit: pageSize,
         p_offset: (page - 1) * pageSize,
     });

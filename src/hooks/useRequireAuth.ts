@@ -1,18 +1,24 @@
-import { useAuth } from "@/hooks/authContext";
-import { useRouter, useSegments } from "expo-router";
+// hooks/useRequireAuth.ts
+import { useNavigation, useRoute } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
 import { useEffect } from "react";
+import { useAuth } from "../contexts/authContext";
 
 export function useRequireAuth() {
     const { session, loading } = useAuth();
-    const segments = useSegments();
-    const router = useRouter();
+    const navigation = useNavigation();
+    const route = useRoute();
 
     useEffect(() => {
         if (!loading && !session) {
-            const currentPath = "/" + segments.join("/");
-            SecureStore.setItemAsync("redirectTo", currentPath);
-            router.replace("/signin");
+            const redirect = {
+                name: route.name,
+                params: route.params,
+            };
+
+            SecureStore.setItemAsync("redirectTo", JSON.stringify(redirect));
+
+            navigation.navigate("Auth" as never);
         }
-    }, [loading, session, segments, router]);
+    }, [loading, session, route, navigation]);
 }

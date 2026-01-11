@@ -1,10 +1,10 @@
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { AuthStackParamList } from "../types/navigation/authStackType";
+import { PublicStackParamList } from "../navigation/PublicStack";
 
 type WelcomeScreenNavigationProp =
-    NativeStackNavigationProp<AuthStackParamList>;
+    NativeStackNavigationProp<PublicStackParamList>;
 
 export default function WelcomeScreen() {
     const navigation = useNavigation<WelcomeScreenNavigationProp>();
@@ -50,7 +50,9 @@ export default function WelcomeScreen() {
             {/* Boutons */}
             <View style={{ width: "100%" }}>
                 <TouchableOpacity
-                    onPress={() => navigation.navigate("Register")}
+                    onPress={() =>
+                        navigation.navigate("Auth", { screen: "Register" })
+                    }
                     style={{
                         backgroundColor: "#2563eb",
                         paddingVertical: 16,
@@ -71,7 +73,9 @@ export default function WelcomeScreen() {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    onPress={() => navigation.navigate("Login")}
+                    onPress={() =>
+                        navigation.navigate("Auth", { screen: "Login" })
+                    }
                     style={{
                         paddingVertical: 16,
                         borderRadius: 18,
@@ -88,6 +92,25 @@ export default function WelcomeScreen() {
                         }}
                     >
                         Se connecter
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => navigation.navigate("AppTabs")}
+                    style={{
+                        paddingVertical: 16,
+                        borderRadius: 18,
+                        alignItems: "center",
+                        marginTop: 12,
+                    }}
+                >
+                    <Text
+                        style={{
+                            color: "#6b7280",
+                            fontWeight: "600",
+                            fontSize: 14,
+                        }}
+                    >
+                        Continuer sans compte
                     </Text>
                 </TouchableOpacity>
             </View>

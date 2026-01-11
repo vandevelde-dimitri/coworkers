@@ -1,9 +1,8 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import React from "react";
 import { useAuth } from "./contexts/authContext";
 import AppTabs from "./navigation/AppTabs";
-import AuthStack from "./navigation/AuthStack";
+import PublicStack from "./navigation/PublicStack";
 import OnboardingScreen from "./screens/auth/OnboardingScreen";
 
 const Stack = createNativeStackNavigator();
@@ -11,20 +10,29 @@ const Stack = createNativeStackNavigator();
 export default function AppNavigator() {
     const { session, loading, profileCompleted } = useAuth();
 
-    if (loading) return null; // tu peux aussi mettre un splash screen
+    if (loading) return null; // splash screen si tu veux
 
     return (
         <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
-                {!session ? (
-                    <Stack.Screen name="Auth" component={AuthStack} />
-                ) : !profileCompleted ? (
-                    // si tu veux gérer un onboarding ou profil incomplet
+                {/* 🔓 Utilisateur NON connecté - Écran d'accueil */}
+                {!session && (
+                    <>
+                        <Stack.Screen name="Public" component={PublicStack} />
+                        <Stack.Screen name="AppTabs" component={AppTabs} />
+                    </>
+                )}
+
+                {/* 🧩 Connecté mais profil incomplet */}
+                {session && !profileCompleted && (
                     <Stack.Screen
-                        name="AuthStack"
-                        component={OnboardingScreen} // ou ton propre écran d'onboarding
+                        name="Onboarding"
+                        component={OnboardingScreen}
                     />
-                ) : (
+                )}
+
+                {/* 🔐 Utilisateur connecté */}
+                {session && profileCompleted && (
                     <Stack.Screen name="AppTabs" component={AppTabs} />
                 )}
             </Stack.Navigator>

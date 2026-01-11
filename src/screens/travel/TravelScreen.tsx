@@ -20,8 +20,11 @@ import {
     useAnnouncementCurrentUser,
     useDeleteAnnouncement,
 } from "../../hooks/announcement/useAnnouncement";
+import { useRequireAuth } from "../../hooks/useRequireAuth";
 
 export default function TravelScreen() {
+    useRequireAuth();
+
     const navigation = useNavigation();
     const {
         data: announcement,
