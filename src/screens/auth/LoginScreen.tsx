@@ -1,4 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useNavigation } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -14,6 +15,7 @@ import * as yup from "yup";
 import { supabase } from "../../../utils/supabase";
 
 export default function LoginScreen() {
+    const navigation = useNavigation();
     const schema = yup.object({
         email: yup.string().email("Email invalide").required("Email requis"),
         password: yup.string().required("Mot de passe requis"),
@@ -27,6 +29,7 @@ export default function LoginScreen() {
     });
     const handleLogin = async (data: { email: string; password: string }) => {
         const { email, password } = data;
+
         const { error } = await supabase.auth.signInWithPassword({
             email,
             password,
@@ -34,19 +37,30 @@ export default function LoginScreen() {
 
         if (error) {
             Alert.alert("Erreur", error.message);
-        } else {
-            // ✅ Lire la route d'origine (si elle existe)
-            const redirectTo = await SecureStore.getItemAsync("redirectTo");
+            return;
+        }
 
-            if (redirectTo) {
-                await SecureStore.deleteItemAsync("redirectTo");
-                // router.replace(redirectTo as any); // Type assertion for dynamic routes
-            } else {
-                // router.replace("/(tabs)/(home)");
-            }
+        // Login réussi → récupérer la redirection
+        const redirectStr = await SecureStore.getItemAsync("redirectTo");
+        if (redirectStr) {
+            const redirect = JSON.parse(redirectStr);
+
+            navigation.navigate(
+                "AppTabs" as never,
+                {
+                    screen: redirect.stack || "HomeStack",
+                    params: {
+                        screen: redirect.name,
+                        params: redirect.params,
+                    },
+                } as never
+            );
+
+            await SecureStore.deleteItemAsync("redirectTo");
+        } else {
+            navigation.navigate("AppTabs"); // par défaut
         }
     };
-
     return (
         <ScrollView
             style={{ flex: 1, padding: 16, backgroundColor: "#f3f4f6" }}

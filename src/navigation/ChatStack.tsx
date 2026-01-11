@@ -2,12 +2,10 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
 import ConversationsListScreen from "../screens/chat/conversationListScreen";
 import ChatScreen from "../screens/chat/messengingScreen";
-import { useRequireAuth } from "../hooks/useRequireAuth";
 
 const Stack = createNativeStackNavigator<any>();
 
 export default function ChatStack() {
-    useRequireAuth();
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen

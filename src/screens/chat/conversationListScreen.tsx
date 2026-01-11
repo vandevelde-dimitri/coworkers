@@ -6,8 +6,11 @@ import ScreenWrapper from "../../components/ui/CustomHeader";
 import EmptyState from "../../components/ui/EmptyComponent";
 import { useMessageStatus } from "../../contexts/messageContext";
 import { useUserConversations } from "../../hooks/conversation/useConversationUser";
+import { useRequireAuth } from "../../hooks/useRequireAuth";
 
 export default function ConversationsListScreen({ navigation }: any) {
+    useRequireAuth("ChatStack");
+
     const { data: conversations, isLoading, refetch } = useUserConversations();
     const { unreadConversations } = useMessageStatus();
 
@@ -18,6 +21,8 @@ export default function ConversationsListScreen({ navigation }: any) {
     );
     if (!conversations) return null;
     if (isLoading) return null;
+
+    console.log("conversation => ", conversations);
 
     return (
         <ScreenWrapper title="Mes conversations">
