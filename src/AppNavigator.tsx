@@ -1,7 +1,7 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
-import { useAuth } from "./contexts/authContext"; // 👈 ton hook
+import { useAuth } from "./contexts/authContext";
 import AppTabs from "./navigation/AppTabs";
 import AuthStack from "./navigation/AuthStack";
 import OnboardingScreen from "./screens/auth/OnboardingScreen";
