@@ -1,9 +1,12 @@
+import { useNavigation } from "@react-navigation/native";
+import * as SecureStore from "expo-secure-store";
 import React, { useEffect, useState } from "react";
 import { Text, TouchableOpacity } from "react-native";
 import { supabase } from "../../utils/supabase";
 import { useAuth } from "../contexts/authContext";
 
 export default function FavoriteButton({ annonceId }: { annonceId: string }) {
+    const navigation = useNavigation();
     const { session } = useAuth();
     const [isFavorite, setIsFavorite] = useState(false);
 
@@ -25,7 +28,21 @@ export default function FavoriteButton({ annonceId }: { annonceId: string }) {
     }, [session, annonceId]);
 
     const toggleFavorite = async () => {
-        if (!session) return;
+        // 🔐 Vérification connexion
+        if (!session) {
+            // Stocker l'action pour retour après login
+            await SecureStore.setItemAsync(
+                "redirectTo",
+                JSON.stringify({
+                    screen: "AnnonceDetail",
+                    params: { id: annonceId },
+                })
+            );
+
+            // Rediriger vers login
+            navigation.navigate("Public" as never);
+            return;
+        }
 
         const newValue = !isFavorite;
 

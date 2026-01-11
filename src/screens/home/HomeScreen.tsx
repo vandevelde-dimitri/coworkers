@@ -11,6 +11,7 @@ import AnnouncementCardList from "../../components/AnnouncementCardList";
 import ScreenWrapper from "../../components/ui/CustomHeader";
 import EmptyState from "../../components/ui/EmptyComponent";
 import Pagination from "../../components/ui/Pagination";
+import { useAuth } from "../../contexts/authContext";
 import { useAnnouncementByFc } from "../../hooks/announcement/useAnnouncement";
 import { AnnouncementWithUser } from "../../types/announcement.interface";
 
@@ -19,6 +20,7 @@ const PAGE_SIZE = 5;
 
 export default function HomeScreen() {
     const [page, setPage] = useState(1);
+    const { session } = useAuth();
     const { data, isLoading, error } = useAnnouncementByFc(page, PAGE_SIZE);
     const navigation = useNavigation();
 
@@ -88,7 +90,9 @@ export default function HomeScreen() {
     }
 
     return (
-        <ScreenWrapper title="Annonce pour Lil1">
+        <ScreenWrapper
+            title={session ? "Annonce pour Lil1" : "Annonces disponibles"}
+        >
             <View>
                 <TextInput
                     placeholder="Rechercher une annonce..."

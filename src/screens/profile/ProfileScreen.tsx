@@ -12,13 +12,16 @@ import { Section } from "../../components/ui/CustomSection";
 import { InfoRow } from "../../components/ui/InfoRaw";
 import { useAuth } from "../../contexts/authContext";
 import { useCurrentUser } from "../../hooks/user/useUsers";
+import { useRequireAuth } from "../../hooks/useRequireAuth";
 import { ProfileStackParamList } from "../../types/navigation/profileStackType";
 
 export default function ProfileScreen() {
+    useRequireAuth("ProfileStack");
     const { data: user } = useCurrentUser();
     const { session } = useAuth();
     const navigation = useNavigation<NavigationProp<ProfileStackParamList>>();
     const formatedDate = formatDate(session?.user.created_at || "");
+    if (!user) return null;
 
     console.log("user profile data:", user);
     const right_buttons = (

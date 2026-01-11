@@ -9,12 +9,10 @@ import CandidateProfile from "../screens/profile/candidateProfile";
 import FavoriteScreen from "../screens/profile/favoriteScreen";
 import UpdateAvatarScreen from "../screens/profile/updateAvatarScreen";
 import { ProfileStackParamList } from "../types/navigation/profileStackType";
-import { useRequireAuth } from "../hooks/useRequireAuth";
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
 
 export default function ProfileStack() {
-    useRequireAuth();
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen

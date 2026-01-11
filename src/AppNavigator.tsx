@@ -20,6 +20,7 @@ export default function AppNavigator() {
                     <>
                         <Stack.Screen name="Public" component={PublicStack} />
                         <Stack.Screen name="AppTabs" component={AppTabs} />
+                        {/* <Stack.Screen name="Auth" component={AuthStack} /> */}
                     </>
                 )}
 

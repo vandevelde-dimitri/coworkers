@@ -17,14 +17,19 @@ import { createConversation } from "../../api/messaging/createConversation";
 import ScreenWrapper from "../../components/ui/CustomHeader";
 import { FormDatePicker } from "../../components/ui/DatePicker";
 import { FormInput } from "../../components/ui/FormInput";
+import { useAuth } from "../../contexts/authContext";
 import {
     useAddAnnouncement,
     useAnnouncementById,
     useUpdateAnnouncement,
 } from "../../hooks/announcement/useAnnouncement";
+import { useRequireAuth } from "../../hooks/useRequireAuth";
 import { AnnouncementFormValues } from "../../types/announcement.interface";
 
 export default function FormAnnouncementScreen() {
+    useRequireAuth("FormStack");
+    const { session } = useAuth();
+
     const navigation = useNavigation();
     const route = useRoute();
     const { id } = route.params ?? {}; // params peut être undefined
@@ -66,7 +71,9 @@ export default function FormAnnouncementScreen() {
             });
         }
     }, [isEditMode, existingAnnouncement, reset]);
-
+    if (!session) {
+        return null; // ou un splash / loader léger
+    }
     if (isEditMode && isLoading) {
         return (
             <View style={styles.center}>

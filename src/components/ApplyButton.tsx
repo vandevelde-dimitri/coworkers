@@ -1,3 +1,5 @@
+import { useNavigation } from "@react-navigation/native";
+import * as SecureStore from "expo-secure-store";
 import React, { useEffect, useState } from "react";
 import { Alert, Text, TouchableOpacity } from "react-native";
 import { supabase } from "../../utils/supabase";
@@ -6,6 +8,7 @@ import { AnnonceDetail } from "../types/announcement.interface";
 
 export default function ApplyButton({ annonce }: { annonce: AnnonceDetail }) {
     const { session } = useAuth();
+    const navigation = useNavigation();
     const [request, setRequest] = useState<any>(null);
     const [loading, setLoading] = useState(false);
 
@@ -34,8 +37,19 @@ export default function ApplyButton({ annonce }: { annonce: AnnonceDetail }) {
 
     // 🔄 Postuler ou annuler
     const handleApplyToggle = async () => {
+        // 🔐 Vérification connexion
         if (!session) {
-            Alert.alert("Connexion requise");
+            // Stocker l'action pour retour après login
+            await SecureStore.setItemAsync(
+                "redirectTo",
+                JSON.stringify({
+                    screen: "AnnonceDetail",
+                    params: { id: annonceId },
+                })
+            );
+
+            // Rediriger vers login
+            navigation.navigate("Public" as never);
             return;
         }
 

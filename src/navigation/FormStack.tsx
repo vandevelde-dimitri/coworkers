@@ -5,7 +5,6 @@ import { useRequireAuth } from "../hooks/useRequireAuth";
 const Stack = createNativeStackNavigator();
 
 export default function FormStack() {
-    useRequireAuth();
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen
