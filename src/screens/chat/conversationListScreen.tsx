@@ -3,6 +3,7 @@ import React, { useCallback } from "react";
 import { FlatList } from "react-native";
 import ConversationItem from "../../components/ConversationItem";
 import ScreenWrapper from "../../components/ui/CustomHeader";
+import EmptyState from "../../components/ui/EmptyComponent";
 import { useMessageStatus } from "../../contexts/messageContext";
 import { useUserConversations } from "../../hooks/conversation/useConversationUser";
 
@@ -35,6 +36,24 @@ export default function ConversationsListScreen({ navigation }: any) {
                         }
                     />
                 )}
+                contentContainerStyle={{
+                    paddingBottom: 32,
+                    flexGrow: 1,
+                    justifyContent:
+                        conversations.length === 0 ? "center" : "flex-start",
+                }}
+                ListEmptyComponent={
+                    <EmptyState
+                        title="Aucune conversation"
+                        description="Vous ne faites partie d’aucune conversation pour le moment. Vous pouvez en démarrer une en postulant à une annonce."
+                        actionLabel="Explorer les annonces"
+                        onAction={() =>
+                            (navigation as any).navigate("HomeStack", {
+                                screen: "HomeScreen",
+                            })
+                        }
+                    />
+                }
                 showsVerticalScrollIndicator={false}
             />
         </ScreenWrapper>

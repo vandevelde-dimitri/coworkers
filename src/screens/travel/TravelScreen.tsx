@@ -13,6 +13,7 @@ import { formatDate } from "../../../utils/formatedDate";
 import SafeScreen from "../../components/SafeScreen";
 import { Card } from "../../components/ui/Card";
 import ScreenWrapper from "../../components/ui/CustomHeader";
+import EmptyState from "../../components/ui/EmptyComponent";
 import RemoveParticipantButton from "../../components/ui/RemoveParticipantButton";
 import SmartImage from "../../components/ui/SmartImage";
 import {
@@ -52,26 +53,18 @@ export default function TravelScreen() {
     // 3️⃣ Aucune annonce → bouton créer
     if (!announcement) {
         return (
-            <SafeScreen title="Mon annonce">
-                <View style={styles.emptyContainer}>
-                    <Text style={styles.emptyText}>
-                        Vous n'avez pas encore créé d'annonce.
-                    </Text>
-
-                    <TouchableOpacity
-                        style={styles.buttonPrimary}
-                        onPress={() =>
-                            (navigation as any).navigate("FormStack", {
-                                screen: "FormAnnouncementScreen",
-                            })
-                        }
-                    >
-                        <Text style={styles.buttonPrimaryText}>
-                            Créer une annonce
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-            </SafeScreen>
+            <ScreenWrapper title="Mon annonce">
+                <EmptyState
+                    title="Aucun trajet enregistré"
+                    description="Vous n’avez pas encore créé de trajet."
+                    actionLabel="Créer une annonce"
+                    onAction={() =>
+                        (navigation as any).navigate("FormStack", {
+                            screen: "FormAnnouncementScreen",
+                        })
+                    }
+                />
+            </ScreenWrapper>
         );
     }
 

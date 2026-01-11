@@ -1,11 +1,14 @@
+import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import AnnouncementCardList from "../../components/AnnouncementCardList";
-import SafeScreen from "../../components/SafeScreen";
+import ScreenWrapper from "../../components/ui/CustomHeader";
+import EmptyState from "../../components/ui/EmptyComponent";
 import { useAnnouncementsFavorites } from "../../hooks/announcement/useAnnouncement";
 const FavoriteScreen = () => {
     // Simulated data fetching
     const { data: announcements, isLoading } = useAnnouncementsFavorites();
+    const navigation = useNavigation();
 
     if (isLoading) {
         return (
@@ -15,36 +18,40 @@ const FavoriteScreen = () => {
         );
     }
 
-    if (!announcements || announcements.length === 0) {
-        return (
-            <SafeScreen title="Mes favoris">
-                <View style={styles.emptyContainer}>
-                    <Text style={styles.emptyText}>
-                        Vous n'avez pas encore d'annonce en favoris.
-                    </Text>
-                </View>
-            </SafeScreen>
-        );
-    }
-
     console.log("annonce en favori", announcements);
 
     return (
-        <SafeScreen backBtn title="Mes favoris">
+        <ScreenWrapper back title="Mes favoris">
             <View style={{ flex: 1 }}>
                 <FlatList
                     data={announcements}
                     keyExtractor={(item) => item.id.toString()}
-                    renderItem={({ item, index }) => (
-                        <AnnouncementCardList data={item} index={index} />
-                    )}
                     contentContainerStyle={{
-                        padding: 16,
-                        paddingBottom: 40,
+                        paddingBottom: 32,
+                        flexGrow: 1,
+                        justifyContent:
+                            announcements?.length === 0
+                                ? "center"
+                                : "flex-start",
                     }}
+                    ListEmptyComponent={
+                        <EmptyState
+                            title="Aucun favori"
+                            description="Ajoutez des annonces en favori pour les retrouver rapidement."
+                            actionLabel="Explorer les annonces"
+                            onAction={() =>
+                                (navigation as any).navigate("HomeStack", {
+                                    screen: "HomeScreen",
+                                })
+                            }
+                        />
+                    }
+                    renderItem={({ item }) => (
+                        <AnnouncementCardList data={item} key={item.id} />
+                    )}
                 />
             </View>
-        </SafeScreen>
+        </ScreenWrapper>
     );
 };
 

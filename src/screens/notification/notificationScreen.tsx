@@ -11,6 +11,7 @@ import { supabase } from "../../../utils/supabase";
 import { addUserConversation } from "../../api/messaging/addUserConversation";
 import SafeScreen from "../../components/SafeScreen";
 import ScreenWrapper from "../../components/ui/CustomHeader";
+import EmptyState from "../../components/ui/EmptyComponent";
 import SmartImage from "../../components/ui/SmartImage";
 import { useAuth } from "../../contexts/authContext";
 import { useAcceptRequest } from "../../hooks/candidate/useCandidate";
@@ -114,6 +115,7 @@ export default function NotificationsScreen() {
                 {/* Header notif */}
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                     <SmartImage
+                        size={44}
                         userData={item}
                         // source={{
                         //     uri:
@@ -193,8 +195,19 @@ export default function NotificationsScreen() {
                 data={notifications}
                 keyExtractor={(item) => item.id}
                 renderItem={renderItem}
-                contentContainerStyle={{ paddingBottom: 32 }}
                 showsVerticalScrollIndicator={false}
+                contentContainerStyle={{
+                    paddingBottom: 32,
+                    flexGrow: 1,
+                    justifyContent:
+                        notifications.length === 0 ? "center" : "flex-start",
+                }}
+                ListEmptyComponent={
+                    <EmptyState
+                        title="Aucune notification"
+                        description="Vous serez averti ici des nouvelles candidatures et réponses."
+                    />
+                }
             />
         </ScreenWrapper>
     );

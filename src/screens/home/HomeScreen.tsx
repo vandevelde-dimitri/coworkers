@@ -2,6 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useCallback, useMemo, useState } from "react";
 import {
     FlatList,
+    StyleSheet,
     Text,
     TextInput,
     TouchableOpacity,
@@ -9,6 +10,7 @@ import {
 } from "react-native";
 import AnnouncementCardList from "../../components/AnnouncementCardList";
 import ScreenWrapper from "../../components/ui/CustomHeader";
+import EmptyState from "../../components/ui/EmptyComponent";
 import { useAnnouncementByFc } from "../../hooks/announcement/useAnnouncement";
 import { AnnouncementWithUser } from "../../types/announcement.interface";
 
@@ -143,8 +145,34 @@ export default function HomeScreen() {
                 data={rides}
                 keyExtractor={(item) => item.id}
                 renderItem={renderItem}
+                contentContainerStyle={{
+                    flexGrow: 1,
+                    justifyContent:
+                        rides.length === 0 ? "center" : "flex-start",
+                }}
+                ListEmptyComponent={
+                    <EmptyState
+                        title="Aucune annonce disponible"
+                        description="Il n’y a pas encore d’annonce correspondant à votre centre ou à vos critères."
+                        actionLabel="Créer une annonce"
+                        onAction={() =>
+                            (navigation as any).navigate("FormStack", {
+                                screen: "FormAnnouncementScreen",
+                            })
+                        }
+                    />
+                }
                 showsVerticalScrollIndicator={false}
             />
         </ScreenWrapper>
     );
 }
+const styles = StyleSheet.create({
+    emptyContainer: {
+        padding: 16,
+        alignItems: "center",
+        justifyContent: "center",
+        flex: 1,
+    },
+    emptyText: { fontSize: 16, marginBottom: 12 },
+});

@@ -1,15 +1,10 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import {
-    FlatList,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import { supabase } from "../../../utils/supabase";
 import ApplyButton from "../../components/ApplyButton";
 import SafeScreen from "../../components/SafeScreen";
+import EmptyState from "../../components/ui/EmptyComponent";
 import { useAuth } from "../../contexts/authContext";
 
 export default function CandidateProfile() {
@@ -82,25 +77,6 @@ export default function CandidateProfile() {
         </View>
     );
 
-    const renderEmptyComponent = () => (
-        <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>
-                Vous avez postuler à aucune annonce.
-            </Text>
-
-            <TouchableOpacity
-                style={styles.buttonPrimary}
-                onPress={() =>
-                    (navigation as any).navigate("HomeStack", {
-                        screen: "HomeScreen",
-                    })
-                }
-            >
-                <Text style={styles.buttonPrimaryText}>Voir les annonces</Text>
-            </TouchableOpacity>
-        </View>
-    );
-
     return (
         <SafeScreen backBtn title="Mes candidatures">
             {loading ? (
@@ -108,10 +84,26 @@ export default function CandidateProfile() {
             ) : (
                 <FlatList
                     data={applications}
-                    ListEmptyComponent={renderEmptyComponent}
                     keyExtractor={(item) => item.id}
                     renderItem={renderItem}
-                    contentContainerStyle={{ paddingBottom: 20 }}
+                    contentContainerStyle={{
+                        paddingBottom: 32,
+                        flexGrow: 1,
+                        justifyContent:
+                            applications.length === 0 ? "center" : "flex-start",
+                    }}
+                    ListEmptyComponent={
+                        <EmptyState
+                            title="Aucune candidature envoyée"
+                            description="Vous n’avez encore postulé à aucune annonce."
+                            actionLabel="Explorer les annonces"
+                            onAction={() =>
+                                (navigation as any).navigate("HomeStack", {
+                                    screen: "HomeScreen",
+                                })
+                            }
+                        />
+                    }
                 />
             )}
         </SafeScreen>
