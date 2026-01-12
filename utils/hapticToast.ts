@@ -6,7 +6,7 @@ export const haptic = {
         if (Platform.OS === "ios") {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         } else {
-            Vibration.vibrate(30);
+            Vibration.vibrate(40);
         }
     },
 
@@ -14,7 +14,7 @@ export const haptic = {
         if (Platform.OS === "ios") {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         } else {
-            Vibration.vibrate([0, 40, 40, 40]);
+            Vibration.vibrate([0, 40, 40, 40]); // Vibre 40ms, pause 40ms, vibre 40ms
         }
     },
 

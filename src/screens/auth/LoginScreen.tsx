@@ -2,17 +2,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigation } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
 import React from "react";
-import { Controller, useForm } from "react-hook-form";
-import {
-    Alert,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import { useForm } from "react-hook-form";
+import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import * as yup from "yup";
 import { supabase } from "../../../utils/supabase";
+import ScreenWrapper from "../../components/ui/CustomHeader";
+import { FormInput } from "../../components/ui/FormInput";
 
 export default function LoginScreen() {
     const navigation = useNavigation();
@@ -20,11 +15,7 @@ export default function LoginScreen() {
         email: yup.string().email("Email invalide").required("Email requis"),
         password: yup.string().required("Mot de passe requis"),
     });
-    const {
-        control,
-        handleSubmit,
-        formState: { errors },
-    } = useForm({
+    const { control, handleSubmit } = useForm({
         resolver: yupResolver(schema),
     });
     const handleLogin = async (data: { email: string; password: string }) => {
@@ -62,117 +53,97 @@ export default function LoginScreen() {
         }
     };
     return (
-        <ScrollView
-            style={{ flex: 1, padding: 16, backgroundColor: "#f3f4f6" }}
-        >
-            <Text
-                style={{
-                    fontSize: 28,
-                    fontWeight: "700",
-                    marginBottom: 32,
-                    textAlign: "center",
+        <ScreenWrapper>
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{
+                    flexGrow: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    paddingHorizontal: 16,
                 }}
             >
-                Se connecter
-            </Text>
-
-            <View
-                style={{
-                    backgroundColor: "#fff",
-                    borderRadius: 18,
-                    padding: 16,
-                    marginBottom: 24,
-                    shadowColor: "#000",
-                    shadowOpacity: 0.05,
-                    shadowRadius: 6,
-                }}
-            >
-                <Controller
-                    control={control}
-                    name="email"
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <TextInput
-                            placeholder="Email"
-                            value={value}
-                            onBlur={onBlur}
-                            onChangeText={onChange}
-                            keyboardType="email-address"
-                            style={{
-                                borderBottomWidth: 1,
-                                borderBottomColor: "#e5e7eb",
-                                marginBottom: 16,
-                                fontSize: 16,
-                                paddingVertical: 8,
-                            }}
-                        />
-                    )}
-                />
-                {errors.email && <Text>{errors.email.message}</Text>}
-                <Controller
-                    control={control}
-                    name="password"
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <TextInput
-                            placeholder="Mot de passe"
-                            value={value}
-                            onBlur={onBlur}
-                            onChangeText={onChange}
-                            secureTextEntry
-                            style={{
-                                borderBottomWidth: 1,
-                                borderBottomColor: "#e5e7eb",
-                                marginBottom: 16,
-                                fontSize: 16,
-                                paddingVertical: 8,
-                            }}
-                        />
-                    )}
-                />
-                {errors.password && <Text>{errors.password.message}</Text>}
-
-                <TouchableOpacity
-                    onPress={handleSubmit(handleLogin)}
+                <Text
                     style={{
-                        backgroundColor: "#2563eb",
-                        paddingVertical: 14,
-                        borderRadius: 18,
-                        alignItems: "center",
-                        marginTop: 8,
+                        fontSize: 28,
+                        fontWeight: "700",
+                        marginBottom: 32,
+                        textAlign: "center",
                     }}
                 >
-                    <Text
+                    Se connecter
+                </Text>
+
+                <View
+                    style={{
+                        backgroundColor: "#fff",
+                        borderRadius: 18,
+                        padding: 16,
+                        marginBottom: 24,
+                        shadowColor: "#000",
+                        shadowOpacity: 0.05,
+                        shadowRadius: 6,
+                        width: "100%",
+                        maxWidth: 400,
+                    }}
+                >
+                    <FormInput
+                        control={control}
+                        name="email"
+                        label="Email"
+                        placeholder="john@doe.fr"
+                    />
+
+                    <FormInput
+                        control={control}
+                        name="password"
+                        label="Mot de passe"
+                        placeholder="*******"
+                    />
+                    <TouchableOpacity
+                        onPress={handleSubmit(handleLogin)}
                         style={{
-                            color: "#fff",
-                            fontWeight: "700",
-                            fontSize: 16,
+                            backgroundColor: "#2563eb",
+                            paddingVertical: 14,
+                            borderRadius: 18,
+                            alignItems: "center",
+                            marginTop: 8,
                         }}
                     >
-                        Se connecter
-                    </Text>
-                </TouchableOpacity>
+                        <Text
+                            style={{
+                                color: "#fff",
+                                fontWeight: "700",
+                                fontSize: 16,
+                            }}
+                        >
+                            Se connecter
+                        </Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={{ marginTop: 16, alignItems: "center" }}
-                >
-                    <Text style={{ color: "#2563eb", fontWeight: "600" }}>
-                        Créer un compte
-                    </Text>
-                </TouchableOpacity>
+                    <TouchableOpacity
+                        style={{ marginTop: 16, alignItems: "center" }}
+                    >
+                        <Text style={{ color: "#2563eb", fontWeight: "600" }}>
+                            Créer un compte
+                        </Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity
-                    onPress={() =>
-                        Alert.alert(
-                            "Mot de passe oublié",
-                            "Fonctionnalité à implémenter"
-                        )
-                    }
-                    style={{ marginTop: 8, alignItems: "center" }}
-                >
-                    <Text style={{ color: "#6b7280" }}>
-                        Mot de passe oublié ?
-                    </Text>
-                </TouchableOpacity>
-            </View>
-        </ScrollView>
+                    <TouchableOpacity
+                        onPress={() =>
+                            Alert.alert(
+                                "Mot de passe oublié",
+                                "Fonctionnalité à implémenter"
+                            )
+                        }
+                        style={{ marginTop: 8, alignItems: "center" }}
+                    >
+                        <Text style={{ color: "#6b7280" }}>
+                            Mot de passe oublié ?
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
+        </ScreenWrapper>
     );
 }

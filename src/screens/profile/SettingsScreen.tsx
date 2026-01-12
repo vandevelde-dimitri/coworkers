@@ -3,7 +3,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, Switch, Text, TouchableOpacity, View } from "react-native";
 import * as yup from "yup";
 import { supabase } from "../../../utils/supabase";
 import { onUpdateEmail } from "../../../utils/updateEmail";
@@ -87,7 +87,64 @@ export default function SettingsScreen() {
                         />
                     </TouchableOpacity>
                 </Section>
-
+                <Section title="Préférences">
+                    <View
+                        style={{
+                            backgroundColor: "#fff",
+                            borderRadius: 18,
+                            padding: 16,
+                        }}
+                    >
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                            }}
+                        >
+                            <Text style={{ fontSize: 16, fontWeight: "600" }}>
+                                Vibrations
+                            </Text>
+                            <Switch />
+                        </View>
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                            }}
+                        >
+                            <Text style={{ fontSize: 16, fontWeight: "600" }}>
+                                Véhiculer
+                            </Text>
+                            <Switch />
+                        </View>
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                            }}
+                        >
+                            <Text style={{ fontSize: 16, fontWeight: "600" }}>
+                                Mode vacances
+                            </Text>
+                            <Switch />
+                        </View>
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                            }}
+                        >
+                            <Text style={{ fontSize: 16, fontWeight: "600" }}>
+                                Notification push
+                            </Text>
+                            <Switch />
+                        </View>
+                    </View>
+                </Section>
                 {/* SECTION SÉCURITÉ */}
                 <Section title="Sécurité">
                     {/* EMAIL */}
@@ -171,25 +228,51 @@ export default function SettingsScreen() {
 
                 {/* SECTION DANGER */}
                 <Section title="Session">
-                    <TouchableOpacity
+                    <View
                         style={{
-                            backgroundColor: "#f70505ff",
+                            backgroundColor: "#fa02023b",
+                            borderRadius: 18,
                             padding: 16,
-                            borderRadius: 16,
-                            marginBottom: 10,
+                            marginBottom: 16,
                         }}
-                        onPress={logout}
                     >
-                        <Text
+                        <TouchableOpacity
                             style={{
-                                color: "#fff",
-                                textAlign: "center",
-                                fontWeight: "600",
+                                backgroundColor: "rgba(247, 5, 5, 0.6)",
+                                padding: 16,
+                                borderRadius: 16,
+                                marginBottom: 10,
+                            }}
+                            onPress={logout}
+                        >
+                            <Text
+                                style={{
+                                    color: "#fff",
+                                    textAlign: "center",
+                                    fontWeight: "600",
+                                }}
+                            >
+                                Se déconnecter
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={{
+                                backgroundColor: "rgba(247, 5, 5, 0.6)",
+                                padding: 16,
+                                borderRadius: 16,
                             }}
                         >
-                            Se déconnecter
-                        </Text>
-                    </TouchableOpacity>
+                            <Text
+                                style={{
+                                    color: "#fff",
+                                    textAlign: "center",
+                                    fontWeight: "600",
+                                }}
+                            >
+                                Supprimer mon compte
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
                 </Section>
             </ScrollView>
         </ScreenWrapper>

@@ -92,7 +92,7 @@ export default function HomeScreen() {
 
     const openToast = () => {
         showToast(
-            "error",
+            "success",
             "Annonce créée",
             "Votre annonce a été créée avec succès !"
         );

@@ -1,7 +1,13 @@
 import FeatherIcon from "@expo/vector-icons/Feather";
 import { useNavigation } from "@react-navigation/native";
 import React, { ReactNode } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import {
+    StyleProp,
+    Text,
+    TouchableOpacity,
+    View,
+    ViewStyle,
+} from "react-native";
 import {
     SafeAreaView,
     useSafeAreaInsets,
@@ -11,7 +17,7 @@ type ScreenWrapperProps = {
     title?: string;
     back?: boolean;
     children: ReactNode;
-    style?: object;
+    style?: StyleProp<ViewStyle>;
     rightActions?: ReactNode;
 };
 
