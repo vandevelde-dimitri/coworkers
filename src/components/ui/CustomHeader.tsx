@@ -1,6 +1,6 @@
 import FeatherIcon from "@expo/vector-icons/Feather";
 import { useNavigation } from "@react-navigation/native";
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import {
     StyleProp,
     Text,
@@ -31,18 +31,18 @@ export default function ScreenWrapper({
     const navigation = useNavigation();
     const insets = useSafeAreaInsets();
 
+    // On affiche le header si on a un titre, un bouton retour OU des actions
+    const hasHeader = title || back || rightActions;
+
     return (
         <SafeAreaView
             style={{
                 flex: 1,
-                // backgroundColor: "#0977e6ff",
                 backgroundColor: "#F9FAFB",
-                paddingTop: 0,
-                paddingBottom: -insets.bottom,
             }}
         >
             {/* Header */}
-            {title && (
+            {hasHeader && (
                 <View
                     style={{
                         flexDirection: "row",
@@ -50,23 +50,24 @@ export default function ScreenWrapper({
                         justifyContent: "center",
                         paddingHorizontal: 16,
                         paddingVertical: 12,
+                        minHeight: 56, // On ajoute une hauteur minimale
                         backgroundColor: "#fff",
                         borderRadius: 18,
                         marginBottom: 16,
                         shadowColor: "#000",
                         shadowOpacity: 0.05,
                         shadowRadius: 6,
-                        position: "relative", // pour positionner les boutons absolus
+                        position: "relative",
                     }}
                 >
-                    {/* Bouton Back */}
+                    {/* Bouton Back - Sorti de la condition title */}
                     {back && (
                         <TouchableOpacity
                             onPress={() => navigation.goBack()}
                             style={{
                                 position: "absolute",
                                 left: 16,
-                                top: "50%",
+                                zIndex: 10, // S'assure qu'il est cliquable
                             }}
                         >
                             <FeatherIcon
@@ -77,28 +78,33 @@ export default function ScreenWrapper({
                         </TouchableOpacity>
                     )}
 
-                    {/* Titre centré */}
-                    <Text
-                        style={{
-                            fontSize: 18,
-                            fontWeight: "700",
-                            color: "#111827",
-                            textAlign: "center",
-                        }}
-                        numberOfLines={1}
-                    >
-                        {title}
-                    </Text>
+                    {/* Titre centré - Toujours présent si fourni */}
+                    {title ? (
+                        <Text
+                            style={{
+                                fontSize: 18,
+                                fontWeight: "700",
+                                color: "#111827",
+                                textAlign: "center",
+                                maxWidth: "70%", // Évite de chevaucher les boutons
+                            }}
+                            numberOfLines={1}
+                        >
+                            {title}
+                        </Text>
+                    ) : (
+                        <View style={{ height: 24 }} /> // Espaceur si pas de titre
+                    )}
 
-                    {/* Boutons à droite */}
+                    {/* Boutons à droite - Sorti de la condition title */}
                     {rightActions && (
                         <View
                             style={{
                                 position: "absolute",
                                 right: 16,
-                                top: "50%",
                                 flexDirection: "row",
                                 gap: 16,
+                                zIndex: 10,
                             }}
                         >
                             {rightActions}
@@ -109,11 +115,13 @@ export default function ScreenWrapper({
 
             {/* Contenu de l’écran */}
             <View
-                style={{
-                    flex: 1,
-                    paddingHorizontal: 16,
-                    ...style,
-                }}
+                style={[
+                    {
+                        flex: 1,
+                        paddingHorizontal: 16,
+                    },
+                    style, // Utilisation propre du style array/object
+                ]}
             >
                 {children}
             </View>

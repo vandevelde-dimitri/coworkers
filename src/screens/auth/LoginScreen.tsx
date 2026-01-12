@@ -5,6 +5,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import * as yup from "yup";
+import { showToast } from "../../../utils/showToast";
 import { supabase } from "../../../utils/supabase";
 import ScreenWrapper from "../../components/ui/CustomHeader";
 import { FormInput } from "../../components/ui/FormInput";
@@ -31,6 +32,7 @@ export default function LoginScreen() {
             return;
         }
 
+        showToast("success", "Connexion réussie !");
         // Login réussi → récupérer la redirection
         const redirectStr = await SecureStore.getItemAsync("redirectTo");
         if (redirectStr) {
@@ -53,7 +55,7 @@ export default function LoginScreen() {
         }
     };
     return (
-        <ScreenWrapper>
+        <ScreenWrapper back>
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{
@@ -92,6 +94,7 @@ export default function LoginScreen() {
                         name="email"
                         label="Email"
                         placeholder="john@doe.fr"
+                        type="email"
                     />
 
                     <FormInput
@@ -99,6 +102,7 @@ export default function LoginScreen() {
                         name="password"
                         label="Mot de passe"
                         placeholder="*******"
+                        type="password"
                     />
                     <TouchableOpacity
                         onPress={handleSubmit(handleLogin)}

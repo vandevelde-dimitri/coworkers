@@ -77,7 +77,7 @@ export default function ProfileScreen() {
                         icon="external-link"
                         onPress={() =>
                             Linking.openURL(
-                                "https://dimdev.notion.site/politique-de-confidentialite-coworkers-XXXXXXXXXXXX"
+                                "https://coworkers-legal.vercel.app/politique_confidentialite"
                             )
                         }
                     />
@@ -86,7 +86,7 @@ export default function ProfileScreen() {
                         icon="external-link"
                         onPress={() =>
                             Linking.openURL(
-                                "https://dimdev.notion.site/conditions-utilisation-coworkers-XXXXXXXXXXXX"
+                                "https://coworkers-legal.vercel.app/"
                             )
                         }
                     />
