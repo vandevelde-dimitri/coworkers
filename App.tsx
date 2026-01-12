@@ -21,7 +21,7 @@ export default function App() {
                 <Toast
                     config={toastConfig}
                     position="bottom"
-                    bottomOffset={100}
+                    bottomOffset={120}
                 />
             </AuthProvider>
         </QueryClientProvider>

@@ -39,6 +39,7 @@ export default function ScreenWrapper({
             style={{
                 flex: 1,
                 backgroundColor: "#F9FAFB",
+                paddingBottom: -insets.bottom,
             }}
         >
             {/* Header */}
