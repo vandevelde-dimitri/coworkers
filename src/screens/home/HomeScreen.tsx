@@ -7,6 +7,7 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
+import { showToast } from "../../../utils/showToast";
 import AnnouncementCardList from "../../components/AnnouncementCardList";
 import ScreenWrapper from "../../components/ui/CustomHeader";
 import EmptyState from "../../components/ui/EmptyComponent";
@@ -89,6 +90,14 @@ export default function HomeScreen() {
         );
     }
 
+    const openToast = () => {
+        showToast(
+            "error",
+            "Annonce créée",
+            "Votre annonce a été créée avec succès !"
+        );
+    };
+
     return (
         <ScreenWrapper
             title={session ? "Annonce pour Lil1" : "Annonces disponibles"}
@@ -152,6 +161,24 @@ export default function HomeScreen() {
                     ))}
                 </View>
             </View>
+            <TouchableOpacity
+                onPress={openToast}
+                style={{
+                    backgroundColor: "#ef4444",
+                    padding: 16,
+                    borderRadius: 16,
+                }}
+            >
+                <Text
+                    style={{
+                        color: "#fff",
+                        textAlign: "center",
+                        fontWeight: "600",
+                    }}
+                >
+                    Afficher toast
+                </Text>
+            </TouchableOpacity>
             <FlatList
                 data={rides}
                 keyExtractor={(item) => item.id}
