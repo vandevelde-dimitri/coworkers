@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import Toast from "react-native-toast-message";
 import deleteAnnouncement from "../../api/announcement/deleteAnnouncement";
 import { getAllAnnouncementByFc } from "../../api/announcement/getAllAnnouncementByFc";
 import { getAllAnnouncementFavorite } from "../../api/announcement/getAllAnnouncementFavorite";
@@ -52,6 +53,13 @@ export function useAddAnnouncement() {
             queryClient.invalidateQueries({ queryKey: ["announcements"] });
             queryClient.invalidateQueries({
                 queryKey: ["announcement", "currentUser"],
+            });
+            Toast.show({
+                type: "coworkerAlert", // ou 'coworkerAlert' si tu veux ton style perso
+                text1: "Succès ! ✨",
+                text2: "L'annonce a été modifiée avec succès.",
+                position: "bottom",
+                visibilityTime: 5000, // Le toast reste 2 secondes
             });
             // // 🔄 refresh conversations
             // queryClient.invalidateQueries({

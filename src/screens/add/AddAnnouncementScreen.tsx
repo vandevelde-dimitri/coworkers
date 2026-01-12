@@ -88,21 +88,20 @@ export default function FormAnnouncementScreen() {
                 { id: id as string, body: data },
                 {
                     onSuccess: () => {
-                        Alert.alert("Succès", "Annonce modifiée !", [
-                            {
-                                text: "OK",
-                                onPress: () =>
-                                    navigation.navigate("HomeStack", {
-                                        screen: "HomeScreen",
-                                    }),
-                            },
-                        ]);
+                        // 2. On redirige l'utilisateur
+                        // Note : Le toast restera visible même pendant la transition vers l'autre écran !
+                        navigation.navigate("HomeStack", {
+                            screen: "HomeScreen",
+                        });
                     },
-                    onError: () =>
+                    onError: (error) => {
+                        // 3. Toast en cas d'erreur
                         Alert.alert(
                             "Erreur",
                             "Impossible de modifier l'annonce"
-                        ),
+                        );
+                        console.error(error);
+                    },
                 }
             );
         } else {
@@ -168,15 +167,9 @@ export default function FormAnnouncementScreen() {
                         }
 
                         reset();
-                        Alert.alert("Succès", "Annonce créée !", [
-                            {
-                                text: "OK",
-                                onPress: () =>
-                                    navigation.navigate("HomeStack", {
-                                        screen: "HomeScreen",
-                                    }),
-                            },
-                        ]);
+                        navigation.navigate("HomeStack", {
+                            screen: "HomeScreen",
+                        });
                     } catch (err) {
                         console.error(
                             "Erreur création annonce / conversation :",
