@@ -3,7 +3,7 @@ import Toast from "react-native-toast-message";
 import { haptic } from "./hapticToast";
 
 export function showToast(
-    type: "success" | "error" | "info",
+    type: "success" | "error" | "info" | "warning",
     text1: string,
     text2?: string,
     duration?: number

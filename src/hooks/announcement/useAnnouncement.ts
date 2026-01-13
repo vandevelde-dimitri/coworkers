@@ -48,7 +48,7 @@ export function useAddAnnouncement() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (body: AnnouncementFormValues) => addAnnouncement(body),
+        mutationFn: addAnnouncement,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["announcements"] });
             queryClient.invalidateQueries({
@@ -56,14 +56,23 @@ export function useAddAnnouncement() {
             });
             showToast(
                 "success",
-                "Annonce créée avec succès !",
-                "Une conversation a été ouverte."
+                "Annonce créée avec succès",
+                "Une conversation a été ouverte"
             );
-
-            // // 🔄 refresh conversations
-            // queryClient.invalidateQueries({
-            //     queryKey: ["user-conversations", session?.user.id],
-            // });
+        },
+        onError: (error: any) => {
+            if (error?.code === "23505") {
+                showToast(
+                    "warning",
+                    "Annonce déjà active",
+                    "Vous avez déjà une annonce en cours"
+                );
+                return;
+            }
+            showToast(
+                "error",
+                "Une erreur est survenue lors de la création de l'annonce."
+            );
         },
     });
 }
@@ -87,6 +96,12 @@ export function useUpdateAnnouncement() {
             });
             showToast("success", "Votre annonce à était modifié avec succès !");
         },
+        onError: () => {
+            showToast(
+                "error",
+                "Une erreur est survenue lors de la modification de l'annonce."
+            );
+        },
     });
 }
 
@@ -106,6 +121,12 @@ export function useDeleteAnnouncement() {
                 exact: false,
             });
             showToast("success", "Votre annonce à était supprimé !");
+        },
+        onError: () => {
+            showToast(
+                "error",
+                "Une erreur est survenue lors de la suppression de l'annonce."
+            );
         },
     });
 }

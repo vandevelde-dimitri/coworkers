@@ -3,12 +3,13 @@ import {
     useNavigation,
     useRoute,
 } from "@react-navigation/native";
-import React from "react";
+import React, { useState } from "react";
 import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { isMyAnnouncement } from "../../../utils/announcementUtils";
 import ApplyButton from "../../components/ApplyButton";
 import FavoriteButton from "../../components/FavoriteButton";
 import { Card } from "../../components/ui/Card";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 import ScreenWrapper from "../../components/ui/CustomHeader";
 import RemoveParticipantButton from "../../components/ui/RemoveParticipantButton";
 import SmartImage from "../../components/ui/SmartImage";
@@ -24,7 +25,7 @@ export default function AnnouncementDetailScreen() {
     const navigation = useNavigation<NavigationProp<HomeStackParamList>>();
     const { id } = route.params as { id: string };
     const { session } = useAuth();
-
+    const [open, setOpen] = useState(false);
     const { data: announcement, isLoading, error } = useAnnouncementById(id);
     const { mutate: deleteAnnouncement } = useDeleteAnnouncement();
     const isOwner = isMyAnnouncement(announcement, session?.user.id);
@@ -33,7 +34,6 @@ export default function AnnouncementDetailScreen() {
     if (error) return <Text>Error loading announcement</Text>;
     if (!announcement) return <Text>Annonce introuvable</Text>;
 
-    console.log("Détail screen => ", announcement.participant_requests);
     const handleEdit = () => {
         if (!isOwner) return;
         navigation.navigate("FormStack", {
@@ -179,7 +179,12 @@ export default function AnnouncementDetailScreen() {
                 {isOwner ? (
                     <>
                         <TouchableOpacity
-                            onPress={handleEdit}
+                            onPress={() =>
+                                navigation.navigate("FormStack", {
+                                    screen: "FormAnnouncementScreen",
+                                    params: { id },
+                                })
+                            }
                             style={{
                                 backgroundColor: "#2563eb",
                                 padding: 16,
@@ -197,9 +202,8 @@ export default function AnnouncementDetailScreen() {
                                 Modifier
                             </Text>
                         </TouchableOpacity>
-
                         <TouchableOpacity
-                            onPress={handleDelete}
+                            onPress={() => setOpen(true)}
                             style={{
                                 backgroundColor: "#ef4444",
                                 padding: 16,
@@ -216,6 +220,19 @@ export default function AnnouncementDetailScreen() {
                                 Supprimer
                             </Text>
                         </TouchableOpacity>
+                        <ConfirmModal
+                            visible={open}
+                            title="Supprimer cette annonce ?"
+                            description="Cette action est définitive et ne pourra pas être annulée."
+                            confirmLabel="Supprimer"
+                            onCancel={() => setOpen(false)}
+                            onConfirm={() => {
+                                setOpen(false);
+                                deleteAnnouncement(id);
+                                navigation.popToTop();
+                            }}
+                            danger
+                        />
                     </>
                 ) : (
                     <>

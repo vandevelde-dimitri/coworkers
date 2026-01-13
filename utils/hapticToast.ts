@@ -25,4 +25,11 @@ export const haptic = {
             Vibration.vibrate(20);
         }
     },
+    warning() {
+        if (Platform.OS === "ios") {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        } else {
+            Vibration.vibrate(20);
+        }
+    },
 };

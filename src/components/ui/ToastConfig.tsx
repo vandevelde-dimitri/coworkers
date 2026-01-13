@@ -75,4 +75,21 @@ export const toastConfig = {
             </Container>
         );
     },
+    warning: ({ text1, text2 }: BaseToastProps) => {
+        return (
+            <Container bg="#FFFBEB" border="#F59E0B">
+                <FeatherIcon name="alert-triangle" size={22} color="#F59E0B" />
+                <View style={{ marginLeft: 10 }}>
+                    <Text style={{ fontWeight: "700", color: "#92400E" }}>
+                        {text1}
+                    </Text>
+                    {text2 && (
+                        <Text style={{ color: "#B45309", marginTop: 2 }}>
+                            {text2}
+                        </Text>
+                    )}
+                </View>
+            </Container>
+        );
+    },
 };
