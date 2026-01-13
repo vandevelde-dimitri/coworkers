@@ -16,6 +16,7 @@ import ScreenWrapper from "../../components/ui/CustomHeader";
 import EmptyState from "../../components/ui/EmptyComponent";
 import RemoveParticipantButton from "../../components/ui/RemoveParticipantButton";
 import SmartImage from "../../components/ui/SmartImage";
+import { useAuth } from "../../contexts/authContext";
 import {
     useAnnouncementCurrentUser,
     useDeleteAnnouncement,
@@ -24,7 +25,7 @@ import { useRequireAuth } from "../../hooks/useRequireAuth";
 
 export default function TravelScreen() {
     useRequireAuth();
-
+    const { session } = useAuth();
     const navigation = useNavigation();
     const {
         data: announcement,
@@ -34,6 +35,8 @@ export default function TravelScreen() {
 
     // Hooks must be called unconditionally — placer la mutation en haut
     const deleteMutation = useDeleteAnnouncement();
+
+    if (!session) return null;
 
     // 1️⃣ Loading
     if (isLoading) {

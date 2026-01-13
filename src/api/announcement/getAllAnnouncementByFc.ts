@@ -12,9 +12,6 @@ export async function getAllAnnouncementByFc(
         p_offset: (page - 1) * pageSize,
     });
 
-    console.log("fc_id", fc_id);
-    console.log("RPC data", data);
-    console.log("RPC error", error);
     if (error) throw error;
 
     return {

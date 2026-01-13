@@ -36,7 +36,7 @@ export default function ConversationItem({
                             numberOfLines={1}
                             style={{ color: "#6b7280", fontSize: 13 }}
                         >
-                            {item.last_message}
+                            {item.last_message || "Aucun message"}
                         </Text>
                     </View>
                     <View
