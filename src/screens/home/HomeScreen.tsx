@@ -67,7 +67,7 @@ export default function HomeScreen() {
         const center = centersOptions.find(
             (opt) => opt.value === selectedCenter
         );
-        return center?.value === "" ? "Tous les centres" : center?.label;
+        return center?.value === "" ? "" : center?.label;
     }, [selectedCenter, centersOptions]);
 
     const sortOptions = [
@@ -151,7 +151,7 @@ export default function HomeScreen() {
         <ScreenWrapper
             title={
                 selectedCenterLabel
-                    ? `Annonces : ${selectedCenterLabel}`
+                    ? `Annonces pour ${selectedCenterLabel}`
                     : "Annonces disponibles"
             }
         >
