@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import Toast from "react-native-toast-message";
+import { showToast } from "../../../utils/showToast";
 import deleteAnnouncement from "../../api/announcement/deleteAnnouncement";
 import { getAllAnnouncementByFc } from "../../api/announcement/getAllAnnouncementByFc";
 import { getAllAnnouncementFavorite } from "../../api/announcement/getAllAnnouncementFavorite";
@@ -7,7 +7,6 @@ import { getAnnouncementById } from "../../api/announcement/getAnnouncementById"
 import { getAnnouncementByCurrentUser } from "../../api/announcement/getAnnouncementCurrentUser";
 import addAnnouncement from "../../api/announcement/postAnnouncement";
 import updateAnnouncement from "../../api/announcement/updateAnnouncement";
-import { useAuth } from "../../contexts/authContext";
 import { AnnouncementFormValues } from "../../types/announcement.interface";
 
 export function useAnnouncementByFc(
@@ -47,24 +46,20 @@ export function useAnnouncementsFavorites(page: number, pageSize: number = 5) {
 
 export function useAddAnnouncement() {
     const queryClient = useQueryClient();
-    const { session } = useAuth();
 
     return useMutation({
         mutationFn: (body: AnnouncementFormValues) => addAnnouncement(body),
         onSuccess: () => {
-            // Invalidation du cache pour forcer le rechargement des listes d'annonces
-            // et de l'annonce de l'utilisateur courant (utilisé par TravelScreen)
             queryClient.invalidateQueries({ queryKey: ["announcements"] });
             queryClient.invalidateQueries({
                 queryKey: ["announcement", "currentUser"],
             });
-            Toast.show({
-                type: "coworkerAlert", // ou 'coworkerAlert' si tu veux ton style perso
-                text1: "Succès ! ✨",
-                text2: "L'annonce a été modifiée avec succès.",
-                position: "bottom",
-                visibilityTime: 5000, // Le toast reste 2 secondes
-            });
+            showToast(
+                "success",
+                "Annonce créée avec succès !",
+                "Une conversation a été ouverte."
+            );
+
             // // 🔄 refresh conversations
             // queryClient.invalidateQueries({
             //     queryKey: ["user-conversations", session?.user.id],
@@ -85,13 +80,12 @@ export function useUpdateAnnouncement() {
             body: AnnouncementFormValues;
         }) => updateAnnouncement(id, body),
         onSuccess: (_, { id }) => {
-            // Invalidation du cache pour l'annonce spécifique et la liste
             queryClient.invalidateQueries({ queryKey: ["announcement", id] });
             queryClient.invalidateQueries({ queryKey: ["announcements"] });
-            // Aussi invalider l'annonce du user courant au cas où il modifie sa propre annonce
             queryClient.invalidateQueries({
                 queryKey: ["announcement", "currentUser"],
             });
+            showToast("success", "Votre annonce à était modifié avec succès !");
         },
     });
 }
@@ -103,9 +97,7 @@ export function useDeleteAnnouncement() {
         mutationFn: (id: string) => deleteAnnouncement(id),
 
         onSuccess: () => {
-            // Invalidation du cache pour forcer le rechargement des listes d'annonces
             queryClient.invalidateQueries({ queryKey: ["announcements"] });
-            // Si l'utilisateur supprime son annonce, s'assurer que l'écran Mon annonce est mis à jour
             queryClient.invalidateQueries({
                 queryKey: ["announcement", "currentUser"],
             });
@@ -113,6 +105,7 @@ export function useDeleteAnnouncement() {
                 queryKey: ["user-conversations"],
                 exact: false,
             });
+            showToast("success", "Votre annonce à était supprimé !");
         },
     });
 }

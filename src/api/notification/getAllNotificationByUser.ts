@@ -76,6 +76,9 @@ function getMessageByStatus(
         case StatusNotification.REJECTED:
             return `Vous avez refusé une candidature pour "${annonce_title}"`;
 
+        case StatusNotification.DELETE:
+            return `Vous avez supprimée l'annonce "${annonce_title}"`;
+
         default:
             return "Aucune notification disponible.";
     }
