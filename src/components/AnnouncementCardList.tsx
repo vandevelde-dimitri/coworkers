@@ -31,11 +31,11 @@ export default function AnnouncementCardList({
                     size={44}
                     userData={{
                         image_profile:
-                            data.image_profile || data.users.image_profile,
+                            data.image_profile || data.users?.image_profile,
                         avatar_updated_at:
                             data.avatar_updated_at ||
-                            data.users.avatar_updated_at,
-                        contract: data.contract || data.users.contract,
+                            data.users?.avatar_updated_at,
+                        contract: data.contract || data.users?.contract,
                     }}
                 />
                 <View style={{ marginLeft: 12 }}>

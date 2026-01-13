@@ -1,5 +1,6 @@
 import { Image } from "expo-image";
 import React from "react";
+
 import { Contract } from "../../types/enum/contract.enum";
 
 type SmartImageProps = {
@@ -19,7 +20,7 @@ const SmartImage = ({ userData, size = 80 }: SmartImageProps) => {
         : null;
 
     const fallbackImage =
-        "https://ui-avatars.com/api/?name=User&background=random";
+        "https://ctkoosixwtoxxtilcuqh.supabase.co/storage/v1/object/public/avatars/1903ad4c-4a65-4cb0-a21c-9590c00b6b63/avatar.webp";
 
     return (
         <Image

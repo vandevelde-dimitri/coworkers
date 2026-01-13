@@ -89,18 +89,17 @@ export default function UpdateAvatarScreen() {
                 style: "destructive",
                 onPress: async () => {
                     try {
-                        setLoading(true);
-
                         await supabase
-                            .from("profiles")
-                            .update({ avatar_url: null })
+                            .from("users")
+                            .update({
+                                image_profile: null,
+                                avatar_updated_at: new Date(),
+                            })
                             .eq("id", userId);
 
                         Alert.alert("Photo supprimée");
                     } catch (e: any) {
                         Alert.alert("Erreur", e.message);
-                    } finally {
-                        setLoading(false);
                     }
                 },
             },
@@ -112,16 +111,7 @@ export default function UpdateAvatarScreen() {
     return (
         <ScreenWrapper back title="Photo de profil">
             <View style={{ alignItems: "center", marginTop: 24 }}>
-                <SmartImage
-                    userData={user}
-                    size={120}
-                    // source={
-                    //     avatarUrl
-                    //         ? { uri: avatarUrl }
-                    //         : require("../../../assets/avatar-placeholder.png")
-                    // }
-                    // style={avatar}
-                />
+                <SmartImage userData={user} size={120} />
 
                 <View style={{ width: "100%", marginTop: 32 }}>
                     <Action
