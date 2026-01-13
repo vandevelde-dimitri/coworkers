@@ -91,7 +91,7 @@ export default function ProfileScreen() {
                         }
                     />
                     <ActionRow
-                        label="Contacter le développeur"
+                        label="Contacter le support"
                         icon="mail"
                         onPress={() =>
                             Linking.openURL("mailto:vandevdimitri@gmail.com")

@@ -7,7 +7,6 @@ export function ProfileCard() {
     const { data: user, isLoading } = useCurrentUser();
     const { session } = useAuth();
     if (isLoading) return <Text>Loading...</Text>;
-    console.log("user => ", user);
 
     return (
         <View style={styles.profileCard}>

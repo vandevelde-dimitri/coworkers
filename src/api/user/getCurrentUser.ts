@@ -12,6 +12,7 @@ export async function getCurrentUser(session: Session): Promise<User> {
         .select(
             `*,
             fc:fc_id ( 
+            id,
         name
       )`
         )

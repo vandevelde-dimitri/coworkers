@@ -1,22 +1,20 @@
 import { supabase } from "../../../utils/supabase";
 import { AnnouncementWithUser } from "../../types/announcement.interface";
 
-// getAllAnnouncementByFc.ts
 export async function getAllAnnouncementByFc(
     page: number,
-    pageSize: number = 5
+    pageSize: number = 5,
+    fc_id?: string | null
 ): Promise<{ data: AnnouncementWithUser[]; totalCount: number }> {
-    const { data: sessionData, error: sessionError } =
-        await supabase.auth.getSession();
-    if (sessionError) throw sessionError;
-    const userId = sessionData?.session?.user?.id;
-
     const { data, error } = await supabase.rpc("get_annonces_for_user", {
-        p_user_id: userId ?? null,
+        p_fc_id: fc_id ? fc_id : null,
         p_limit: pageSize,
         p_offset: (page - 1) * pageSize,
     });
 
+    console.log("fc_id", fc_id);
+    console.log("RPC data", data);
+    console.log("RPC error", error);
     if (error) throw error;
 
     return {

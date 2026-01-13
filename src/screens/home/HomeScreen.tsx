@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
     FlatList,
     Text,
@@ -7,40 +7,83 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
-import { showToast } from "../../../utils/showToast";
 import AnnouncementCardList from "../../components/AnnouncementCardList";
 import ScreenWrapper from "../../components/ui/CustomHeader";
 import EmptyState from "../../components/ui/EmptyComponent";
+import { IconButtonSelect } from "../../components/ui/InputButtonSelect";
 import Pagination from "../../components/ui/Pagination";
 import { useAuth } from "../../contexts/authContext";
 import { useAnnouncementByFc } from "../../hooks/announcement/useAnnouncement";
+import { useFloorsAll } from "../../hooks/useFloor";
+import { useCurrentUser } from "../../hooks/user/useUsers";
 import { AnnouncementWithUser } from "../../types/announcement.interface";
 
 type SortBy = "date" | "seats" | "from";
 const PAGE_SIZE = 5;
 
 export default function HomeScreen() {
-    const [page, setPage] = useState(1);
-    const { session } = useAuth();
-    const { data, isLoading, error } = useAnnouncementByFc(page, PAGE_SIZE);
     const navigation = useNavigation();
+    const { session } = useAuth();
+    const { data: currentUser } = useCurrentUser();
+    const { data: floors } = useFloorsAll();
 
+    // États de filtrage
+    const [page, setPage] = useState(1);
     const [search, setSearch] = useState("");
     const [sortBy, setSortBy] = useState<SortBy>("date");
+    const [selectedCenter, setSelectedCenter] = useState<string | null>(null);
 
-    // On extrait les données du nouvel objet de retour
+    // Initialiser le centre par défaut avec celui de l'utilisateur
+    useEffect(() => {
+        if (currentUser?.fc_id && !selectedCenter) {
+            setSelectedCenter(currentUser.fc_id);
+        }
+    }, [currentUser]);
+
+    // On passe selectedCenter au hook pour filtrer au niveau de la DB
+    const { data, isLoading, error } = useAnnouncementByFc(
+        page,
+        PAGE_SIZE,
+        selectedCenter
+    );
+
     const announcements = data?.data || [];
     const totalCount = data?.totalCount || 0;
     const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
+    // Options pour le sélecteur (transformées depuis la DB)
+    const centersOptions = useMemo(() => {
+        const options =
+            floors?.map((c) => ({
+                label: c.name,
+                value: c.id,
+            })) || [];
+        // On peut ajouter une option pour tout voir
+        return [{ label: "Tous les centres", value: "" }, ...options];
+    }, [floors]);
+
+    // Label du centre actuellement sélectionné (pour le titre)
+    const selectedCenterLabel = useMemo(() => {
+        const center = centersOptions.find(
+            (opt) => opt.value === selectedCenter
+        );
+        return center?.value === "" ? "Tous les centres" : center?.label;
+    }, [selectedCenter, centersOptions]);
+
+    const sortOptions = [
+        { label: "Plus récent", value: "date" },
+        { label: "Places", value: "seats" },
+        { label: "Près de moi", value: "from" },
+    ];
+
+    // Logique de tri et recherche locale
     const rides = useMemo(() => {
         if (!announcements) return [];
-
-        let data = [...announcements];
+        let filteredData = [...announcements];
 
         if (search.trim()) {
             const q = search.toLowerCase();
-            data = data.filter(
+            filteredData = filteredData.filter(
                 (a) =>
                     a.title.toLowerCase().includes(q) ||
                     a.content.toLowerCase().includes(q) ||
@@ -50,61 +93,72 @@ export default function HomeScreen() {
 
         switch (sortBy) {
             case "date":
-                data.sort(
+                filteredData.sort(
                     (a, b) =>
                         new Date(b.date_start).getTime() -
                         new Date(a.date_start).getTime()
                 );
                 break;
             case "seats":
-                data.sort((a, b) => b.number_of_places - a.number_of_places);
+                filteredData.sort(
+                    (a, b) => b.number_of_places - a.number_of_places
+                );
                 break;
             case "from":
-                data.sort((a, b) => a.city.localeCompare(b.city));
+                filteredData.sort((a, b) => a.city.localeCompare(b.city));
                 break;
         }
-
-        return data;
+        return filteredData;
     }, [announcements, search, sortBy]);
 
     const renderItem = useCallback(
-        ({ item: announcements }: { item: AnnouncementWithUser }) => (
-            <AnnouncementCardList data={announcements} key={announcements.id} />
+        ({ item }: { item: AnnouncementWithUser }) => (
+            <AnnouncementCardList data={item} key={item.id} />
         ),
-        [navigation]
+        []
     );
 
-    if (isLoading) {
+    if (isLoading)
         return (
-            <View>
-                <Text>Loading...</Text>
-            </View>
+            <ScreenWrapper title="Chargement...">
+                <View
+                    style={{
+                        flex: 1,
+                        justifyContent: "center",
+                        alignItems: "center",
+                    }}
+                >
+                    <Text>Chargement des annonces...</Text>
+                </View>
+            </ScreenWrapper>
         );
-    }
-
-    if (error) {
+    if (error)
         return (
-            <View>
-                <Text>Error loading announcements</Text>
-            </View>
+            <ScreenWrapper title="Erreur">
+                <View
+                    style={{
+                        flex: 1,
+                        justifyContent: "center",
+                        alignItems: "center",
+                    }}
+                >
+                    <Text>Erreur lors du chargement</Text>
+                </View>
+            </ScreenWrapper>
         );
-    }
-
-    const openToast = () => {
-        showToast(
-            "success",
-            "Annonce créée",
-            "Votre annonce a été créée avec succès !"
-        );
-    };
 
     return (
         <ScreenWrapper
-            title={session ? "Annonce pour Lil1" : "Annonces disponibles"}
+            title={
+                selectedCenterLabel
+                    ? `Annonces : ${selectedCenterLabel}`
+                    : "Annonces disponibles"
+            }
         >
             <View>
+                {/* Barre de recherche */}
                 <TextInput
-                    placeholder="Rechercher une annonce..."
+                    placeholder="Rechercher une ville, un titre..."
                     value={search}
                     onChangeText={setSearch}
                     style={{
@@ -119,18 +173,16 @@ export default function HomeScreen() {
                     }}
                 />
 
+                {/* Filtres et Bouton Select */}
                 <View
                     style={{
                         flexDirection: "row",
                         marginBottom: 16,
                         flexWrap: "wrap",
+                        alignItems: "center",
                     }}
                 >
-                    {[
-                        { label: "Plus récent", value: "date" },
-                        { label: "Places", value: "seats" },
-                        { label: "Près de moi", value: "from" },
-                    ].map((option) => (
+                    {sortOptions.map((option) => (
                         <TouchableOpacity
                             key={option.value}
                             onPress={() => setSortBy(option.value as SortBy)}
@@ -159,39 +211,33 @@ export default function HomeScreen() {
                             </Text>
                         </TouchableOpacity>
                     ))}
+
+                    {/* Nouveau Bouton Liste de choix pour les centres */}
+                    <IconButtonSelect
+                        options={centersOptions}
+                        selectedValue={selectedCenter}
+                        onSelect={(val) => {
+                            setSelectedCenter(val);
+                            setPage(1); // On revient à la page 1 lors d'un changement de filtre
+                        }}
+                    />
                 </View>
             </View>
-            <TouchableOpacity
-                onPress={openToast}
-                style={{
-                    backgroundColor: "#ef4444",
-                    padding: 16,
-                    borderRadius: 16,
-                }}
-            >
-                <Text
-                    style={{
-                        color: "#fff",
-                        textAlign: "center",
-                        fontWeight: "600",
-                    }}
-                >
-                    Afficher toast
-                </Text>
-            </TouchableOpacity>
+
             <FlatList
                 data={rides}
                 keyExtractor={(item) => item.id}
                 renderItem={renderItem}
                 contentContainerStyle={{
                     flexGrow: 1,
+                    paddingBottom: 20,
                     justifyContent:
                         rides.length === 0 ? "center" : "flex-start",
                 }}
                 ListEmptyComponent={
                     <EmptyState
-                        title="Aucune annonce disponible"
-                        description="Il n’y a pas encore d’annonce correspondant à votre centre ou à vos critères."
+                        title="Aucune annonce"
+                        description="Essayez de changer de centre ou de critères de recherche."
                         actionLabel="Créer une annonce"
                         onAction={() =>
                             (navigation as any).navigate("FormStack", {
@@ -202,11 +248,13 @@ export default function HomeScreen() {
                 }
                 showsVerticalScrollIndicator={false}
                 ListFooterComponent={
-                    <Pagination
-                        currentPage={page}
-                        totalPages={totalPages}
-                        onPageChange={(newPage) => setPage(newPage)}
-                    />
+                    totalPages > 1 ? (
+                        <Pagination
+                            currentPage={page}
+                            totalPages={totalPages}
+                            onPageChange={(newPage) => setPage(newPage)}
+                        />
+                    ) : null
                 }
             />
         </ScreenWrapper>

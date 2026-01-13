@@ -10,11 +10,15 @@ import updateAnnouncement from "../../api/announcement/updateAnnouncement";
 import { useAuth } from "../../contexts/authContext";
 import { AnnouncementFormValues } from "../../types/announcement.interface";
 
-export function useAnnouncementByFc(page: number, pageSize: number = 5) {
+export function useAnnouncementByFc(
+    page: number,
+    pageSize: number = 5,
+    fc_id?: string | null
+) {
     return useQuery({
-        queryKey: ["announcements", page], // La page fait partie de la clé
-        queryFn: () => getAllAnnouncementByFc(page, pageSize),
-        placeholderData: (previousData) => previousData, // Garde les données affichées pendant le chargement
+        queryKey: ["announcements", page, pageSize, fc_id ?? "all"],
+        queryFn: () => getAllAnnouncementByFc(page, pageSize, fc_id),
+        placeholderData: (previousData) => previousData,
     });
 }
 
