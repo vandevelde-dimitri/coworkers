@@ -55,3 +55,38 @@ export async function getAllAnnouncementFavorite(
         totalCount: count || 0,
     };
 }
+
+export async function getFavoriteStatus(
+    userId: string,
+    annonceId: string
+): Promise<boolean> {
+    const { data, error } = await supabase
+        .from("user_annonces")
+        .select("favorite")
+        .eq("user_id", userId)
+        .eq("annonce_id", annonceId)
+        .maybeSingle();
+
+    if (error) throw error;
+
+    return !!data?.favorite;
+}
+
+export async function toggleFavorite(
+    userId: string,
+    annonceId: string,
+    value: boolean
+) {
+    const { error } = await supabase.from("user_annonces").upsert(
+        [
+            {
+                user_id: userId,
+                annonce_id: annonceId,
+                favorite: value,
+            },
+        ],
+        { onConflict: "user_id,annonce_id" }
+    );
+
+    if (error) throw error;
+}
