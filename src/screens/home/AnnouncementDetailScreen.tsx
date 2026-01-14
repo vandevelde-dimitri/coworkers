@@ -238,16 +238,6 @@ export default function AnnouncementDetailScreen() {
                     <>
                         <ApplyButton annonce={announcement} />
                         <FavoriteButton annonceId={announcement.id} />
-                        <Text
-                            style={{
-                                textAlign: "center",
-                                marginTop: 10,
-                                color: "#6b7280",
-                            }}
-                        >
-                            {announcement.myStatus &&
-                                `Statut : ${announcement.myStatus}`}
-                        </Text>
                     </>
                 )}
             </ScrollView>
