@@ -7,6 +7,7 @@ import AppNavigator from "./src/AppNavigator";
 import { toastConfig } from "./src/components/ui/ToastConfig";
 import { AuthProvider } from "./src/contexts/authContext";
 import { MessageProvider } from "./src/contexts/messageContext";
+import { NotificationProvider } from "./src/contexts/notificationContext";
 
 const Tab = createBottomTabNavigator();
 export default function App() {
@@ -14,10 +15,12 @@ export default function App() {
     return (
         <QueryClientProvider client={queryClient}>
             <AuthProvider>
-                <MessageProvider>
-                    <StatusBar style="auto" />
-                    <AppNavigator />
-                </MessageProvider>
+                <NotificationProvider>
+                    <MessageProvider>
+                        <StatusBar style="auto" />
+                        <AppNavigator />
+                    </MessageProvider>
+                </NotificationProvider>
                 <Toast
                     config={toastConfig}
                     position="bottom"

@@ -3,7 +3,7 @@ import type { NavigationProp } from "@react-navigation/native";
 
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
-import { Linking, ScrollView, TouchableOpacity } from "react-native";
+import { Linking, ScrollView, TouchableOpacity, View } from "react-native";
 import { formatDate } from "../../../utils/formatedDate";
 import { ProfileCard } from "../../components/ProfileCard";
 import { ActionRow } from "../../components/ui/ActionRaw";
@@ -11,6 +11,7 @@ import ScreenWrapper from "../../components/ui/CustomHeader";
 import { Section } from "../../components/ui/CustomSection";
 import { InfoRow } from "../../components/ui/InfoRaw";
 import { useAuth } from "../../contexts/authContext";
+import { useNotificationStatus } from "../../contexts/notificationContext";
 import { useCurrentUser } from "../../hooks/user/useUsers";
 import { useRequireAuth } from "../../hooks/useRequireAuth";
 import { ProfileStackParamList } from "../../types/navigation/profileStackType";
@@ -18,6 +19,7 @@ import { ProfileStackParamList } from "../../types/navigation/profileStackType";
 export default function ProfileScreen() {
     useRequireAuth("ProfileStack");
     const { data: user } = useCurrentUser();
+    const { hasNewNotification, clearNotifications } = useNotificationStatus();
     const { session } = useAuth();
     const navigation = useNavigation<NavigationProp<ProfileStackParamList>>();
     const formatedDate = formatDate(session?.user.created_at || "");
@@ -27,9 +29,25 @@ export default function ProfileScreen() {
     const right_buttons = (
         <>
             <TouchableOpacity
-                onPress={() => navigation.navigate("NotificationsScreen")}
+                onPress={() => {
+                    clearNotifications(); // 🔹 Supprime la bulle
+                    navigation.navigate("NotificationsScreen"); // 🔹 Va sur l’écran
+                }}
             >
                 <FeatherIcon name="bell" size={22} color="#1D2A32" />
+                {hasNewNotification && (
+                    <View
+                        style={{
+                            position: "absolute",
+                            top: -2,
+                            right: -2,
+                            width: 10,
+                            height: 10,
+                            borderRadius: 5,
+                            backgroundColor: "red",
+                        }}
+                    />
+                )}
             </TouchableOpacity>
             <TouchableOpacity
                 onPress={() => navigation.navigate("SettingsScreen")}

@@ -5,6 +5,7 @@ import { Platform, StyleSheet, Text, View } from "react-native";
 import { HapticTab } from "../components/HapticTab";
 import { IconSymbol } from "../components/ui/IconSymbol";
 import { useMessageStatus } from "../contexts/messageContext";
+import { useNotificationStatus } from "../contexts/notificationContext";
 import TravelScreen from "../screens/travel/TravelScreen";
 import ChatStack from "./ChatStack";
 import FormStack from "./FormStack";
@@ -15,6 +16,8 @@ const Tab = createBottomTabNavigator();
 
 export default function AppTabs() {
     const { unreadCount } = useMessageStatus();
+    const { hasNewNotification } = useNotificationStatus();
+
     return (
         <Tab.Navigator
             screenOptions={{
@@ -155,11 +158,19 @@ export default function AppTabs() {
                 options={{
                     title: "Profil",
                     tabBarIcon: ({ color }) => (
-                        <IconSymbol
-                            size={28}
-                            name="person.crop.circle.fill"
-                            color={color}
-                        />
+                        <View style={{ position: "relative" }}>
+                            <IconSymbol
+                                size={28}
+                                name="person.crop.circle.fill"
+                                color={color}
+                            />
+
+                            {hasNewNotification && (
+                                <View style={styles.badge}>
+                                    <Text style={styles.badgeText}></Text>
+                                </View>
+                            )}
+                        </View>
                     ),
                 }}
                 listeners={({ navigation }) => ({

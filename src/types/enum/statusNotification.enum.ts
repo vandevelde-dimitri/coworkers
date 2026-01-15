@@ -1,6 +1,6 @@
 export enum StatusNotification {
     PENDING = "pending",
     ACCEPTED = "accepted",
-    REJECTED = "rejected",
+    REJECTED = "refused",
     DELETE = "announce_deleted",
 }
