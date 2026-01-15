@@ -2,6 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
 import { useState } from "react";
 import { Text, TouchableOpacity } from "react-native";
+import { showToast } from "../../utils/showToast";
 import { useAuth } from "../contexts/authContext";
 import { useApply } from "../hooks/useApply";
 import { AnnonceDetail } from "../types/announcement.interface";
@@ -107,6 +108,12 @@ export default function ApplyButton({ annonce }: { annonce: AnnonceDetail }) {
                 onConfirm={async () => {
                     setConfirmOpen(false);
                     await toggleApply();
+                    showToast(
+                        "success",
+                        request?.status === "accepted"
+                            ? "Participation annulée"
+                            : "Candidature annulée"
+                    );
                 }}
                 danger
             />

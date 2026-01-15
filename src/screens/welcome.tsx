@@ -1,6 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import Button from "../components/ui/Button";
 import { PublicStackParamList } from "../navigation/PublicStack";
 
 type WelcomeScreenNavigationProp =
@@ -49,51 +50,19 @@ export default function WelcomeScreen() {
 
             {/* Boutons */}
             <View style={{ width: "100%" }}>
-                <TouchableOpacity
+                <Button
+                    label="Commencer"
                     onPress={() =>
                         navigation.navigate("Auth", { screen: "Register" })
                     }
-                    style={{
-                        backgroundColor: "#2563eb",
-                        paddingVertical: 16,
-                        borderRadius: 18,
-                        alignItems: "center",
-                        marginBottom: 16,
-                    }}
-                >
-                    <Text
-                        style={{
-                            color: "#fff",
-                            fontWeight: "700",
-                            fontSize: 16,
-                        }}
-                    >
-                        Commencer
-                    </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
+                />
+                <Button
+                    variant="secondary"
+                    label="Se connecter"
                     onPress={() =>
                         navigation.navigate("Auth", { screen: "Login" })
                     }
-                    style={{
-                        paddingVertical: 16,
-                        borderRadius: 18,
-                        alignItems: "center",
-                        borderWidth: 1,
-                        borderColor: "#2563eb",
-                    }}
-                >
-                    <Text
-                        style={{
-                            color: "#2563eb",
-                            fontWeight: "700",
-                            fontSize: 16,
-                        }}
-                    >
-                        Se connecter
-                    </Text>
-                </TouchableOpacity>
+                />
                 <TouchableOpacity
                     onPress={() => navigation.navigate("AppTabs")}
                     style={{

@@ -1,13 +1,16 @@
 import FeatherIcon from "@expo/vector-icons/Feather";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView, Switch, Text, TouchableOpacity, View } from "react-native";
 import * as yup from "yup";
+import { showToast } from "../../../utils/showToast";
 import { supabase } from "../../../utils/supabase";
 import { onUpdateEmail } from "../../../utils/updateEmail";
 import { onUpdatePassword } from "../../../utils/updatePassword";
+import Button from "../../components/ui/Button";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 import ScreenWrapper from "../../components/ui/CustomHeader";
 import { Section } from "../../components/ui/CustomSection";
 import { FormInput } from "../../components/ui/FormInput";
@@ -18,6 +21,8 @@ export default function SettingsScreen() {
     const { session } = useAuth();
     const user = session?.user;
     const navigation = useNavigation<NavigationProp<ProfileStackParamList>>();
+    const [openLogout, setOpenLogout] = useState(false);
+    const [openDestroy, setOpenDestroy] = useState(false);
 
     const emailSchema = yup.object({
         email: yup.string().email("Email invalide").required("Email requis"),
@@ -163,26 +168,12 @@ export default function SettingsScreen() {
                             placeholder="ex: prenom.nom@amazon.com"
                             type="text"
                         />
-                        <TouchableOpacity
+                        <Button
+                            label="Modifier mon email"
+                            variant="secondary"
                             onPress={emailForm.handleSubmit(onUpdateEmail)}
                             disabled={emailForm.formState.isSubmitting}
-                            style={{
-                                backgroundColor: "#2563eb",
-                                padding: 16,
-                                borderRadius: 16,
-                                marginBottom: 10,
-                            }}
-                        >
-                            <Text
-                                style={{
-                                    color: "#fff",
-                                    textAlign: "center",
-                                    fontWeight: "600",
-                                }}
-                            >
-                                Modifier l’email
-                            </Text>
-                        </TouchableOpacity>
+                        />
                     </View>
 
                     {/* PASSWORD */}
@@ -201,28 +192,14 @@ export default function SettingsScreen() {
                             placeholder="••••••••"
                             type="text"
                         />
-                        <TouchableOpacity
+                        <Button
+                            label="Changer le mot de passe"
+                            variant="secondary"
                             onPress={passwordForm.handleSubmit(
                                 onUpdatePassword
                             )}
                             disabled={passwordForm.formState.isSubmitting}
-                            style={{
-                                backgroundColor: "#2563eb",
-                                padding: 16,
-                                borderRadius: 16,
-                                marginBottom: 10,
-                            }}
-                        >
-                            <Text
-                                style={{
-                                    color: "#fff",
-                                    textAlign: "center",
-                                    fontWeight: "600",
-                                }}
-                            >
-                                Changer le mot de passe
-                            </Text>
-                        </TouchableOpacity>
+                        />
                     </View>
                 </Section>
 
@@ -230,48 +207,54 @@ export default function SettingsScreen() {
                 <Section title="Session">
                     <View
                         style={{
-                            backgroundColor: "#fa02023b",
+                            backgroundColor: "#fff",
                             borderRadius: 18,
                             padding: 16,
                             marginBottom: 16,
+                            borderLeftWidth: 3,
+                            borderLeftColor: "#dc2626",
                         }}
                     >
-                        <TouchableOpacity
-                            style={{
-                                backgroundColor: "rgba(247, 5, 5, 0.6)",
-                                padding: 16,
-                                borderRadius: 16,
-                                marginBottom: 10,
+                        <Button
+                            label="Se déconnecter"
+                            variant="danger"
+                            onPress={() => setOpenLogout(true)}
+                        />
+                        <ConfirmModal
+                            visible={openLogout}
+                            title="Voulez-vous vous déconnecter ?"
+                            description="Vous pourrez vous reconnecter à tout moment."
+                            confirmLabel="Oui"
+                            cancelLabel="Non"
+                            onCancel={() => setOpenLogout(false)}
+                            onConfirm={() => {
+                                setOpenLogout(false);
+                                logout();
+                                showToast("success", "Déconnexion réussie");
                             }}
-                            onPress={logout}
-                        >
-                            <Text
-                                style={{
-                                    color: "#fff",
-                                    textAlign: "center",
-                                    fontWeight: "600",
-                                }}
-                            >
-                                Se déconnecter
-                            </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={{
-                                backgroundColor: "rgba(247, 5, 5, 0.6)",
-                                padding: 16,
-                                borderRadius: 16,
+                        />
+                        <View style={{ height: 12 }} />
+                        <Button
+                            label="Supprimer mon compte"
+                            variant="danger"
+                            onPress={() => setOpenDestroy(true)}
+                        />
+                        <ConfirmModal
+                            visible={openDestroy}
+                            title="Voulez-vous vraiement supprimer votre compte ?"
+                            description="Vous perdrez toutes vos données de manière définitive."
+                            confirmLabel="Oui"
+                            cancelLabel="Non"
+                            onCancel={() => setOpenDestroy(false)}
+                            onConfirm={() => {
+                                setOpenDestroy(false);
+                                showToast(
+                                    "success",
+                                    "Suppression de compte réussie"
+                                );
                             }}
-                        >
-                            <Text
-                                style={{
-                                    color: "#fff",
-                                    textAlign: "center",
-                                    fontWeight: "600",
-                                }}
-                            >
-                                Supprimer mon compte
-                            </Text>
-                        </TouchableOpacity>
+                            danger
+                        />
                     </View>
                 </Section>
             </ScrollView>

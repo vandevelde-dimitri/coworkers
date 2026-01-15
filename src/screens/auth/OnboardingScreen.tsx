@@ -1,275 +1,224 @@
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useState } from "react";
-import {
-    Alert,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import { useForm } from "react-hook-form";
+import { ScrollView, Text, View } from "react-native";
+import * as yup from "yup";
+import { capitalize } from "../../../utils/capitalize";
+import { showToast } from "../../../utils/showToast";
 import { supabase } from "../../../utils/supabase";
-import { CustomPicker } from "../../components/ui/CustomPicker";
+import { updateUser } from "../../api/user/updateUser";
+import Button from "../../components/ui/Button";
+import ScreenWrapper from "../../components/ui/CustomHeader";
+import { FormInput } from "../../components/ui/FormInput";
+import { FormSelect } from "../../components/ui/FormSelect";
 import { useAuth } from "../../contexts/authContext";
+import { useFloorsAll } from "../../hooks/useFloor";
+import { Contract } from "../../types/enum/contract.enum";
+import { Team } from "../../types/enum/team.enum";
+import { EditProfileFormValues } from "../../types/user.interface";
 
 export default function OnboardingScreen() {
-    const { session, refreshSession } = useAuth();
-
+    const { refreshSession } = useAuth();
+    const { data: floors } = useFloorsAll();
     const [step, setStep] = useState(1);
 
-    // Données utilisateur
-    const [prenom, setPrenom] = useState("");
-    const [nom, setNom] = useState("");
-    const [ville, setVille] = useState("");
-    const [team, setTeam] = useState("");
-    const [centre, setCentre] = useState("");
-    const [contrat, setContrat] = useState("");
+    /* ===================== OPTIONS ===================== */
 
-    const centres = [
-        "Amazon Lauwin-Planque",
-        "Amazon Boves",
-        "Amazon Montélimar",
-    ];
-    const contrats = ["CDI", "Intérim"];
+    const centersOptions = floors?.map((c) => ({
+        label: c.name,
+        value: c.id,
+    }));
+
+    const contractOptions = Object.values(Contract).map((c: string) => ({
+        label: capitalize(c),
+        value: c,
+    }));
+
+    const teamOptions = Object.values(Team).map((t: string) => ({
+        label: capitalize(t),
+        value: t,
+    }));
+
+    /* ===================== FORM ===================== */
+
+    const schema = yup.object({
+        firstname: yup.string().required("Prénom requis"),
+        lastname: yup.string().required("Nom requis"),
+        city: yup.string().required("Ville requise"),
+        fc_id: yup.string().required("Centre Amazon requis"),
+        team: yup
+            .mixed<Team>()
+            .oneOf(Object.values(Team))
+            .required("Équipe requise"),
+        contract: yup
+            .mixed<Contract>()
+            .oneOf(Object.values(Contract))
+            .required("Contrat requis"),
+    });
+
+    const { control, trigger, getValues } = useForm<EditProfileFormValues>({
+        resolver: yupResolver(schema),
+    });
+
+    /* ===================== HANDLERS ===================== */
 
     const handleNext = async () => {
-        if (step === 1 && (!prenom || !nom)) {
-            Alert.alert("Erreur", "Veuillez remplir votre prénom et nom.");
+        let fields: (keyof EditProfileFormValues)[] = [];
+
+        if (step === 1) fields = ["firstname", "lastname"];
+        if (step === 2) fields = ["city", "team"];
+        if (step === 3) fields = ["fc_id", "contract"];
+
+        const isValid = await trigger(fields);
+        if (!isValid) return;
+
+        if (step < 3) {
+            setStep(step + 1);
             return;
         }
-        if (step === 2 && (!ville || !team)) {
-            Alert.alert("Erreur", "Veuillez remplir votre ville et team.");
-            return;
-        }
-        if (step === 3 && (!centre || !contrat)) {
-            Alert.alert(
-                "Erreur",
-                "Veuillez choisir votre centre et type de contrat."
-            );
-            return;
-        }
 
-        if (step < 3) setStep(step + 1);
-        else {
-            const { data: user, error } = await supabase
-                .from("users")
-                .update({
-                    firstname: prenom,
-                    lastname: nom,
-                    city: ville,
-                    team: team,
-                    // fc_id: centre,
-                    // contract: contrat,
-                })
-                .eq("id", session?.user.id);
+        const values = getValues();
 
-            if (error) {
-                console.log("Erreur mise à jour user:", error.message);
-                return;
-            }
+        await supabase.auth.updateUser({
+            data: {
+                profile_completed: true,
+            },
+        });
+        console.log("values => ", values);
+        await updateUser(values);
+        showToast(
+            "success",
+            "Inscription réussie !",
+            "Un email de confirmation a été envoyé."
+        );
+        refreshSession();
+    };
 
-            console.log("Utilisateur mis à jour team:", user);
-            await supabase.auth.updateUser({
-                data: { profile_completed: true },
-            });
-
-            refreshSession();
-        }
+    const onSubmit = async (data: EditProfileFormValues) => {
+        console.log("DATA => ", data);
     };
 
     const handlePrev = () => {
         if (step > 1) setStep(step - 1);
     };
 
+    const cardStyle = {
+        backgroundColor: "#fff",
+        borderRadius: 20,
+        padding: 20,
+        marginBottom: 24,
+    };
+
     const renderStep = () => {
         switch (step) {
             case 1:
                 return (
-                    <View
-                        style={{
-                            backgroundColor: "#fff",
-                            borderRadius: 18,
-                            padding: 16,
-                            shadowColor: "#000",
-                            shadowOpacity: 0.05,
-                            shadowRadius: 6,
-                            marginBottom: 24,
-                        }}
-                    >
-                        <Text
-                            style={{
-                                fontWeight: "700",
-                                fontSize: 18,
-                                marginBottom: 12,
-                            }}
-                        >
-                            Vos informations personnelles
-                        </Text>
-                        <TextInput
-                            placeholder="Prénom"
-                            value={prenom}
-                            onChangeText={setPrenom}
-                            style={{
-                                borderBottomWidth: 1,
-                                borderBottomColor: "#e5e7eb",
-                                marginBottom: 12,
-                                fontSize: 16,
-                                paddingVertical: 6,
-                            }}
+                    <View style={cardStyle}>
+                        <FormInput
+                            name="firstname"
+                            control={control}
+                            label="Prénom"
+                            placeholder="Votre prénom"
+                            type="text"
                         />
-                        <TextInput
-                            placeholder="Nom"
-                            value={nom}
-                            onChangeText={setNom}
-                            style={{
-                                borderBottomWidth: 1,
-                                borderBottomColor: "#e5e7eb",
-                                marginBottom: 12,
-                                fontSize: 16,
-                                paddingVertical: 6,
-                            }}
+                        <FormInput
+                            name="lastname"
+                            control={control}
+                            label="Nom"
+                            placeholder="Votre nom"
+                            type="text"
                         />
                     </View>
                 );
+
             case 2:
                 return (
-                    <View
-                        style={{
-                            backgroundColor: "#fff",
-                            borderRadius: 18,
-                            padding: 16,
-                            shadowColor: "#000",
-                            shadowOpacity: 0.05,
-                            shadowRadius: 6,
-                            marginBottom: 24,
-                        }}
-                    >
-                        <Text
-                            style={{
-                                fontWeight: "700",
-                                fontSize: 18,
-                                marginBottom: 12,
-                            }}
-                        >
-                            Informations professionnelles
-                        </Text>
-                        <TextInput
-                            placeholder="Ville"
-                            value={ville}
-                            onChangeText={setVille}
-                            style={{
-                                borderBottomWidth: 1,
-                                borderBottomColor: "#e5e7eb",
-                                marginBottom: 12,
-                                fontSize: 16,
-                                paddingVertical: 6,
-                            }}
+                    <View style={cardStyle}>
+                        <FormInput
+                            name="city"
+                            control={control}
+                            label="Ville"
+                            placeholder="Paris, Lyon…"
+                            type="text"
                         />
-                        <TextInput
-                            placeholder="Team"
-                            value={team}
-                            onChangeText={setTeam}
-                            style={{
-                                borderBottomWidth: 1,
-                                borderBottomColor: "#e5e7eb",
-                                marginBottom: 12,
-                                fontSize: 16,
-                                paddingVertical: 6,
-                            }}
+                        <FormSelect
+                            name="team"
+                            control={control}
+                            label="Équipe"
+                            placeholder="Sélectionner une équipe"
+                            options={teamOptions || []}
                         />
                     </View>
                 );
+
             case 3:
                 return (
-                    <View
-                        style={{
-                            backgroundColor: "#fff",
-                            borderRadius: 18,
-                            padding: 16,
-                            shadowColor: "#000",
-                            shadowOpacity: 0.05,
-                            shadowRadius: 6,
-                            marginBottom: 24,
-                        }}
-                    >
-                        <CustomPicker
+                    <View style={cardStyle}>
+                        <FormSelect
+                            name="fc_id"
+                            control={control}
                             label="Centre Amazon"
-                            selectedValue={centre}
-                            onValueChange={setCentre}
-                            items={[
-                                "Amazon Lauwin-Planque",
-                                "Amazon Boves",
-                                "Amazon Montélimar",
-                            ]}
+                            placeholder="Sélectionner un centre"
+                            options={centersOptions || []}
                         />
-
-                        <CustomPicker
-                            label="Type de contrat"
-                            selectedValue={contrat}
-                            onValueChange={setContrat}
-                            items={["CDI", "Intérim"]}
+                        <FormSelect
+                            name="contract"
+                            control={control}
+                            label="Contrat"
+                            placeholder="Sélectionner un contrat"
+                            options={contractOptions || []}
                         />
                     </View>
                 );
+
             default:
                 return null;
         }
     };
 
-    return (
-        <ScrollView
-            style={{ flex: 1, padding: 16, backgroundColor: "#f3f4f6" }}
-        >
-            <Text
-                style={{
-                    fontSize: 24,
-                    fontWeight: "700",
-                    marginBottom: 24,
-                    textAlign: "center",
-                }}
-            >
-                Onboarding
-            </Text>
-            {renderStep()}
+    const getTitle = () => {
+        if (step === 1) return "Qui êtes-vous ?";
+        if (step === 2) return "Votre rôle";
+        return "Votre centre";
+    };
 
-            <View
-                style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                }}
-            >
-                {step > 1 && (
-                    <TouchableOpacity
-                        onPress={handlePrev}
+    return (
+        <ScreenWrapper title="Création du profil">
+            <ScrollView showsVerticalScrollIndicator={false}>
+                {/* HEADER */}
+                <View style={{ marginBottom: 20 }}>
+                    <Text style={{ fontSize: 14, color: "#6b7280" }}>
+                        Étape {step} sur 3
+                    </Text>
+                    <Text
                         style={{
-                            flex: 1,
-                            backgroundColor: "#d1d5db",
-                            padding: 14,
-                            borderRadius: 18,
-                            marginRight: 8,
-                            alignItems: "center",
+                            fontSize: 22,
+                            fontWeight: "700",
+                            marginTop: 4,
                         }}
                     >
-                        <Text style={{ fontWeight: "700", color: "#374151" }}>
-                            Précédent
-                        </Text>
-                    </TouchableOpacity>
-                )}
-                <TouchableOpacity
-                    onPress={handleNext}
-                    style={{
-                        flex: 1,
-                        backgroundColor: "#2563eb",
-                        padding: 14,
-                        borderRadius: 18,
-                        marginLeft: step > 1 ? 8 : 0,
-                        alignItems: "center",
-                    }}
-                >
-                    <Text style={{ fontWeight: "700", color: "#fff" }}>
-                        {step === 3 ? "Terminer" : "Suivant"}
+                        {getTitle()}
                     </Text>
-                </TouchableOpacity>
-            </View>
-        </ScrollView>
+                </View>
+
+                {/* CONTENT */}
+                <View key={`step-${step}`}>{renderStep()}</View>
+
+                {/* ACTIONS */}
+                <View style={{ marginBottom: 24 }}>
+                    {step > 1 && (
+                        <Button
+                            label="Précédent"
+                            variant="secondary"
+                            onPress={handlePrev}
+                        />
+                    )}
+                    <Button
+                        label={step === 3 ? "Terminer" : "Continuer"}
+                        onPress={handleNext}
+                    />
+                </View>
+            </ScrollView>
+        </ScreenWrapper>
     );
 }

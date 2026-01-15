@@ -1,7 +1,8 @@
 // ui/ConfirmModal.tsx
 import FeatherIcon from "@expo/vector-icons/Feather";
 import React from "react";
-import { Modal, Text, TouchableOpacity, View } from "react-native";
+import { Modal, Text, View } from "react-native";
+import Button from "./Button";
 
 type ConfirmModalProps = {
     visible: boolean;
@@ -93,47 +94,16 @@ export default function ConfirmModal({
 
                     {/* Actions */}
                     <View style={{ gap: 10 }}>
-                        <TouchableOpacity
+                        <Button
+                            label={confirmLabel}
+                            variant={danger ? "danger" : "primary"}
                             onPress={onConfirm}
-                            style={{
-                                backgroundColor: "#2563eb",
-                                paddingVertical: 14,
-                                borderRadius: 18,
-                                alignItems: "center",
-                                marginTop: 8,
-                            }}
-                        >
-                            <Text
-                                style={{
-                                    color: "#fff",
-                                    fontWeight: "700",
-                                    fontSize: 16,
-                                }}
-                            >
-                                {confirmLabel}
-                            </Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
+                        />
+                        <Button
+                            label={cancelLabel}
+                            variant="secondary"
                             onPress={onCancel}
-                            style={{
-                                backgroundColor: "#2563eb",
-                                paddingVertical: 14,
-                                borderRadius: 18,
-                                alignItems: "center",
-                                marginTop: 8,
-                            }}
-                        >
-                            <Text
-                                style={{
-                                    color: "#fff",
-                                    fontWeight: "700",
-                                    fontSize: 16,
-                                }}
-                            >
-                                {cancelLabel}
-                            </Text>
-                        </TouchableOpacity>
+                        />
                     </View>
                 </View>
             </View>

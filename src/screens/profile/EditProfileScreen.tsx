@@ -6,6 +6,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import * as yup from "yup";
 import { capitalize } from "../../../utils/capitalize";
+import Button from "../../components/ui/Button";
 import ScreenWrapper from "../../components/ui/CustomHeader";
 import { Section } from "../../components/ui/CustomSection";
 import { FormInput } from "../../components/ui/FormInput";
@@ -55,8 +56,14 @@ export default function EditProfileScreen() {
             )
             .required("Le type de contrat est requis"),
     });
-    const { control, handleSubmit, reset } = useForm<EditProfileFormValues>({
+    const {
+        control,
+        handleSubmit,
+        reset,
+        formState: { isDirty },
+    } = useForm<EditProfileFormValues>({
         resolver: yupResolver(schema),
+
         defaultValues: {
             firstname: user?.firstname || "",
             lastname: user?.lastname || "",
@@ -68,7 +75,6 @@ export default function EditProfileScreen() {
     });
 
     const onSave: SubmitHandler<EditProfileFormValues> = (data) => {
-        console.log("Save profile", data);
         updateUser({ body: data });
         reset();
         navigation.goBack();
@@ -162,26 +168,16 @@ export default function EditProfileScreen() {
                         />
                     </View>
                 </Section>
-                <TouchableOpacity
-                    style={{
-                        backgroundColor: "#2563eb",
-                        padding: 16,
-                        borderRadius: 16,
-                        marginBottom: 10,
-                    }}
-                    disabled={isUpdating}
+                <Button
                     onPress={handleSubmit(onSave)}
-                >
-                    <Text
-                        style={{
-                            color: "#fff",
-                            textAlign: "center",
-                            fontWeight: "600",
-                        }}
-                    >
-                        Enregistrer
-                    </Text>
-                </TouchableOpacity>
+                    variant={isDirty ? "primary" : "disabled"}
+                    label={
+                        isUpdating
+                            ? "Enregistrement en cours ..."
+                            : "Enregistrer"
+                    }
+                    disabled={isUpdating || !isDirty}
+                />
             </ScrollView>
         </ScreenWrapper>
     );

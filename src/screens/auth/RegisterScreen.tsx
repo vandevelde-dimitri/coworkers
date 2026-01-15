@@ -11,8 +11,8 @@ import {
     View,
 } from "react-native";
 import * as yup from "yup";
-import { showToast } from "../../../utils/showToast";
 import { supabase } from "../../../utils/supabase";
+import Button from "../../components/ui/Button";
 import ScreenWrapper from "../../components/ui/CustomHeader";
 import { FormInput } from "../../components/ui/FormInput";
 import { AuthStackParamList } from "../../types/navigation/authStackType";
@@ -53,12 +53,6 @@ export default function RegisterScreen() {
                     },
                 ],
                 { onConflict: "id" }
-            );
-
-            showToast(
-                "success",
-                "Inscription réussie !",
-                "Un email de confirmation a été envoyé."
             );
 
             if (errorUser) {
@@ -157,29 +151,13 @@ export default function RegisterScreen() {
                         </Text>
                         .
                     </Text>
-                    <TouchableOpacity
+                    <Button
+                        label="S'inscrire"
                         onPress={handleSubmit(onSubmit)}
-                        style={{
-                            backgroundColor: "#2563eb",
-                            paddingVertical: 14,
-                            borderRadius: 18,
-                            alignItems: "center",
-                            marginTop: 8,
-                        }}
-                    >
-                        <Text
-                            style={{
-                                color: "#fff",
-                                fontWeight: "700",
-                                fontSize: 16,
-                            }}
-                        >
-                            S'inscrire
-                        </Text>
-                    </TouchableOpacity>
-
+                    />
                     <TouchableOpacity
                         style={{ marginTop: 16, alignItems: "center" }}
+                        onPress={() => navigation.navigate("Login")}
                     >
                         <Text style={{ color: "#2563eb", fontWeight: "600" }}>
                             Déjà un compte ? Se connecter

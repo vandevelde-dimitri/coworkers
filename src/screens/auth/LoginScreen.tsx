@@ -1,5 +1,6 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import * as SecureStore from "expo-secure-store";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -9,9 +10,13 @@ import { showToast } from "../../../utils/showToast";
 import { supabase } from "../../../utils/supabase";
 import ScreenWrapper from "../../components/ui/CustomHeader";
 import { FormInput } from "../../components/ui/FormInput";
+import { AuthStackParamList } from "../../types/navigation/authStackType";
+
+type WelcomeScreenNavigationProp =
+    NativeStackNavigationProp<AuthStackParamList>;
 
 export default function LoginScreen() {
-    const navigation = useNavigation();
+    const navigation = useNavigation<WelcomeScreenNavigationProp>();
     const schema = yup.object({
         email: yup.string().email("Email invalide").required("Email requis"),
         password: yup.string().required("Mot de passe requis"),
@@ -127,6 +132,7 @@ export default function LoginScreen() {
 
                     <TouchableOpacity
                         style={{ marginTop: 16, alignItems: "center" }}
+                        onPress={() => navigation.navigate("Register")}
                     >
                         <Text style={{ color: "#2563eb", fontWeight: "600" }}>
                             Créer un compte

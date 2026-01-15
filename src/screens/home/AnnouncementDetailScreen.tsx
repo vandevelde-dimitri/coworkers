@@ -4,10 +4,11 @@ import {
     useRoute,
 } from "@react-navigation/native";
 import React, { useState } from "react";
-import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Alert, ScrollView, Text, View } from "react-native";
 import { isMyAnnouncement } from "../../../utils/announcementUtils";
 import ApplyButton from "../../components/ApplyButton";
 import FavoriteButton from "../../components/FavoriteButton";
+import Button from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 import ScreenWrapper from "../../components/ui/CustomHeader";
@@ -33,33 +34,6 @@ export default function AnnouncementDetailScreen() {
     if (isLoading) return <Text>Loading...</Text>;
     if (error) return <Text>Error loading announcement</Text>;
     if (!announcement) return <Text>Annonce introuvable</Text>;
-
-    const handleEdit = () => {
-        if (!isOwner) return;
-        navigation.navigate("FormStack", {
-            screen: "FormAnnouncementScreen",
-            params: { id },
-        });
-    };
-
-    const handleDelete = () => {
-        if (!isOwner) return;
-        Alert.alert(
-            "Confirmation",
-            "Voulez-vous vraiment supprimer cette annonce ?",
-            [
-                { text: "Annuler", style: "cancel" },
-                {
-                    text: "Supprimer",
-                    style: "destructive",
-                    onPress: () => {
-                        deleteAnnouncement(id);
-                        navigation.popToTop();
-                    },
-                },
-            ]
-        );
-    };
 
     return (
         <ScreenWrapper title="Détails de l'annonce" back>
@@ -178,48 +152,21 @@ export default function AnnouncementDetailScreen() {
                 {/* Actions */}
                 {isOwner ? (
                     <>
-                        <TouchableOpacity
+                        <Button
+                            label="Modifier"
+                            variant="primary"
                             onPress={() =>
                                 navigation.navigate("FormStack", {
                                     screen: "FormAnnouncementScreen",
                                     params: { id },
                                 })
                             }
-                            style={{
-                                backgroundColor: "#2563eb",
-                                padding: 16,
-                                borderRadius: 16,
-                                marginBottom: 10,
-                            }}
-                        >
-                            <Text
-                                style={{
-                                    color: "#fff",
-                                    textAlign: "center",
-                                    fontWeight: "600",
-                                }}
-                            >
-                                Modifier
-                            </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
+                        />
+                        <Button
+                            label="Supprimer"
                             onPress={() => setOpen(true)}
-                            style={{
-                                backgroundColor: "#ef4444",
-                                padding: 16,
-                                borderRadius: 16,
-                            }}
-                        >
-                            <Text
-                                style={{
-                                    color: "#fff",
-                                    textAlign: "center",
-                                    fontWeight: "600",
-                                }}
-                            >
-                                Supprimer
-                            </Text>
-                        </TouchableOpacity>
+                            variant="danger"
+                        />
                         <ConfirmModal
                             visible={open}
                             title="Supprimer cette annonce ?"

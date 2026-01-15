@@ -1,17 +1,11 @@
-// src/screens/home/TravelScreen.tsx
 import { useNavigation } from "@react-navigation/native";
-import React from "react";
-import {
-    Alert,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import React, { useState } from "react";
+import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
 import { formatDate } from "../../../utils/formatedDate";
 import SafeScreen from "../../components/SafeScreen";
+import Button from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 import ScreenWrapper from "../../components/ui/CustomHeader";
 import EmptyState from "../../components/ui/EmptyComponent";
 import RemoveParticipantButton from "../../components/ui/RemoveParticipantButton";
@@ -25,6 +19,7 @@ import { useRequireAuth } from "../../hooks/useRequireAuth";
 
 export default function TravelScreen() {
     useRequireAuth();
+    const [open, setOpen] = useState(false);
     const { session } = useAuth();
     const navigation = useNavigation();
     const {
@@ -32,9 +27,7 @@ export default function TravelScreen() {
         isLoading,
         error,
     } = useAnnouncementCurrentUser();
-
-    // Hooks must be called unconditionally — placer la mutation en haut
-    const deleteMutation = useDeleteAnnouncement();
+    const { mutate: deleteAnnouncement } = useDeleteAnnouncement();
 
     if (!session) return null;
 
@@ -56,7 +49,6 @@ export default function TravelScreen() {
         );
     }
 
-    // 3️⃣ Aucune annonce → bouton créer
     if (!announcement) {
         return (
             <ScreenWrapper title="Mon annonce">
@@ -73,41 +65,6 @@ export default function TravelScreen() {
             </ScreenWrapper>
         );
     }
-
-    // ---------- ACTIONS ----------
-    const handleEdit = () => {
-        (navigation as any).navigate("FormStack", {
-            screen: "FormAnnouncementScreen",
-            params: { id: announcement.id },
-        });
-    };
-
-    const handleDelete = () => {
-        Alert.alert(
-            "Supprimer l'annonce",
-            "Êtes-vous sûr de vouloir supprimer votre annonce ?",
-            [
-                { text: "Annuler", style: "cancel" },
-                {
-                    text: "Supprimer",
-                    style: "destructive",
-                    onPress: async () => {
-                        try {
-                            await deleteMutation.mutateAsync(announcement.id);
-                            (navigation as any).navigate("HomeStack", {
-                                screen: "HomeScreen",
-                            });
-                        } catch (err) {
-                            Alert.alert(
-                                "Erreur",
-                                "Impossible de supprimer l'annonce."
-                            );
-                        }
-                    },
-                },
-            ]
-        );
-    };
 
     // ---------- FORMATTING ----------
     const dateStart = formatDate(announcement.date_start);
@@ -219,111 +176,36 @@ export default function TravelScreen() {
 
                 {/* Actions */}
 
-                <TouchableOpacity
-                    onPress={handleEdit}
-                    style={{
-                        backgroundColor: "#2563eb",
-                        padding: 16,
-                        borderRadius: 16,
-                        marginBottom: 10,
+                <Button
+                    label="Modifier"
+                    variant="primary"
+                    onPress={() => {
+                        (navigation as any).navigate("FormStack", {
+                            screen: "FormAnnouncementScreen",
+                            params: { id: announcement.id },
+                        });
                     }}
-                >
-                    <Text
-                        style={{
-                            color: "#fff",
-                            textAlign: "center",
-                            fontWeight: "600",
-                        }}
-                    >
-                        Modifier
-                    </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    onPress={handleDelete}
-                    style={{
-                        backgroundColor: "#ef4444",
-                        padding: 16,
-                        borderRadius: 16,
+                />
+                <Button
+                    label="Supprimer"
+                    variant="danger"
+                    onPress={() => setOpen(true)}
+                />
+                <ConfirmModal
+                    visible={open}
+                    title="Supprimer cette annonce ?"
+                    description="Cette action est définitive et ne pourra pas être annulée."
+                    confirmLabel="Supprimer"
+                    onCancel={() => setOpen(false)}
+                    onConfirm={() => {
+                        setOpen(false);
+                        deleteAnnouncement(announcement.id);
+                        //! chercher les différences entre navigation.navigate et navigation.popToTop
+                        navigation.popToTop();
                     }}
-                >
-                    <Text
-                        style={{
-                            color: "#fff",
-                            textAlign: "center",
-                            fontWeight: "600",
-                        }}
-                    >
-                        Supprimer
-                    </Text>
-                </TouchableOpacity>
+                    danger
+                />
             </ScrollView>
         </ScreenWrapper>
     );
 }
-
-const styles = StyleSheet.create({
-    content: { padding: 16 },
-    card: {
-        backgroundColor: "#fff",
-        borderRadius: 12,
-        padding: 16,
-        elevation: 2,
-    },
-
-    // --- EMPTY ---
-    emptyContainer: {
-        padding: 16,
-        alignItems: "center",
-        justifyContent: "center",
-        flex: 1,
-    },
-    emptyText: { fontSize: 16, marginBottom: 12 },
-
-    // --- TEXT ---
-    title: { fontSize: 20, fontWeight: "700", marginBottom: 12 },
-    contentText: { fontSize: 15, marginBottom: 8, color: "#333" },
-    dates: { fontSize: 13, color: "#888", marginBottom: 4 },
-    places: { fontSize: 14, fontWeight: "600", marginBottom: 12 },
-
-    // --- USER ---
-    userSection: {
-        flexDirection: "row",
-        alignItems: "center",
-        marginBottom: 12,
-    },
-    avatar: {
-        width: 50,
-        height: 50,
-        borderRadius: 50,
-        borderWidth: 2,
-    },
-    userName: { fontSize: 16, fontWeight: "600" },
-    city: { fontSize: 13, color: "#999" },
-
-    // --- VEHICLE ---
-    noVehicle: {
-        color: "#ff0000",
-        fontWeight: "600",
-        marginBottom: 12,
-    },
-
-    // --- BUTTONS ---
-    actions: { gap: 12, marginTop: 12 },
-
-    buttonPrimary: {
-        backgroundColor: "#10B981",
-        padding: 12,
-        borderRadius: 8,
-        alignItems: "center",
-    },
-    buttonPrimaryText: { color: "#fff", fontWeight: "600" },
-
-    buttonDelete: {
-        backgroundColor: "#EF4444",
-        padding: 12,
-        borderRadius: 8,
-        alignItems: "center",
-    },
-    buttonDeleteText: { color: "#fff", fontWeight: "600" },
-});
