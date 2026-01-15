@@ -19,7 +19,7 @@ export function useUploadAvatar() {
     const queryClient = useQueryClient();
     const { session } = useAuth();
     return useMutation({
-        mutationFn: ({ imageUri }: { imageUri: string }) =>
+        mutationFn: ({ imageUri }: { imageUri: string | null }) =>
             uploadUserAvatar(imageUri),
 
         onSuccess: () => {

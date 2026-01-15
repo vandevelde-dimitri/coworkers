@@ -1,6 +1,6 @@
 import { supabase } from "../../../utils/supabase";
 
-export async function uploadUserAvatar(imgUri: string) {
+export async function uploadUserAvatar(imgUri: string | null) {
     const { data, error: sessionError } = await supabase.auth.getSession();
     if (sessionError) throw sessionError;
     if (!data?.session) throw new Error("No active session found");

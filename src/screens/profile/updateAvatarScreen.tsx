@@ -1,22 +1,23 @@
-import FeatherIcon from "@expo/vector-icons/Feather";
 import * as ImagePicker from "expo-image-picker";
-import React from "react";
-import { Alert, Text, TouchableOpacity, View } from "react-native";
+import React, { useState } from "react";
+import { View } from "react-native";
 import { convertToWebp } from "../../../utils/convertToWebp";
 import { requestPermission } from "../../../utils/permission";
+import { showToast } from "../../../utils/showToast";
 import { supabase } from "../../../utils/supabase";
 import { uriToArrayBuffer } from "../../../utils/uriToArrayBuffer";
+import Button from "../../components/ui/Button";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 import ScreenWrapper from "../../components/ui/CustomHeader";
 import SmartImage from "../../components/ui/SmartImage";
-import { useAuth } from "../../contexts/authContext";
 import { useCurrentUser, useUploadAvatar } from "../../hooks/user/useUsers";
 
 export default function UpdateAvatarScreen() {
-    const { session } = useAuth();
     const { data: user } = useCurrentUser();
     const { mutate: updateAvatar } = useUploadAvatar();
+    const [open, setOpen] = useState(false);
+
     if (!user) return null;
-    const userId = session?.user.id;
 
     const avatarUrl = user?.image_profile ?? null;
 
@@ -72,9 +73,9 @@ export default function UpdateAvatarScreen() {
 
             updateAvatar({ imageUri: publicUrlData.publicUrl });
 
-            Alert.alert("Succès", "Photo mise à jour");
+            showToast("success", "Photo de profil mise à jour");
         } catch (e: any) {
-            Alert.alert("Erreur", e.message);
+            showToast("error", "Erreur lors de la mise à jour de la photo");
         } finally {
         }
     };
@@ -82,28 +83,14 @@ export default function UpdateAvatarScreen() {
     /* ===================== DELETE ===================== */
 
     const deleteAvatar = async () => {
-        Alert.alert("Supprimer la photo", "Cette action est irréversible", [
-            { text: "Annuler", style: "cancel" },
-            {
-                text: "Supprimer",
-                style: "destructive",
-                onPress: async () => {
-                    try {
-                        await supabase
-                            .from("users")
-                            .update({
-                                image_profile: null,
-                                avatar_updated_at: new Date(),
-                            })
-                            .eq("id", userId);
-
-                        Alert.alert("Photo supprimée");
-                    } catch (e: any) {
-                        Alert.alert("Erreur", e.message);
-                    }
-                },
-            },
-        ]);
+        try {
+            updateAvatar({
+                imageUri: null,
+            });
+            showToast("success", "Photo de profil supprimée");
+        } catch (e: any) {
+            showToast("error", "Erreur lors de la suppression de la photo");
+        }
     };
 
     /* ===================== UI ===================== */
@@ -114,67 +101,42 @@ export default function UpdateAvatarScreen() {
                 <SmartImage userData={user} size={120} />
 
                 <View style={{ width: "100%", marginTop: 32 }}>
-                    <Action
+                    {/* <Action
                         icon="camera"
                         label="Prendre une photo"
                         onPress={() => pickImage(true)}
+                    /> */}
+                    <Button
+                        label="Prendre une photo"
+                        onPress={() => pickImage(true)}
                     />
-                    <Action
-                        icon="image"
+                    <Button
+                        variant="secondary"
                         label="Choisir depuis la galerie"
                         onPress={() => pickImage(false)}
                     />
                     {avatarUrl && (
-                        <Action
-                            icon="trash-2"
+                        <Button
+                            variant="danger"
                             label="Supprimer la photo"
-                            danger
-                            onPress={deleteAvatar}
+                            onPress={() => setOpen(true)}
                         />
                     )}
+                    <ConfirmModal
+                        visible={open}
+                        title="Supprimer la photo de profil ?"
+                        description="Cette action est définitive et ne pourra pas être annulée."
+                        confirmLabel="Oui"
+                        cancelLabel="Non"
+                        onCancel={() => setOpen(false)}
+                        onConfirm={() => {
+                            setOpen(false);
+                            deleteAvatar();
+                        }}
+                        danger
+                    />
                 </View>
             </View>
         </ScreenWrapper>
     );
 }
-
-/* ===================== COMPONENT ===================== */
-
-const Action = ({ icon, label, onPress, danger = false }) => (
-    <TouchableOpacity
-        onPress={onPress}
-        style={{
-            flexDirection: "row",
-            alignItems: "center",
-            padding: 16,
-            backgroundColor: "#fff",
-            borderRadius: 18,
-            marginBottom: 12,
-        }}
-    >
-        <FeatherIcon
-            name={icon}
-            size={20}
-            color={danger ? "#EF4444" : "#1F2937"}
-        />
-        <Text
-            style={{
-                marginLeft: 12,
-                fontSize: 15,
-                fontWeight: "600",
-                color: danger ? "#EF4444" : "#111827",
-            }}
-        >
-            {label}
-        </Text>
-    </TouchableOpacity>
-);
-
-/* ===================== STYLES ===================== */
-
-const avatar = {
-    width: 120,
-    height: 120,
-    borderRadius: 999,
-    backgroundColor: "#E5E7EB",
-};
