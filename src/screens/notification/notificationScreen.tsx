@@ -32,9 +32,12 @@ export default function NotificationsScreen() {
     const isLoading = ownerQuery.isLoading || candidateQuery.isLoading;
     const error = ownerQuery.error || candidateQuery.error;
 
-    const notifications: NotificationResponse[] = [
-        ...(ownerQuery.data ?? []),
-        ...(candidateQuery.data ?? []),
+    const notifications = [
+        ...(ownerQuery.data ?? []).map((n) => ({ ...n, _scope: "owner" })),
+        ...(candidateQuery.data ?? []).map((n) => ({
+            ...n,
+            _scope: "candidate",
+        })),
     ].sort(
         (a, b) =>
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -174,7 +177,7 @@ export default function NotificationsScreen() {
         <ScreenWrapper back title="Notifications">
             <FlatList
                 data={notifications}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => `${item.id}-${item._scope}`}
                 renderItem={renderItem}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{

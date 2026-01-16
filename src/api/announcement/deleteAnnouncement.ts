@@ -13,6 +13,13 @@ export default async function deleteAnnouncement(
         throw new Error("Utilisateur non authentifié");
     }
 
+    const { error } = await supabase
+        .from("participant_requests")
+        .update({ status: "announce_deleted" })
+        .eq("annonce_id", id);
+
+    if (error) throw error;
+
     const { data, error: error_annonce } = await supabase
         .from("annonces")
         .delete()
@@ -24,13 +31,6 @@ export default async function deleteAnnouncement(
         console.error("Error deleted announcement:", error_annonce);
         throw error_annonce;
     }
-
-    const { error } = await supabase
-        .from("participant_requests")
-        .update({ status: "announce_deleted" })
-        .eq("annonce_id", data.id);
-
-    if (error) throw error;
 
     return data;
 }
