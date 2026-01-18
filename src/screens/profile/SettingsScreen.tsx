@@ -9,6 +9,7 @@ import { showToast } from "../../../utils/showToast";
 import { supabase } from "../../../utils/supabase";
 import { onUpdateEmail } from "../../../utils/updateEmail";
 import { onUpdatePassword } from "../../../utils/updatePassword";
+import { deleteAccount } from "../../api/account/deleteAccount";
 import Button from "../../components/ui/Button";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 import ScreenWrapper from "../../components/ui/CustomHeader";
@@ -51,6 +52,15 @@ export default function SettingsScreen() {
 
     const logout = async () => {
         await supabase.auth.signOut();
+    };
+    const onDeleteAccount = async () => {
+        try {
+            await deleteAccount();
+            await supabase.auth.signOut();
+            showToast("success", "Compte supprimé définitivement");
+        } catch (e) {
+            showToast("error", "Impossible de supprimer le compte");
+        }
     };
 
     /* ===================== UI ===================== */
@@ -196,7 +206,7 @@ export default function SettingsScreen() {
                             label="Changer le mot de passe"
                             variant="secondary"
                             onPress={passwordForm.handleSubmit(
-                                onUpdatePassword
+                                onUpdatePassword,
                             )}
                             disabled={passwordForm.formState.isSubmitting}
                         />
@@ -248,9 +258,10 @@ export default function SettingsScreen() {
                             onCancel={() => setOpenDestroy(false)}
                             onConfirm={() => {
                                 setOpenDestroy(false);
+                                onDeleteAccount();
                                 showToast(
                                     "success",
-                                    "Suppression de compte réussie"
+                                    "Suppression de compte réussie",
                                 );
                             }}
                             danger
