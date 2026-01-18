@@ -62,8 +62,6 @@ export default function NotificationsScreen() {
     /* ===================== ACTIONS ===================== */
 
     const onAccept = async (annonceId: string, candidate_id: string) => {
-        console.log("onAccept", annonceId, candidate_id);
-
         if (!session) {
             Alert.alert("Connexion requise");
             return;

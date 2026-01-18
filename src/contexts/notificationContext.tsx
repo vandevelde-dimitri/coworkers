@@ -25,9 +25,6 @@ export const NotificationProvider = ({
     useEffect(() => {
         if (!userId) return;
 
-        // 🔹 Debug : voir si le useEffect se lance
-        console.log("[NotificationContext] userId:", userId);
-
         // 🔹 Charger les notifications initiales
         const loadInitialNotifications = async () => {
             try {
@@ -35,7 +32,7 @@ export const NotificationProvider = ({
                 if (data && data.length > 0) {
                     console.log(
                         "[NotificationContext] initial notifications:",
-                        data
+                        data,
                     );
                     setHasNewNotification(true);
                 }
@@ -58,7 +55,7 @@ export const NotificationProvider = ({
                 (payload) => {
                     console.log("[Realtime] INSERT detected:", payload);
                     handleNotification(payload.new, "INSERT");
-                }
+                },
             )
             .on(
                 "postgres_changes",
@@ -70,7 +67,7 @@ export const NotificationProvider = ({
                 (payload) => {
                     console.log("[Realtime] UPDATE detected:", payload);
                     handleNotification(payload.new, "UPDATE");
-                }
+                },
             )
             .subscribe();
 
@@ -82,7 +79,7 @@ export const NotificationProvider = ({
     // 🔹 Gestion de la bulle
     const handleNotification = async (
         request: any,
-        event: "INSERT" | "UPDATE"
+        event: "INSERT" | "UPDATE",
     ) => {
         if (!userId) return;
 
@@ -98,7 +95,7 @@ export const NotificationProvider = ({
             if (error || !annonceData) {
                 console.error(
                     "[NotificationContext] failed to fetch annonce:",
-                    error
+                    error,
                 );
                 return;
             }
@@ -110,7 +107,7 @@ export const NotificationProvider = ({
 
         // 🔹 Log pour debug
         console.log(
-            `[NotificationContext] handleNotification | event=${event} | isOwner=${isOwner} | isCandidate=${isCandidate} | status=${request.status}`
+            `[NotificationContext] handleNotification | event=${event} | isOwner=${isOwner} | isCandidate=${isCandidate} | status=${request.status}`,
         );
 
         // 🔹 Déclencher la bulle

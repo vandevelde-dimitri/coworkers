@@ -12,7 +12,7 @@ import { AnnouncementFormValues } from "../../types/announcement.interface";
 export function useAnnouncementByFc(
     page: number,
     pageSize: number = 5,
-    fc_id?: string | null
+    fc_id?: string | null,
 ) {
     return useQuery({
         queryKey: ["announcements", page, pageSize, fc_id ?? "all"],
@@ -57,7 +57,7 @@ export function useAddAnnouncement() {
             showToast(
                 "success",
                 "Annonce créée avec succès",
-                "Une conversation a été ouverte"
+                "Une conversation a été ouverte",
             );
         },
         onError: (error: any) => {
@@ -65,13 +65,13 @@ export function useAddAnnouncement() {
                 showToast(
                     "warning",
                     "Annonce déjà active",
-                    "Vous avez déjà une annonce en cours"
+                    "Vous avez déjà une annonce en cours",
                 );
                 return;
             }
             showToast(
                 "error",
-                "Une erreur est survenue lors de la création de l'annonce."
+                "Une erreur est survenue lors de la création de l'annonce.",
             );
         },
     });
@@ -99,7 +99,7 @@ export function useUpdateAnnouncement() {
         onError: () => {
             showToast(
                 "error",
-                "Une erreur est survenue lors de la modification de l'annonce."
+                "Une erreur est survenue lors de la modification de l'annonce.",
             );
         },
     });
@@ -120,12 +120,15 @@ export function useDeleteAnnouncement() {
                 queryKey: ["user-conversations"],
                 exact: false,
             });
+            queryClient.invalidateQueries({
+                queryKey: ["notifications_owner"],
+            });
             showToast("success", "Votre annonce à était supprimé !");
         },
         onError: () => {
             showToast(
                 "error",
-                "Une erreur est survenue lors de la suppression de l'annonce."
+                "Une erreur est survenue lors de la suppression de l'annonce.",
             );
         },
     });

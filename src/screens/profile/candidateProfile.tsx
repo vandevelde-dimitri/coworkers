@@ -32,12 +32,10 @@ export default function CandidateProfile() {
           title,
           number_of_places
         )
-      `
+      `,
             )
             .eq("user_id", session.user.id)
             .order("created_at", { ascending: false });
-
-        console.log("Candidatures récupérées :", data);
 
         if (error) {
             console.error("Erreur chargement candidatures :", error);
@@ -64,8 +62,8 @@ export default function CandidateProfile() {
                 {item.status === "pending"
                     ? " En attente de réponse"
                     : item.status === "accepted"
-                    ? " Accepté"
-                    : " Refusé"}
+                      ? " Accepté"
+                      : " Refusé"}
             </Text>
             {/* Bouton postuler / annuler */}
             <ApplyButton

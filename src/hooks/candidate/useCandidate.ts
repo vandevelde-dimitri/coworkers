@@ -49,6 +49,9 @@ export function useRemoveParticipant() {
             queryClient.invalidateQueries({
                 queryKey: ["announcement", "currentUser"],
             });
+            queryClient.invalidateQueries({
+                queryKey: ["conversation", variables.conversationId],
+            });
         },
     });
 }

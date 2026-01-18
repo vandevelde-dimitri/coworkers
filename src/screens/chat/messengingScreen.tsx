@@ -38,7 +38,7 @@ export default function ChatScreen({ route }: any) {
           avatar_updated_at,
             contract
         )
-      `
+      `,
             )
             .eq("conversation_id", conversationId)
             .order("created_at", { ascending: true });
@@ -58,7 +58,7 @@ export default function ChatScreen({ route }: any) {
                     avatar: m.users?.image_profile ?? null,
                     update_avatar: m.users?.avatar_updated_at ?? null,
                     contract: m.users?.contract,
-                }))
+                })),
             );
         }
 
@@ -92,7 +92,7 @@ export default function ChatScreen({ route }: any) {
                 () => {
                     // Recharger pour récupérer avatar + données complètes
                     loadMessages();
-                }
+                },
             )
             .subscribe();
 
@@ -128,7 +128,6 @@ export default function ChatScreen({ route }: any) {
             </SafeScreen>
         );
     }
-    console.log("RAW DATA", messages);
 
     return (
         <ScreenWrapper title={title} back>

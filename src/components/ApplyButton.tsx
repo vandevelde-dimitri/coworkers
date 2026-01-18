@@ -14,7 +14,7 @@ export default function ApplyButton({ annonce }: { annonce: AnnonceDetail }) {
     const [confirmOpen, setConfirmOpen] = useState(false);
     const { request, isLoading, toggleApply } = useApply(
         annonce.id,
-        session?.user.id
+        session?.user.id,
     );
 
     const isCancelAction =
@@ -23,12 +23,12 @@ export default function ApplyButton({ annonce }: { annonce: AnnonceDetail }) {
     const label = isLoading
         ? "En cours..."
         : request?.status === "accepted"
-        ? "Annuler la participation"
-        : request?.status === "pending"
-        ? "Annuler la candidature"
-        : request?.status === "refused"
-        ? "Postuler à nouveau"
-        : "Postuler";
+          ? "Annuler la participation"
+          : request?.status === "pending"
+            ? "Annuler la candidature"
+            : request?.status === "refused"
+              ? "Postuler à nouveau"
+              : "Postuler";
 
     const onPress = async () => {
         if (!session) {
@@ -37,7 +37,7 @@ export default function ApplyButton({ annonce }: { annonce: AnnonceDetail }) {
                 JSON.stringify({
                     screen: "AnnonceDetail",
                     params: { id: annonce.id },
-                })
+                }),
             );
             navigation.navigate("Public" as never);
             return;
@@ -46,7 +46,12 @@ export default function ApplyButton({ annonce }: { annonce: AnnonceDetail }) {
             setConfirmOpen(true);
             return;
         }
-        await toggleApply();
+        try {
+            await toggleApply();
+            showToast("success", "Candidature envoyée");
+        } catch (error) {
+            showToast("error", "Une erreur est survenue");
+        }
     };
 
     if (annonce.number_of_places <= 0) {
@@ -112,7 +117,7 @@ export default function ApplyButton({ annonce }: { annonce: AnnonceDetail }) {
                         "success",
                         request?.status === "accepted"
                             ? "Participation annulée"
-                            : "Candidature annulée"
+                            : "Candidature annulée",
                     );
                 }}
                 danger
