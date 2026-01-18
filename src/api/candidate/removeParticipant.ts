@@ -9,14 +9,16 @@ export async function removeParticipant({
     participantId: string;
     conversationId: string;
 }) {
-    const { error } = await supabase.rpc("remove_participant", {
-        p_annonce_id: annonceId,
-        p_participant_id: participantId,
-        p_conversation_id: conversationId,
-    });
+    try {
+        const { error } = await supabase.rpc("remove_participant", {
+            p_annonce_id: annonceId,
+            p_participant_id: participantId,
+            p_conversation_id: conversationId,
+        });
 
-    if (error) {
-        console.error("RPC remove_participant error:", error);
+        if (error) throw error;
+    } catch (error) {
+        if (__DEV__) console.error("removeParticipant error:", error);
         throw error;
     }
 }

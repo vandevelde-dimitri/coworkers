@@ -5,50 +5,62 @@ import {
 } from "../../types/announcement.interface";
 
 export async function getAnnouncementById(
-    annonce_id: string
+    annonce_id: string,
 ): Promise<AnnonceDetail> {
-    const { data, error: sessionError } = await supabase.auth.getSession();
-    if (sessionError) throw sessionError;
+    try {
+        // 🔒 Récupération session
+        const { data: sessionData, error: sessionError } =
+            await supabase.auth.getSession();
+        if (sessionError || !sessionData?.session) {
+            throw new Error("Utilisateur non authentifié");
+        }
+        const userId = sessionData.session.user.id;
 
-    const { data: annonce, error } = await supabase
-        .from("annonces")
-        .select(
-            `
-  *,
-  owner:users (
-  id,
-    firstname,
-    image_profile,
-    city,
-    avatar_updated_at,
-    contract
-  ),
-  participant_requests (
-  id,
-    status,
-    user_id,
-    users (
-      id,
-      firstname,
-      image_profile,
-      city,
-        avatar_updated_at,
-        contract
-    )
-  )
-`
+        // 🔒 Récupération annonce + relations
+        const { data: annonce, error } = await supabase
+            .from("annonces")
+            .select(
+                `
+        *,
+        owner:users (
+          id,
+          firstname,
+          image_profile,
+          city,
+          avatar_updated_at,
+          contract
+        ),
+        participant_requests (
+          id,
+          status,
+          user_id,
+          users (
+            id,
+            firstname,
+            image_profile,
+            city,
+            avatar_updated_at,
+            contract
+          )
         )
-        .eq("id", annonce_id)
-        .single();
+      `,
+            )
+            .eq("id", annonce_id)
+            .single();
 
-    if (error) {
-        console.error("Error fetching announcement:", error);
-        throw error;
+        if (error || !annonce) {
+            console.error("Erreur récupération annonce :", error);
+            throw error ?? new Error("Annonce introuvable");
+        }
+
+        // 🔎 Cherche la candidature de l'utilisateur connecté
+        const myRequest = annonce.participant_requests.find(
+            (r: ParticipantRequest) => r.user_id === userId,
+        );
+
+        return { ...annonce, myStatus: myRequest?.status ?? null };
+    } catch (err) {
+        console.error("getAnnouncementById error:", err);
+        throw err; // laisse la mutation ou le composant gérer l'erreur
     }
-
-    const myRequest = annonce.participant_requests.find(
-        (r: ParticipantRequest) => r.user_id === data.session?.user.id
-    );
-
-    return { ...annonce, myStatus: myRequest?.status ?? null };
 }

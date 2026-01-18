@@ -1,19 +1,22 @@
 import { supabase } from "../../../utils/supabase";
-import { Conversation } from "../../types/conversation.interface";
 
 export async function createConversation(
-    announcementId: string
+    announcementId: string,
 ): Promise<string> {
-    const { data, error } = await supabase
-        .from("conversations")
-        .upsert({ annonce_id: announcementId })
-        .select("id")
-        .single();
+    try {
+        const { data, error } = await supabase
+            .from("conversations")
+            .upsert({ annonce_id: announcementId })
+            .select("id")
+            .single();
 
-    if (error) {
-        console.error("Error creating conversation:", error);
-        throw new Error("Failed to create or retrieve conversation");
+        if (error) {
+            throw new Error("Failed to create or retrieve conversation");
+        }
+
+        return data.id;
+    } catch (error) {
+        if (__DEV__) console.error("createConversation error:", error);
+        throw error;
     }
-
-    return data.id;
 }
