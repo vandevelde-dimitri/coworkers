@@ -8,7 +8,6 @@ import {
     View,
 } from "react-native";
 import { supabase } from "../../../utils/supabase";
-import { addUserConversation } from "../../api/messaging/addUserConversation";
 import SafeScreen from "../../components/SafeScreen";
 import ScreenWrapper from "../../components/ui/CustomHeader";
 import EmptyState from "../../components/ui/EmptyComponent";
@@ -40,7 +39,7 @@ export default function NotificationsScreen() {
         })),
     ].sort(
         (a, b) =>
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
     );
 
     if (isLoading) {
@@ -74,12 +73,6 @@ export default function NotificationsScreen() {
             // 1️⃣ Accepter la candidature
 
             await acceptRequest({ candidate_id, annonce_id: annonceId });
-
-            // 2️⃣ Décrémenter les places
-            await supabase.rpc("decrement_places", { annonce: annonceId });
-
-            // 3️⃣ Ajouter le candidat à la conversation
-            await addUserConversation(candidate_id, annonceId);
 
             Alert.alert("Succès", "Candidature acceptée");
         } catch (e: any) {

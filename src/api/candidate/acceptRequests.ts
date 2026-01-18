@@ -1,16 +1,10 @@
 import { supabase } from "../../../utils/supabase";
 
 export async function AcceptRequest(candidate_id: string, annonce_id: string) {
-    const { data, error } = await supabase
-        .from("participant_requests")
-        .update({ status: "accepted" })
-        .eq("annonce_id", annonce_id)
-        .eq("user_id", candidate_id)
-        .select("id")
-        .maybeSingle();
+    const { error } = await supabase.rpc("accept_candidate", {
+        p_annonce_id: annonce_id,
+        p_candidate_id: candidate_id,
+    });
 
     if (error) throw error;
-    if (!data) throw new Error("Candidature introuvable");
-
-    return data;
 }

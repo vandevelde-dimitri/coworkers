@@ -23,6 +23,8 @@ export function useAcceptRequest() {
             queryClient.invalidateQueries({
                 queryKey: ["announcement", variables.annonce_id],
             });
+
+            //! invalider aussi la conversation liée
         },
     });
 }
