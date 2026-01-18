@@ -17,9 +17,10 @@
             "infoPlist": {
                 "NSCameraUsageDescription": "Coworkers a besoin d'accéder à votre caméra pour prendre une photo de profil",
                 "NSPhotoLibraryUsageDescription": "Coworkers a besoin d'accéder à vos photos pour choisir une photo de profil",
-                "NSPhotoLibraryAddUsageDescription": "Coworkers a besoin de sauvegarder des photos dans votre bibliothèque",
-                "NSMicrophoneUsageDescription": "Coworkers n'utilise pas le microphone (permission non requise)"
-            }
+                "NSPhotoLibraryAddUsageDescription": "Coworkers a besoin de sauvegarder des photos dans votre bibliothèque"
+            },
+            "bundleIdentifier": "com.dimitrivandevelde.coworkers",
+            "buildNumber": "1"
         },
         "android": {
             "adaptiveIcon": {
@@ -32,7 +33,9 @@
                 "CAMERA",
                 "READ_EXTERNAL_STORAGE",
                 "WRITE_EXTERNAL_STORAGE"
-            ]
+            ],
+            "package": "com.dimitrivandevelde.coworkers",
+            "versionCode": 1
         },
         "web": {
             "favicon": "./assets/favicon.png"
@@ -43,8 +46,7 @@
                 "expo-camera",
                 {
                     "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
-                    "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
-                    "recordAudioAndroid": true
+                    "recordAudioAndroid": false
                 }
             ]
         ]
