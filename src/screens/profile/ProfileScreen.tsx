@@ -3,7 +3,7 @@ import type { NavigationProp } from "@react-navigation/native";
 
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
-import { Linking, ScrollView, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Linking, ScrollView, TouchableOpacity, View } from "react-native";
 import { formatDate } from "../../../utils/formatedDate";
 import { ProfileCard } from "../../components/ProfileCard";
 import { ActionRow } from "../../components/ui/ActionRaw";
@@ -23,7 +23,7 @@ export default function ProfileScreen() {
     const { session } = useAuth();
     const navigation = useNavigation<NavigationProp<ProfileStackParamList>>();
     const formatedDate = formatDate(session?.user.created_at || "");
-    if (!user) return null;
+    if (!user) return <ActivityIndicator />;
 
     console.log("user profile data:", user);
     const right_buttons = (

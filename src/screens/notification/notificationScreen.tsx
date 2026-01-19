@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     Alert,
     FlatList,
@@ -7,8 +7,10 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
+import { showToast } from "../../../utils/showToast";
 import { supabase } from "../../../utils/supabase";
 import SafeScreen from "../../components/SafeScreen";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 import ScreenWrapper from "../../components/ui/CustomHeader";
 import EmptyState from "../../components/ui/EmptyComponent";
 import SmartImage from "../../components/ui/SmartImage";
@@ -25,6 +27,7 @@ export default function NotificationsScreen() {
     const { session } = useAuth();
 
     const ownerQuery = useOwnerNotifications();
+    const [open, setOpen] = useState(false);
     const candidateQuery = useCandidateNotifications();
     const { mutateAsync: acceptRequest, isPending } = useAcceptRequest();
 
@@ -71,11 +74,8 @@ export default function NotificationsScreen() {
             // 1️⃣ Accepter la candidature
 
             await acceptRequest({ candidate_id, annonce_id: annonceId });
-
-            Alert.alert("Succès", "Candidature acceptée");
         } catch (e: any) {
             console.error("❌ ACCEPT ERROR:", e);
-            Alert.alert("Erreur", JSON.stringify(e, null, 2));
         }
     };
 
@@ -154,10 +154,24 @@ export default function NotificationsScreen() {
 
                         <TouchableOpacity
                             style={[styles.actionBtn, styles.reject]}
-                            onPress={() => onReject(item.annonceId)}
+                            onPress={() => setOpen(true)}
                         >
                             <Text style={styles.actionText}>Refuser</Text>
                         </TouchableOpacity>
+                        <ConfirmModal
+                            visible={open}
+                            title="Voulez-vous vraiement refuser ce candidat ?"
+                            description="Cette action est irréversible."
+                            confirmLabel="Oui"
+                            cancelLabel="Non"
+                            onCancel={() => setOpen(false)}
+                            onConfirm={() => {
+                                setOpen(false);
+                                onReject(item.annonceId);
+                                showToast("success", "Candidature refusée");
+                            }}
+                            danger
+                        />
                     </View>
                 )}
             </View>

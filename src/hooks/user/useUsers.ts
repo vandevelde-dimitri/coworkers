@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { showToast } from "../../../utils/showToast";
 import { getCurrentUser } from "../../api/user/getCurrentUser";
 import { updateUser } from "../../api/user/updateUser";
 import { uploadUserAvatar } from "../../api/user/uploadUserAvatar";
@@ -28,6 +29,19 @@ export function useUploadAvatar() {
             queryClient.invalidateQueries({
                 queryKey: ["currentUser", session?.user?.id],
             });
+            queryClient.invalidateQueries({ queryKey: ["announcements"] });
+            showToast("success", "Avatar mis à jour avec succès !");
+        },
+        onError: (error) => {
+            if (__DEV__)
+                console.error(
+                    "useUploadAvatar error:",
+                    (error as Error).message,
+                );
+            showToast(
+                "error",
+                "Une erreur est survenue lors de la mise à jour de l'avatar.",
+            );
         },
     });
 }
@@ -42,6 +56,15 @@ export function useUpdateUser() {
             // Met à jour le cache du user actuel
             queryClient.invalidateQueries({ queryKey: ["current-user"] });
             queryClient.invalidateQueries({ queryKey: ["announcements"] });
+            showToast("success", "Profil mis à jour avec succès !");
+        },
+        onError: (error) => {
+            if (__DEV__)
+                console.error("useUpdateUser error:", (error as Error).message);
+            showToast(
+                "error",
+                "Une erreur est survenue lors de la mise à jour du profil.",
+            );
         },
     });
 }

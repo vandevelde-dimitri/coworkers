@@ -3,6 +3,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import React, { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import {
+    ActivityIndicator,
     ScrollView,
     StyleSheet,
     Text,
@@ -36,7 +37,7 @@ export default function FormAnnouncementScreen() {
         useUpdateAnnouncement();
     const { data: existingAnnouncement, isLoading } = useAnnouncementById(
         id as string,
-        isEditMode
+        isEditMode,
     );
 
     const schema = yup.object({
@@ -69,7 +70,7 @@ export default function FormAnnouncementScreen() {
         }
     }, [isEditMode, existingAnnouncement, reset]);
     if (!session) {
-        return null; // ou un splash / loader léger
+        return <ActivityIndicator />; // ou un splash / loader léger
     }
     if (isEditMode && isLoading) {
         return (
@@ -90,7 +91,7 @@ export default function FormAnnouncementScreen() {
                             screen: "HomeScreen",
                         });
                     },
-                }
+                },
             );
             return;
         }
@@ -160,8 +161,8 @@ export default function FormAnnouncementScreen() {
                                 ? "Modification en cours..."
                                 : "Modifier l'annonce"
                             : isPending
-                            ? "Publication en cours..."
-                            : "Publier l'annonce"}
+                              ? "Publication en cours..."
+                              : "Publier l'annonce"}
                     </Text>
                 </TouchableOpacity>
             </ScrollView>

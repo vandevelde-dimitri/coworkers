@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { showToast } from "../../../utils/showToast";
 import { AcceptRequest } from "../../api/candidate/acceptRequests";
 import { removeParticipant } from "../../api/candidate/removeParticipant";
 
@@ -25,6 +26,21 @@ export function useAcceptRequest() {
             });
 
             //! invalider aussi la conversation liée
+            queryClient.invalidateQueries({
+                queryKey: ["conversation", variables.annonce_id],
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: ["announcement", "currentUser"],
+            });
+
+            showToast("success", "Demande acceptée avec succès !");
+        },
+        onError: (error) => {
+            showToast(
+                "error",
+                "Une erreur est survenue lors de l'acceptation de la demande.",
+            );
         },
     });
 }
@@ -52,6 +68,13 @@ export function useRemoveParticipant() {
             queryClient.invalidateQueries({
                 queryKey: ["conversation", variables.conversationId],
             });
+            showToast("success", "Participant supprimé avec succès !");
+        },
+        onError: (error) => {
+            showToast(
+                "error",
+                "Une erreur est survenue lors de la suppression du participant.",
+            );
         },
     });
 }

@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
-import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from "react-native";
 import { formatDate } from "../../../utils/formatedDate";
 import SafeScreen from "../../components/SafeScreen";
 import Button from "../../components/ui/Button";
@@ -29,7 +29,7 @@ export default function TravelScreen() {
     } = useAnnouncementCurrentUser();
     const { mutate: deleteAnnouncement } = useDeleteAnnouncement();
 
-    if (!session) return null;
+    if (!session) return <ActivityIndicator />;
 
     // 1️⃣ Loading
     if (isLoading) {

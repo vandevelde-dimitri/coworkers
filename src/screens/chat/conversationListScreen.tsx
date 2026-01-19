@@ -1,6 +1,6 @@
 import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback } from "react";
-import { FlatList } from "react-native";
+import { ActivityIndicator, FlatList } from "react-native";
 import ConversationItem from "../../components/ConversationItem";
 import ScreenWrapper from "../../components/ui/CustomHeader";
 import EmptyState from "../../components/ui/EmptyComponent";
@@ -19,8 +19,8 @@ export default function ConversationsListScreen({ navigation }: any) {
             refetch();
         }, [])
     );
-    if (!conversations) return null;
-    if (isLoading) return null;
+    if (!conversations) return <ActivityIndicator />;
+    if (isLoading) return <ActivityIndicator />;
 
     console.log("conversation => ", conversations);
 

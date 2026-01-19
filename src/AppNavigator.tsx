@@ -4,13 +4,14 @@ import { useAuth } from "./contexts/authContext";
 import AppTabs from "./navigation/AppTabs";
 import PublicStack from "./navigation/PublicStack";
 import OnboardingScreen from "./screens/auth/OnboardingScreen";
+import { ActivityIndicator } from "react-native";
 
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
     const { session, loading, profileCompleted } = useAuth();
 
-    if (loading) return null; // splash screen si tu veux
+    if (loading) return <ActivityIndicator />; // splash screen si tu veux
 
     return (
         <NavigationContainer>

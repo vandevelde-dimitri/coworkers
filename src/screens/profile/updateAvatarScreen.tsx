@@ -1,6 +1,6 @@
 import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
-import { View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import { convertToWebp } from "../../../utils/convertToWebp";
 import { requestPermission } from "../../../utils/permission";
 import { showToast } from "../../../utils/showToast";
@@ -17,7 +17,7 @@ export default function UpdateAvatarScreen() {
     const { mutate: updateAvatar } = useUploadAvatar();
     const [open, setOpen] = useState(false);
 
-    if (!user) return null;
+    if (!user) return <ActivityIndicator />;
 
     const avatarUrl = user?.image_profile ?? null;
 
