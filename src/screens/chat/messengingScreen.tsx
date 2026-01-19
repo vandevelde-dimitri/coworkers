@@ -88,6 +88,15 @@ export default function ChatScreen({ route }: any) {
     );
 
     // ---------------------------
+    // Chargement initial des messages
+    // ---------------------------
+    useEffect(() => {
+        if (conversationId) {
+            loadMessages(0);
+        }
+    }, [conversationId]);
+
+    // ---------------------------
     // Realtime: ajout direct au state
     // ---------------------------
     useEffect(() => {
