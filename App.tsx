@@ -11,7 +11,11 @@ import { NotificationProvider } from "./src/contexts/notificationContext";
 
 const Tab = createBottomTabNavigator();
 export default function App() {
-    const queryClient = new QueryClient();
+    const queryClient = new QueryClient({
+        defaultOptions: {
+            queries: { staleTime: 1000 * 60 * 5 },
+        },
+    });
     return (
         <QueryClientProvider client={queryClient}>
             <AuthProvider>

@@ -53,6 +53,7 @@ export default function SettingsScreen() {
     const logout = async () => {
         await supabase.auth.signOut();
     };
+
     const onDeleteAccount = async () => {
         try {
             await deleteAccount();
@@ -256,13 +257,9 @@ export default function SettingsScreen() {
                             confirmLabel="Oui"
                             cancelLabel="Non"
                             onCancel={() => setOpenDestroy(false)}
-                            onConfirm={() => {
+                            onConfirm={async () => {
                                 setOpenDestroy(false);
-                                onDeleteAccount();
-                                showToast(
-                                    "success",
-                                    "Suppression de compte réussie",
-                                );
+                                await onDeleteAccount();
                             }}
                             danger
                         />

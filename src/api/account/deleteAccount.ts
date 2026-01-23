@@ -1,20 +1,34 @@
 import { supabase } from "../../../utils/supabase";
 
 export async function deleteAccount() {
-    const session = (await supabase.auth.getSession()).data.session;
-    if (!session) throw new Error("Non authentifié");
+    const {
+        data: { session },
+        error: sessionError,
+    } = await supabase.auth.getSession();
 
-    const res = await fetch(
-        `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/delete-account`,
-        {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${session.access_token}`,
+    if (sessionError || !session) throw new Error("Non authentifié");
+
+    try {
+        const res = await fetch(
+            `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/delete-account`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json", // Toujours mieux de le préciser
+                    Authorization: `Bearer ${session.access_token}`,
+                },
             },
-        },
-    );
+        );
 
-    if (!res.ok) {
-        throw new Error("Erreur suppression compte");
+        if (!res.ok) {
+            // On essaie de récupérer le message d'erreur du backend si dispo
+            const errorData = await res.json().catch(() => ({}));
+            throw new Error(errorData.message || "Erreur suppression compte");
+        }
+
+        return true;
+    } catch (err) {
+        console.error("Delete account error:", err);
+        throw err;
     }
 }
