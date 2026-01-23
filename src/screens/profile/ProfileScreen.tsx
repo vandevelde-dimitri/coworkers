@@ -25,7 +25,7 @@ export default function ProfileScreen() {
     const formatedDate = formatDate(session?.user.created_at || "");
     if (!user) return <ActivityIndicator />;
 
-    console.log("user profile data:", user);
+ 
     const right_buttons = (
         <>
             <TouchableOpacity

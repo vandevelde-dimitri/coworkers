@@ -14,8 +14,6 @@ export default function ConversationItem({
     unread: boolean;
     onPress: () => void;
 }) {
-    console.log("Conversation ✔ item", item);
-
     const date_formatted = formatDate(item.last_message_time);
 
     return (

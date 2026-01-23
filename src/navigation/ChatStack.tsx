@@ -2,8 +2,15 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
 import ConversationsListScreen from "../screens/chat/conversationListScreen";
 import ChatScreen from "../screens/chat/messengingScreen";
+import UserScreen from "../screens/users/userProfileScreen";
 
-const Stack = createNativeStackNavigator<any>();
+export type ChatStackParamList = {
+    conversationsList: undefined;
+    ChatScreen: { conversationId: string };
+    ProfileUserScreen: { id: string };
+};
+
+const Stack = createNativeStackNavigator<ChatStackParamList>();
 
 export default function ChatStack() {
     return (
@@ -17,6 +24,11 @@ export default function ChatStack() {
                 name="ChatScreen"
                 component={ChatScreen}
                 options={{ title: "Détail de l'annonce" }}
+            />
+            <Stack.Screen
+                name="ProfileUserScreen"
+                component={UserScreen}
+                options={{ title: "Profil utilisateur" }}
             />
         </Stack.Navigator>
     );

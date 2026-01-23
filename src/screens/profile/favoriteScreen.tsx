@@ -24,7 +24,7 @@ const FavoriteScreen = () => {
         );
     }
 
-    console.log("annonce en favori", favorites);
+   
 
     return (
         <ScreenWrapper back title="Mes favoris">

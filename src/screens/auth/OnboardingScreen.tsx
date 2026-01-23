@@ -84,12 +84,12 @@ export default function OnboardingScreen() {
                 profile_completed: true,
             },
         });
-        console.log("values => ", values);
+
         await updateUser(values);
         showToast(
             "success",
             "Inscription réussie !",
-            "Un email de confirmation a été envoyé."
+            "Un email de confirmation a été envoyé.",
         );
         refreshSession();
     };

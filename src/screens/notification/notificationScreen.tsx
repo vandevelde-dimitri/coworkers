@@ -104,7 +104,7 @@ export default function NotificationsScreen() {
     const renderItem = ({ item }: { item: NotificationResponse }) => {
         const isPending = item.status === StatusNotification.PENDING;
 
-        console.log("item => ", item);
+       
 
         return (
             <View style={styles.card}>

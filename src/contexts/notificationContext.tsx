@@ -30,10 +30,6 @@ export const NotificationProvider = ({
             try {
                 const { data } = await supabase.rpc("get_my_notifications");
                 if (data && data.length > 0) {
-                    console.log(
-                        "[NotificationContext] initial notifications:",
-                        data,
-                    );
                     setHasNewNotification(true);
                 }
             } catch (err) {

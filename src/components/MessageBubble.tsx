@@ -8,6 +8,8 @@ type Message = {
     isMine: boolean;
     avatar?: string | null;
     update_avatar?: string | null;
+    contract?: string | null;
+    user_id?: string;
 };
 
 type Props = {
@@ -15,10 +17,15 @@ type Props = {
 };
 
 export default function MessageBubble({ message }: Props) {
-    const { isMine, content, created_at, avatar, update_avatar, contract } =
-        message;
-
-    console.log("message => ", message);
+    const {
+        isMine,
+        content,
+        created_at,
+        avatar,
+        update_avatar,
+        contract,
+        user_id,
+    } = message;
 
     return (
         <View
@@ -35,6 +42,7 @@ export default function MessageBubble({ message }: Props) {
                         image_profile: avatar,
                         avatar_updated_at: update_avatar,
                         contract: contract,
+                        user_id: user_id || "",
                     }}
                 />
             )}

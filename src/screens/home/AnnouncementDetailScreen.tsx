@@ -4,7 +4,7 @@ import {
     useRoute,
 } from "@react-navigation/native";
 import React, { useState } from "react";
-import { Alert, ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import { isMyAnnouncement } from "../../../utils/announcementUtils";
 import ApplyButton from "../../components/ApplyButton";
 import FavoriteButton from "../../components/FavoriteButton";
@@ -23,8 +23,8 @@ import { HomeStackParamList } from "../../types/navigation/homeStackType";
 
 export default function AnnouncementDetailScreen() {
     const route = useRoute();
-    const navigation = useNavigation<NavigationProp<HomeStackParamList>>();
     const { id } = route.params as { id: string };
+    const navigation = useNavigation<NavigationProp<HomeStackParamList>>();
     const { session } = useAuth();
     const [open, setOpen] = useState(false);
     const { data: announcement, isLoading, error } = useAnnouncementById(id);
@@ -84,7 +84,7 @@ export default function AnnouncementDetailScreen() {
                     </Text>
 
                     {announcement.participant_requests.filter(
-                        (p) => p.status === "accepted"
+                        (p) => p.status === "accepted",
                     ).length === 0 ? (
                         <Text style={{ color: "#6b7280", fontStyle: "italic" }}>
                             Aucun participant pour le moment.
@@ -94,7 +94,7 @@ export default function AnnouncementDetailScreen() {
                             .filter((p) => p.status === "accepted")
                             .map(
                                 (p) => (
-                                    console.log("participant => ", p.users),
+                                    console.log("Rendering participant:", p),
                                     (
                                         <View
                                             key={p.user_id}
@@ -144,7 +144,7 @@ export default function AnnouncementDetailScreen() {
                                             )}
                                         </View>
                                     )
-                                )
+                                ),
                             )
                     )}
                 </Card>

@@ -27,7 +27,7 @@ export async function getAllNotificationsByUserCandidate(): Promise<
             throw error;
         }
 
-        console.log("✅ notification", data);
+ 
 
         // 🔹 Transformation pour l’écran
         const formatted: NotificationResponse[] = (data ?? []).map(

@@ -6,4 +6,5 @@ export type ProfileStackParamList = {
     AvatarRegistrationScreen: undefined;
     NotificationsScreen: undefined;
     CandidateProfile: undefined;
+    ProfileUserScreen: { id: string };
 };

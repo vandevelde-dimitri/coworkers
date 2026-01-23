@@ -11,7 +11,7 @@ export type ConversationPreview = {
 };
 
 export async function getUserConversationsPreview(
-    userId: string
+    userId: string,
 ): Promise<ConversationPreview[]> {
     const { data, error } = await supabase
         .from("conversation_participants")
@@ -23,6 +23,7 @@ export async function getUserConversationsPreview(
       annonces!fk_conversation_annonce (
         title,
         users:user_id (
+        id,
           image_profile,
           firstname,
           lastname,
@@ -35,7 +36,7 @@ export async function getUserConversationsPreview(
         created_at
       )
     )
-    `
+    `,
         )
         .eq("user_id", userId)
         .order("created_at", {
@@ -63,6 +64,7 @@ export async function getUserConversationsPreview(
             last_message_time: lastMessage?.created_at ?? null,
             avatar_updated_at: conv?.annonces?.users?.avatar_updated_at ?? null,
             contract: conv?.annonces?.users?.contract ?? null,
+            user_id: conv?.annonces?.users?.id ?? null,
         };
     });
 }

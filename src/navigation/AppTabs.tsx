@@ -6,11 +6,11 @@ import { HapticTab } from "../components/HapticTab";
 import { IconSymbol } from "../components/ui/IconSymbol";
 import { useMessageStatus } from "../contexts/messageContext";
 import { useNotificationStatus } from "../contexts/notificationContext";
-import TravelScreen from "../screens/travel/TravelScreen";
 import ChatStack from "./ChatStack";
 import FormStack from "./FormStack";
 import HomeStack from "./HomeStack";
 import ProfileStack from "./ProfileStack";
+import TravelStack from "./TravelStack";
 
 const Tab = createBottomTabNavigator();
 
@@ -58,8 +58,8 @@ export default function AppTabs() {
             />
 
             <Tab.Screen
-                name="Travel"
-                component={TravelScreen}
+                name="TravelStack"
+                component={TravelStack}
                 options={{
                     title: "Mes trajets",
                     tabBarIcon: ({ color }) => (

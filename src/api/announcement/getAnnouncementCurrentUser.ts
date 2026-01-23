@@ -39,13 +39,10 @@ export async function getAnnouncementByCurrentUser(): Promise<AnnonceDetail> {
         contract
       )
     )
-  `
+  `,
         )
         .eq("user_id", userId)
         .maybeSingle(); // <-- ici on filtre sur le propriétaire
-
-    console.log("RPC data", annonce);
-    console.log("RPC error", error);
 
     if (error) {
         console.error("Error fetching announcement:", error);

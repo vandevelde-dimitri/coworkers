@@ -17,12 +17,12 @@ export default function ConversationsListScreen({ navigation }: any) {
     useFocusEffect(
         useCallback(() => {
             refetch();
-        }, [])
+        }, []),
     );
     if (!conversations) return <ActivityIndicator />;
     if (isLoading) return <ActivityIndicator />;
 
-    console.log("conversation => ", conversations);
+    console.log("Conversation => ", conversations);
 
     return (
         <ScreenWrapper title="Mes conversations">

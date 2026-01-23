@@ -25,7 +25,7 @@ export async function getAllNotificationByUser(): Promise<
             throw error;
         }
 
-        console.log("✅ notification", data);
+
 
         // 🔹 Transformation pour l’écran
         const formatted: NotificationResponse[] = (data ?? []).map(

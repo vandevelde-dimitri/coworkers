@@ -51,7 +51,7 @@ export default function UpdateAvatarScreen() {
     /* ===================== UPLOAD ===================== */
 
     const uploadAvatar = async (uri: string) => {
-        console.log("Uploading avatar:", uri);
+    
         const fileExt = "webp";
         const filePath = `${user.id}/avatar.${fileExt}`;
         const arrayBuffer = await uriToArrayBuffer(uri);
@@ -68,9 +68,6 @@ export default function UpdateAvatarScreen() {
             const { data: publicUrlData } = supabase.storage
                 .from("avatars")
                 .getPublicUrl(filePath);
-
-            console.log("Public URL:", publicUrlData.publicUrl);
-
             updateAvatar({ imageUri: publicUrlData.publicUrl });
 
             showToast("success", "Photo de profil mise à jour");

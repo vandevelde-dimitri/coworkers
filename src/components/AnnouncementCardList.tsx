@@ -16,8 +16,6 @@ export default function AnnouncementCardList({
     const date_end_formated = formatDate(data.date_end);
     const navigation = useNavigation();
 
-    console.log("data", data);
-
     return (
         <Card>
             <View
@@ -36,6 +34,7 @@ export default function AnnouncementCardList({
                             data.avatar_updated_at ||
                             data.users?.avatar_updated_at,
                         contract: data.contract || data.users?.contract,
+                        user_id: data.user_id || data.users?.user_id || "",
                     }}
                 />
                 <View style={{ marginLeft: 12 }}>

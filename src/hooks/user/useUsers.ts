@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { showToast } from "../../../utils/showToast";
 import { getCurrentUser } from "../../api/user/getCurrentUser";
+import { getUser } from "../../api/user/getUser";
 import { updateUser } from "../../api/user/updateUser";
 import { uploadUserAvatar } from "../../api/user/uploadUserAvatar";
 import { useAuth } from "../../contexts/authContext";
@@ -13,6 +14,15 @@ export function useCurrentUser() {
         queryKey: ["currentUser", session?.user?.id],
         queryFn: () => getCurrentUser(session!),
         enabled: !!session,
+    });
+}
+export function useGetUser(user_id: string) {
+    const { session } = useAuth();
+
+    return useQuery({
+        queryKey: ["getUser", user_id],
+        queryFn: () => getUser(user_id),
+        enabled: !!user_id && !!session,
     });
 }
 

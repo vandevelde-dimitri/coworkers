@@ -8,6 +8,7 @@ import SettingsScreen from "../screens/profile/SettingsScreen";
 import CandidateProfile from "../screens/profile/candidateProfile";
 import FavoriteScreen from "../screens/profile/favoriteScreen";
 import UpdateAvatarScreen from "../screens/profile/updateAvatarScreen";
+import UserScreen from "../screens/users/userProfileScreen";
 import { ProfileStackParamList } from "../types/navigation/profileStackType";
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
@@ -61,6 +62,11 @@ export default function ProfileStack() {
             <Stack.Screen
                 name="CandidateProfile"
                 component={CandidateProfile}
+                options={{ title: "Mes candidatures" }}
+            />
+            <Stack.Screen
+                name="ProfileUserScreen"
+                component={UserScreen}
                 options={{ title: "Mes candidatures" }}
             />
         </Stack.Navigator>

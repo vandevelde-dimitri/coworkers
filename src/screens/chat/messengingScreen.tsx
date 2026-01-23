@@ -31,6 +31,7 @@ export default function ChatScreen({ route }: any) {
             avatar: m.users?.image_profile ?? null,
             update_avatar: m.users?.avatar_updated_at ?? null,
             contract: m.users?.contract,
+            user_id: m.users?.id,
         }));
 
     // ---------------------------
@@ -172,6 +173,7 @@ export default function ChatScreen({ route }: any) {
             </SafeScreen>
         );
     }
+    console.log("Message => ", messages);
 
     return (
         <ScreenWrapper title={title} back>
