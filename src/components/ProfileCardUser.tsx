@@ -1,20 +1,13 @@
 import { StyleSheet, Text, View } from "react-native";
-import { useAuth } from "../contexts/authContext";
-import { useCurrentUser } from "../hooks/user/useUsers";
 import SmartImage from "./ui/SmartImage";
 
-export function ProfileCard() {
-    const { data: user, isLoading } = useCurrentUser();
-    const { session } = useAuth();
-    if (isLoading) return <Text>Loading...</Text>;
-
+export function ProfileCardUser({ user }) {
     return (
         <View style={styles.profileCard}>
             <SmartImage userData={user} />
             <Text style={styles.name}>
                 {user?.firstname} {user?.lastname}
             </Text>
-            <Text style={styles.email}>{session?.user.email}</Text>
         </View>
     );
 }

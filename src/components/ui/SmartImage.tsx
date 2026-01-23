@@ -33,8 +33,15 @@ const SmartImage = ({
 
     const handlePress = () => {
         console.log("SmartImage pressed!", { disablePress, user_id });
+        if (disablePress) {
+            console.log("Press disabled for this image.");
+            return;
+        }
         if ((!disablePress && user_id) || id) {
-            console.log("Navigating to ProfileUserScreen with id:", user_id);
+            console.log(
+                "Navigating to ProfileUserScreen with id:",
+                user_id || id,
+            );
             // "Profile" doit correspondre au nom défini dans ton Stack.Screen
             navigation.navigate("ProfileUserScreen", { id: user_id || id });
         }

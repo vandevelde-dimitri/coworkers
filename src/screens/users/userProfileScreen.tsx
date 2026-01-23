@@ -2,6 +2,7 @@ import { useRoute } from "@react-navigation/native";
 import React from "react";
 import { ActivityIndicator, ScrollView } from "react-native";
 import { formatDate } from "../../../utils/formatedDate";
+import { ProfileCardUser } from "../../components/ProfileCardUser";
 import ScreenWrapper from "../../components/ui/CustomHeader";
 import { Section } from "../../components/ui/CustomSection";
 import { InfoRow } from "../../components/ui/InfoRaw";
@@ -21,8 +22,7 @@ export default function UserScreen() {
         <ScreenWrapper title="Profil de ....utilisateur">
             <ScrollView showsVerticalScrollIndicator={false}>
                 {/* Carte utilisateur */}
-                {/* <ProfileCard /> */}
-
+                <ProfileCardUser user={user} />
                 {/* 🔹 Informations */}
                 <Section title="Informations">
                     <InfoRow label="Centre Amazon" value={user?.fc.name} />

@@ -25,7 +25,7 @@ export async function getAllNotificationByUser(): Promise<
             throw error;
         }
 
-
+        console.log("DATA FECHING BY USER => ", data);
 
         // 🔹 Transformation pour l’écran
         const formatted: NotificationResponse[] = (data ?? []).map(
@@ -39,7 +39,7 @@ export async function getAllNotificationByUser(): Promise<
                     id: item.id,
                     annonceId: item.annonce_id,
                     annonceTitle: item.annonce_title,
-                    userId: item.candidate_id,
+                    user_id: item.candidate_id,
                     status: item.status,
                     candidate_firstname: item.candidate_firstname,
                     candidate_lastname: item.candidate_lastname,

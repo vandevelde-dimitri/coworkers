@@ -27,8 +27,6 @@ export async function getAllNotificationsByUserCandidate(): Promise<
             throw error;
         }
 
- 
-
         // 🔹 Transformation pour l’écran
         const formatted: NotificationResponse[] = (data ?? []).map(
             (item: NotificationResponse) => {
@@ -36,7 +34,7 @@ export async function getAllNotificationsByUserCandidate(): Promise<
                     id: item.id,
                     annonceId: item.annonce_id,
                     annonceTitle: item.annonce_title,
-                    userId: item.candidate_id,
+                    user_id: item.candidate_id,
                     status: item.status,
                     message: getMessageByStatus(
                         item.status,

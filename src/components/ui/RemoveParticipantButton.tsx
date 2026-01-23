@@ -44,7 +44,6 @@ export default function RemoveParticipantButton({ participant, annonce }) {
                 }}
                 danger
             />
-            ;
         </>
     );
 }
