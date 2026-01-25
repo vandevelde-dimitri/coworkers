@@ -9,6 +9,7 @@ export type PublicStackParamList = {
     Welcome: undefined;
     Auth: NavigatorScreenParams<AuthStackParamList>;
     HomeStack: undefined;
+    UpdatePassword: undefined;
 };
 
 const Stack = createNativeStackNavigator<PublicStackParamList>();
@@ -22,6 +23,10 @@ export default function PublicStack() {
             <Stack.Screen name="Auth" component={AuthStack} />
             {/* Consultation libre */}
             <Stack.Screen name="HomeStack" component={HomeStack} />
+            {/* <Stack.Screen
+                name="UpdatePassword"
+                component={UpdatePasswordScreen}
+            /> */}
         </Stack.Navigator>
     );
 }

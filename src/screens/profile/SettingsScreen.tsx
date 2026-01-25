@@ -177,7 +177,7 @@ export default function SettingsScreen() {
                             control={emailForm.control}
                             label="Email"
                             placeholder="ex: prenom.nom@amazon.com"
-                            type="text"
+                            type="email"
                         />
                         <Button
                             label="Modifier mon email"
@@ -201,14 +201,15 @@ export default function SettingsScreen() {
                             control={passwordForm.control}
                             label="Nouveau mot de passe"
                             placeholder="••••••••"
-                            type="text"
+                            type="password"
                         />
                         <Button
                             label="Changer le mot de passe"
                             variant="secondary"
-                            onPress={passwordForm.handleSubmit(
-                                onUpdatePassword,
-                            )}
+                            onPress={passwordForm.handleSubmit(async (data) => {
+                                await onUpdatePassword(data);
+                                passwordForm.reset();
+                            })}
                             disabled={passwordForm.formState.isSubmitting}
                         />
                     </View>

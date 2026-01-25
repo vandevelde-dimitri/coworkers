@@ -64,7 +64,7 @@ export default function WelcomeScreen() {
                     }
                 />
                 <TouchableOpacity
-                    onPress={() => navigation.navigate("AppTabs")}
+                    onPress={() => navigation.navigate("HomeStack")}
                     style={{
                         paddingVertical: 16,
                         borderRadius: 18,

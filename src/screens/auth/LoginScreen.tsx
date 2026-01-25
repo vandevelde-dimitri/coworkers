@@ -1,6 +1,7 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import * as Linking from "expo-linking";
 import * as SecureStore from "expo-secure-store";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -51,7 +52,7 @@ export default function LoginScreen() {
                         screen: redirect.name,
                         params: redirect.params,
                     },
-                } as never
+                } as never,
             );
 
             await SecureStore.deleteItemAsync("redirectTo");
@@ -59,6 +60,21 @@ export default function LoginScreen() {
             navigation.navigate("AppTabs"); // par défaut
         }
     };
+
+    const handleForgotPassword = async (email: string) => {
+        const resetUrl = Linking.createURL("reset-password");
+
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: resetUrl,
+        });
+
+        if (error) {
+            showToast("error", "Erreur : " + error.message);
+        } else {
+            showToast("success", "Lien de réinitialisation envoyé !");
+        }
+    };
+
     return (
         <ScreenWrapper back>
             <ScrollView
@@ -140,12 +156,7 @@ export default function LoginScreen() {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        onPress={() =>
-                            Alert.alert(
-                                "Mot de passe oublié",
-                                "Fonctionnalité à implémenter"
-                            )
-                        }
+                        onPress={() => navigation.navigate("ForgotPassword")}
                         style={{ marginTop: 8, alignItems: "center" }}
                     >
                         <Text style={{ color: "#6b7280" }}>

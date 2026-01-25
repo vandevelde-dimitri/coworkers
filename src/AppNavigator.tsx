@@ -1,42 +1,80 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import * as Linking from "expo-linking";
+import { useEffect } from "react";
+import { ActivityIndicator } from "react-native";
 import { useAuth } from "./contexts/authContext";
 import AppTabs from "./navigation/AppTabs";
 import PublicStack from "./navigation/PublicStack";
+import { navigate, navigationRef } from "./navigation/RootNavigation";
 import OnboardingScreen from "./screens/auth/OnboardingScreen";
-import { ActivityIndicator } from "react-native";
+import UpdatePasswordScreen from "./screens/auth/UpdatePasswordScreen";
 
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
     const { session, loading, profileCompleted } = useAuth();
 
+    useEffect(() => {
+        const handleDeepLink = (event: { url: string }) => {
+            console.log("Lien reçu dans app navigator :", event.url);
+
+            const normalizedUrl = event.url.replace("#", "?");
+            const parsed = Linking.parse(normalizedUrl);
+
+            // On extrait l'access_token du fragment ou des queryParams
+            const accessToken = parsed.queryParams?.access_token;
+            const refreshToken = parsed.queryParams?.refresh_token;
+
+            if (
+                normalizedUrl.includes("type=recovery") ||
+                parsed.path === "reset-password"
+            ) {
+                console.log(
+                    "🚀 Redirection vers UpdatePassword avec les tokens...",
+                );
+
+                // ON PASSE LES PARAMS ICI 👇
+                navigate("UpdatePassword", {
+                    access_token: accessToken,
+                    refresh_token: refreshToken,
+                });
+            }
+        };
+
+        const subscription = Linking.addEventListener("url", handleDeepLink);
+        return () => subscription.remove();
+    }, []);
+
     if (loading) return <ActivityIndicator />; // splash screen si tu veux
 
     return (
-        <NavigationContainer>
+        <NavigationContainer
+            ref={navigationRef}
+            onReady={() => console.log("Navigation prête !")}
+        >
             <Stack.Navigator screenOptions={{ headerShown: false }}>
-                {/* 🔓 Utilisateur NON connecté - Écran d'accueil */}
-                {!session && (
+                {/* 1. TOUJOURS DISPONIBLE (Pour éviter l'erreur NAVIGATE) */}
+
+                {/* 2. LE RESTE RESTE CONDITIONNEL */}
+                {!session ? (
                     <>
                         <Stack.Screen name="Public" component={PublicStack} />
                         <Stack.Screen name="AppTabs" component={AppTabs} />
-                        {/* <Stack.Screen name="Auth" component={AuthStack} /> */}
                     </>
-                )}
-
-                {/* 🧩 Connecté mais profil incomplet */}
-                {session && !profileCompleted && (
+                ) : !profileCompleted ? (
                     <Stack.Screen
                         name="Onboarding"
                         component={OnboardingScreen}
                     />
-                )}
-
-                {/* 🔐 Utilisateur connecté */}
-                {session && profileCompleted && (
+                ) : (
                     <Stack.Screen name="AppTabs" component={AppTabs} />
                 )}
+
+                <Stack.Screen
+                    name="UpdatePassword"
+                    component={UpdatePasswordScreen}
+                />
             </Stack.Navigator>
         </NavigationContainer>
     );
