@@ -2,10 +2,16 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import Button from "../components/ui/Button";
-import { PublicStackParamList } from "../navigation/PublicStack";
+
+type RootStackParamList = {
+    Welcome: undefined;
+    AppTabs: undefined;
+    Auth: { screen: string };
+    UpdatePassword: undefined;
+};
 
 type WelcomeScreenNavigationProp =
-    NativeStackNavigationProp<PublicStackParamList>;
+    NativeStackNavigationProp<RootStackParamList>;
 
 export default function WelcomeScreen() {
     const navigation = useNavigation<WelcomeScreenNavigationProp>();
@@ -64,7 +70,7 @@ export default function WelcomeScreen() {
                     }
                 />
                 <TouchableOpacity
-                    onPress={() => navigation.navigate("HomeStack")}
+                    onPress={() => navigation.navigate("AppTabs")}
                     style={{
                         paddingVertical: 16,
                         borderRadius: 18,

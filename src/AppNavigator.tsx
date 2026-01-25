@@ -5,10 +5,11 @@ import { useEffect } from "react";
 import { ActivityIndicator } from "react-native";
 import { useAuth } from "./contexts/authContext";
 import AppTabs from "./navigation/AppTabs";
-import PublicStack from "./navigation/PublicStack";
+import AuthStack from "./navigation/AuthStack";
 import { navigate, navigationRef } from "./navigation/RootNavigation";
 import OnboardingScreen from "./screens/auth/OnboardingScreen";
 import UpdatePasswordScreen from "./screens/auth/UpdatePasswordScreen";
+import WelcomeScreen from "./screens/welcome";
 
 const Stack = createNativeStackNavigator();
 
@@ -48,29 +49,40 @@ export default function AppNavigator() {
 
     if (loading) return <ActivityIndicator />; // splash screen si tu veux
 
+    // Si connecté mais profil non complété → Onboarding obligatoire
+    if (session && !profileCompleted) {
+        return (
+            <NavigationContainer
+                ref={navigationRef}
+                onReady={() => console.log("Navigation prête !")}
+            >
+                <Stack.Navigator screenOptions={{ headerShown: false }}>
+                    <Stack.Screen
+                        name="Onboarding"
+                        component={OnboardingScreen}
+                    />
+                </Stack.Navigator>
+            </NavigationContainer>
+        );
+    }
+
+    // Sinon : app accessible à tous (connecté ou non)
     return (
         <NavigationContainer
             ref={navigationRef}
             onReady={() => console.log("Navigation prête !")}
         >
             <Stack.Navigator screenOptions={{ headerShown: false }}>
-                {/* 1. TOUJOURS DISPONIBLE (Pour éviter l'erreur NAVIGATE) */}
+                {/* Welcome comme premier écran */}
+                <Stack.Screen name="Welcome" component={WelcomeScreen} />
 
-                {/* 2. LE RESTE RESTE CONDITIONNEL */}
-                {!session ? (
-                    <>
-                        <Stack.Screen name="Public" component={PublicStack} />
-                        <Stack.Screen name="AppTabs" component={AppTabs} />
-                    </>
-                ) : !profileCompleted ? (
-                    <Stack.Screen
-                        name="Onboarding"
-                        component={OnboardingScreen}
-                    />
-                ) : (
-                    <Stack.Screen name="AppTabs" component={AppTabs} />
-                )}
+                {/* AppTabs accessible à tous */}
+                <Stack.Screen name="AppTabs" component={AppTabs} />
 
+                {/* Auth pour login/register */}
+                <Stack.Screen name="Auth" component={AuthStack} />
+
+                {/* Reset password */}
                 <Stack.Screen
                     name="UpdatePassword"
                     component={UpdatePasswordScreen}

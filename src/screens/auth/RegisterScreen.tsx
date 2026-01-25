@@ -37,7 +37,7 @@ export default function RegisterScreen() {
             {
                 email,
                 password,
-            }
+            },
         );
 
         if (errorAuth) {
@@ -52,7 +52,7 @@ export default function RegisterScreen() {
                         id: userAuth.user.id,
                     },
                 ],
-                { onConflict: "id" }
+                { onConflict: "id" },
             );
 
             if (errorUser) {
@@ -61,7 +61,8 @@ export default function RegisterScreen() {
             }
         }
 
-        navigation.navigate("Onboarding");
+        // La navigation vers Onboarding est automatique via authContext
+        // car session && !profileCompleted déclenche l'affichage d'Onboarding
     };
 
     return (
@@ -129,7 +130,7 @@ export default function RegisterScreen() {
                             }}
                             onPress={() =>
                                 Linking.openURL(
-                                    "https://coworkers-legal.vercel.app/"
+                                    "https://coworkers-legal.vercel.app/",
                                 )
                             }
                         >
@@ -143,7 +144,7 @@ export default function RegisterScreen() {
                             }}
                             onPress={() =>
                                 Linking.openURL(
-                                    "https://coworkers-legal.vercel.app/politique_confidentialite"
+                                    "https://coworkers-legal.vercel.app/politique_confidentialite",
                                 )
                             }
                         >

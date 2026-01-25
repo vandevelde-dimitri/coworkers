@@ -6,10 +6,10 @@ import { ActivityIndicator, ScrollView, Text, View } from "react-native";
 import * as yup from "yup";
 import { showToast } from "../../../utils/showToast";
 import { supabase } from "../../../utils/supabase";
-import { navigationRef } from "../../navigation/RootNavigation";
 import Button from "../../components/ui/Button";
 import ScreenWrapper from "../../components/ui/CustomHeader";
 import { FormInput } from "../../components/ui/FormInput";
+import { navigationRef } from "../../navigation/RootNavigation";
 
 export default function UpdatePasswordScreen({ route, navigation }: any) {
     const { access_token, refresh_token } = route.params || {};
@@ -92,11 +92,11 @@ export default function UpdatePasswordScreen({ route, navigation }: any) {
 
             showToast("success", "Mot de passe mis à jour !");
             await supabase.auth.signOut();
-            
-            // Force la navigation vers PublicStack car UpdatePassword est hors du flux conditionnel
+
+            // Force la navigation vers Welcome car UpdatePassword est hors du flux conditionnel
             navigationRef.reset({
                 index: 0,
-                routes: [{ name: "Public" }],
+                routes: [{ name: "Welcome" }],
             });
         } catch (error: any) {
             console.error("❌ Erreur finale :", error);
