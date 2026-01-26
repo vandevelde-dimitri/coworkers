@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import {
-    Alert,
     FlatList,
     StyleSheet,
     Text,
@@ -14,7 +13,6 @@ import ConfirmModal from "../../components/ui/ConfirmModal";
 import ScreenWrapper from "../../components/ui/CustomHeader";
 import EmptyState from "../../components/ui/EmptyComponent";
 import SmartImage from "../../components/ui/SmartImage";
-import { useAuth } from "../../contexts/authContext";
 import { useAcceptRequest } from "../../hooks/candidate/useCandidate";
 import {
     useCandidateNotifications,
@@ -24,8 +22,6 @@ import { StatusNotification } from "../../types/enum/statusNotification.enum";
 import { NotificationResponse } from "../../types/notification.interface";
 
 export default function NotificationsScreen() {
-    const { session } = useAuth();
-
     const ownerQuery = useOwnerNotifications();
     const [open, setOpen] = useState(false);
     const candidateQuery = useCandidateNotifications();
@@ -65,26 +61,17 @@ export default function NotificationsScreen() {
     /* ===================== ACTIONS ===================== */
 
     const onAccept = async (annonceId: string, candidate_id: string) => {
-        if (!session) {
-            Alert.alert("Connexion requise");
-            return;
-        }
-
         try {
             // 1️⃣ Accepter la candidature
 
             await acceptRequest({ candidate_id, annonce_id: annonceId });
+            showToast("success", "Candidature acceptée");
         } catch (e: any) {
-            console.error("❌ ACCEPT ERROR:", e);
+            showToast("error", "Impossible d'accepter la candidature");
         }
     };
 
     const onReject = async (annonceId: string) => {
-        if (!session) {
-            Alert.alert("Connexion requise");
-            return;
-        }
-
         try {
             const { error } = await supabase
                 .from("participant_requests")
@@ -93,9 +80,9 @@ export default function NotificationsScreen() {
 
             if (error) throw error;
 
-            Alert.alert("Succès", "Candidature refusée");
+            showToast("success", "Candidature refusée");
         } catch (e: any) {
-            Alert.alert("Erreur", e.message ?? "Impossible de refuser");
+            showToast("error", "Impossible de refuser la candidature");
         }
     };
 
@@ -103,8 +90,6 @@ export default function NotificationsScreen() {
 
     const renderItem = ({ item }: { item: NotificationResponse }) => {
         const isPending = item.status === StatusNotification.PENDING;
-
-        console.log("ITEM NOTIFICATION => ", item);
 
         return (
             <View style={styles.card}>

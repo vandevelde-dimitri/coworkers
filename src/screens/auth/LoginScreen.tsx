@@ -43,7 +43,6 @@ export default function LoginScreen() {
         const redirectStr = await SecureStore.getItemAsync("redirectTo");
         if (redirectStr) {
             const redirect = JSON.parse(redirectStr);
-            console.log("redirect => ", redirect);
 
             navigation.navigate(
                 "AppTabs" as never,

@@ -49,7 +49,6 @@ export const NotificationProvider = ({
                     table: "participant_requests",
                 },
                 (payload) => {
-                    console.log("[Realtime] INSERT detected:", payload);
                     handleNotification(payload.new, "INSERT");
                 },
             )
@@ -61,7 +60,6 @@ export const NotificationProvider = ({
                     table: "participant_requests",
                 },
                 (payload) => {
-                    console.log("[Realtime] UPDATE detected:", payload);
                     handleNotification(payload.new, "UPDATE");
                 },
             )
@@ -101,10 +99,6 @@ export const NotificationProvider = ({
         const isOwner = annonceOwnerId === userId;
         const isCandidate = request.user_id === userId;
 
-        // 🔹 Log pour debug
-        console.log(
-            `[NotificationContext] handleNotification | event=${event} | isOwner=${isOwner} | isCandidate=${isCandidate} | status=${request.status}`,
-        );
 
         // 🔹 Déclencher la bulle
         if (

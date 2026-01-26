@@ -22,8 +22,6 @@ export default function ConversationsListScreen({ navigation }: any) {
     if (!conversations) return <ActivityIndicator />;
     if (isLoading) return <ActivityIndicator />;
 
-    console.log("Conversation => ", conversations);
-
     return (
         <ScreenWrapper title="Mes conversations">
             <FlatList

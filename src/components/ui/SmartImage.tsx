@@ -32,17 +32,8 @@ const SmartImage = ({
         "https://ctkoosixwtoxxtilcuqh.supabase.co/storage/v1/object/public/avatars/1903ad4c-4a65-4cb0-a21c-9590c00b6b63/avatar.webp";
 
     const handlePress = () => {
-        console.log("SmartImage pressed!", { disablePress, user_id });
-        if (disablePress) {
-            console.log("Press disabled for this image.");
-            return;
-        }
+       
         if ((!disablePress && user_id) || id) {
-            console.log(
-                "Navigating to ProfileUserScreen with id:",
-                user_id || id,
-            );
-            // "Profile" doit correspondre au nom défini dans ton Stack.Screen
             navigation.navigate("ProfileUserScreen", { id: user_id || id });
         }
     };

@@ -17,12 +17,9 @@ export default function AppNavigator() {
 
     useEffect(() => {
         const handleDeepLink = (event: { url: string }) => {
-            console.log("Lien reçu dans app navigator :", event.url);
-
             const normalizedUrl = event.url.replace("#", "?");
             const parsed = Linking.parse(normalizedUrl);
 
-            // On extrait l'access_token du fragment ou des queryParams
             const accessToken = parsed.queryParams?.access_token;
             const refreshToken = parsed.queryParams?.refresh_token;
 
@@ -30,11 +27,6 @@ export default function AppNavigator() {
                 normalizedUrl.includes("type=recovery") ||
                 parsed.path === "reset-password"
             ) {
-                console.log(
-                    "🚀 Redirection vers UpdatePassword avec les tokens...",
-                );
-
-                // ON PASSE LES PARAMS ICI 👇
                 navigate("UpdatePassword", {
                     access_token: accessToken,
                     refresh_token: refreshToken,

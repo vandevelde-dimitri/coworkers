@@ -27,8 +27,6 @@ export default function ForgotPwdScreen() {
         // On génère l'URL de retour vers l'app
         const redirectTo = Linking.createURL("reset-password");
 
-        console.log("redirect to => ", redirectTo);
-
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
             redirectTo: redirectTo,
         });

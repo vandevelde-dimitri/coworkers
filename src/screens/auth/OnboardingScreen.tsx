@@ -94,10 +94,6 @@ export default function OnboardingScreen() {
         refreshSession();
     };
 
-    const onSubmit = async (data: EditProfileFormValues) => {
-        console.log("DATA => ", data);
-    };
-
     const handlePrev = () => {
         if (step > 1) setStep(step - 1);
     };

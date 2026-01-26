@@ -11,6 +11,7 @@ import {
     View,
 } from "react-native";
 import * as yup from "yup";
+import { showToast } from "../../../utils/showToast";
 import { supabase } from "../../../utils/supabase";
 import Button from "../../components/ui/Button";
 import ScreenWrapper from "../../components/ui/CustomHeader";
@@ -41,7 +42,7 @@ export default function RegisterScreen() {
         );
 
         if (errorAuth) {
-            console.log("Erreur inscription:", errorAuth.message);
+            showToast("error", "Inscription échouée : ");
             return;
         }
 
@@ -56,7 +57,11 @@ export default function RegisterScreen() {
             );
 
             if (errorUser) {
-                console.log("Erreur création user table:", errorUser.message);
+                if (__DEV__)
+                    console.log(
+                        "Erreur création user table:",
+                        errorUser.message,
+                    );
                 return;
             }
         }

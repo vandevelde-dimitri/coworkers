@@ -1,5 +1,4 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as Linking from "expo-linking";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ActivityIndicator, ScrollView, Text, View } from "react-native";
@@ -32,19 +31,29 @@ export default function UpdatePasswordScreen({ route, navigation }: any) {
     const { control, handleSubmit } = useForm({
         resolver: yupResolver(schema),
     });
-    // On récupère l'URL actuelle (qu'elle vienne du démarrage ou d'un changement)
-    const url = Linking.useLinkingURL();
+
     useEffect(() => {
         const init = async () => {
-            // Plus besoin de Linking.getInitialURL() ici !
-            if (access_token) {
-                console.log("✅ Token reçu des params, activation session...");
-                const { error } = await supabase.auth.setSession({
-                    access_token: access_token,
-                    refresh_token: refresh_token || "",
+            if (!access_token) {
+                showToast("error", "Session de récupération manquante.");
+                navigationRef.reset({
+                    index: 0,
+                    routes: [{ name: "Welcome" }],
                 });
+                return;
+            }
 
-                if (error) console.error("Erreur setSession:", error.message);
+            const { error } = await supabase.auth.setSession({
+                access_token,
+                refresh_token: refresh_token || "",
+            });
+
+            if (error) {
+                showToast("error", "Le lien a expiré.");
+                navigationRef.reset({
+                    index: 0,
+                    routes: [{ name: "Welcome" }],
+                });
             }
             setIsReady(true);
         };
@@ -88,7 +97,6 @@ export default function UpdatePasswordScreen({ route, navigation }: any) {
         }
     };
 
-    // 4. Affiche un loader tant que la session n'est pas vérifiée
     if (!isReady) {
         return (
             <ScreenWrapper>
@@ -149,12 +157,14 @@ export default function UpdatePasswordScreen({ route, navigation }: any) {
                         name="password"
                         label="Nouveau mot de passe"
                         placeholder="••••••"
+                        type="password"
                     />
                     <FormInput
                         control={control}
                         name="confirmPassword"
                         label="Confirmer le mot de passe"
                         placeholder="••••••"
+                        type="password"
                     />
                     <Button
                         label={isloading ? "Chargement..." : "Enregistrer"}

@@ -92,60 +92,53 @@ export default function AnnouncementDetailScreen() {
                     ) : (
                         announcement.participant_requests
                             .filter((p) => p.status === "accepted")
-                            .map(
-                                (p) => (
-                                    console.log("Rendering participant:", p),
-                                    (
-                                        <View
-                                            key={p.user_id}
-                                            style={{
-                                                flexDirection: "row",
-                                                alignItems: "center",
-                                                justifyContent: "space-between",
-                                                marginBottom: 12,
-                                            }}
-                                        >
-                                            <View
+                            .map((p) => (
+                                <View
+                                    key={p.user_id}
+                                    style={{
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                        marginBottom: 12,
+                                    }}
+                                >
+                                    <View
+                                        style={{
+                                            flexDirection: "row",
+                                            alignItems: "center",
+                                        }}
+                                    >
+                                        <SmartImage
+                                            size={44}
+                                            userData={p.users}
+                                        />
+                                        <View style={{ marginLeft: 12 }}>
+                                            <Text
                                                 style={{
-                                                    flexDirection: "row",
-                                                    alignItems: "center",
+                                                    fontWeight: "500",
                                                 }}
                                             >
-                                                <SmartImage
-                                                    size={44}
-                                                    userData={p.users}
-                                                />
-                                                <View
-                                                    style={{ marginLeft: 12 }}
-                                                >
-                                                    <Text
-                                                        style={{
-                                                            fontWeight: "500",
-                                                        }}
-                                                    >
-                                                        {p.users.firstname}
-                                                    </Text>
-                                                    <Text
-                                                        style={{
-                                                            fontSize: 12,
-                                                            color: "#6b7280",
-                                                        }}
-                                                    >
-                                                        {p.users.city}
-                                                    </Text>
-                                                </View>
-                                            </View>
-
-                                            {isOwner && (
-                                                <RemoveParticipantButton
-                                                    annonce={announcement}
-                                                    participant={p}
-                                                />
-                                            )}
+                                                {p.users.firstname}
+                                            </Text>
+                                            <Text
+                                                style={{
+                                                    fontSize: 12,
+                                                    color: "#6b7280",
+                                                }}
+                                            >
+                                                {p.users.city}
+                                            </Text>
                                         </View>
-                                    )
-                                ),
-                            )
+                                    </View>
+
+                                    {isOwner && (
+                                        <RemoveParticipantButton
+                                            annonce={announcement}
+                                            participant={p}
+                                        />
+                                    )}
+                                </View>
+                            ))
                     )}
                 </Card>
 

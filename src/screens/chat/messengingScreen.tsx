@@ -173,7 +173,6 @@ export default function ChatScreen({ route }: any) {
             </SafeScreen>
         );
     }
-    console.log("Message => ", messages);
 
     return (
         <ScreenWrapper title={title} back>
