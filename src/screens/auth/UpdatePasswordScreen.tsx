@@ -54,36 +54,6 @@ export default function UpdatePasswordScreen({ route, navigation }: any) {
     const onSubmit = async (data: any) => {
         setIsLoading(true);
         try {
-            // 1. On vérifie si on a une session, sinon on tente de la ré-extraire de l'URL
-            // let {
-            //     data: { user },
-            // } = await supabase.auth.getUser();
-
-            // if (!user) {
-            //     console.log(
-            //         "🔄 Session manquante, tentative de récupération via l'URL...",
-            //     );
-            //     const url = await Linking.getInitialURL();
-            //     const accessToken = url?.match(/access_token=([^&]+)/)?.[1];
-
-            //     if (accessToken) {
-            //         const { data: sessionData } =
-            //             await supabase.auth.setSession({
-            //                 access_token: accessToken,
-            //                 refresh_token:
-            //                     url?.match(/refresh_token=([^&]+)/)?.[1] || "",
-            //             });
-            //         user = sessionData.user;
-            //     }
-            // }
-
-            // if (!user) {
-            //     throw new Error(
-            //         "Session d'authentification introuvable. Veuillez cliquer à nouveau sur le lien dans votre email.",
-            //     );
-            // }
-
-            // 2. Si on a un user, on update
             const { error } = await supabase.auth.updateUser({
                 password: data.password,
             });
@@ -93,14 +63,26 @@ export default function UpdatePasswordScreen({ route, navigation }: any) {
             showToast("success", "Mot de passe mis à jour !");
             await supabase.auth.signOut();
 
-            // Force la navigation vers Welcome car UpdatePassword est hors du flux conditionnel
             navigationRef.reset({
                 index: 0,
                 routes: [{ name: "Welcome" }],
             });
         } catch (error: any) {
-            console.error("❌ Erreur finale :", error);
-            showToast("error", error.message);
+            let friendlyMessage = "Une erreur est survenue.";
+
+            // Gestion spécifique des codes d'erreur Supabase Auth
+            if (error.message.includes("different from the old password")) {
+                friendlyMessage =
+                    "Le nouveau mot de passe doit être différent de l'ancien.";
+            } else if (error.status === 422) {
+                friendlyMessage =
+                    "Le mot de passe est trop faible ou invalide.";
+            } else if (error.message.includes("JWT")) {
+                friendlyMessage =
+                    "Votre session a expiré. Veuillez recommencer la procédure.";
+            }
+
+            showToast("error", friendlyMessage);
         } finally {
             setIsLoading(false);
         }

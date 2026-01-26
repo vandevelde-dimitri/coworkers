@@ -19,10 +19,7 @@ export function useRequireAuth(stackName: string = "HomeStack") {
             SecureStore.setItemAsync("redirectTo", JSON.stringify(redirect));
 
             // Redirige vers le Login
-            navigation.navigate(
-                "Public" as never,
-                { screen: "AuthStack" } as never
-            );
+            navigation.navigate("PublicStack" as never);
         }
     }, [loading, session, route, navigation, stackName]);
 }
