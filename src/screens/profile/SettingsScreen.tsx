@@ -41,10 +41,10 @@ export default function SettingsScreen() {
     });
 
     const settingsSchema = yup.object({
-        vibrations: yup.boolean().default(false),
-        notification_push: yup.boolean().default(true),
-        to_convey: yup.boolean().default(false),
-        available: yup.boolean().default(false),
+        vibrations: yup.boolean(),
+        notification_push: yup.boolean(),
+        to_convey: yup.boolean(),
+        available: yup.boolean(),
     });
 
     const emailForm = useForm({
@@ -61,13 +61,15 @@ export default function SettingsScreen() {
         },
     });
 
+    console.log("setting => ", settings);
+
     const settingsForm = useForm({
         resolver: yupResolver(settingsSchema),
-        defaultValues: {
+        values: {
             vibrations: settings?.vibrations ?? false,
             notification_push: settings?.notification_push ?? true,
             to_convey: settings?.to_convey ?? false,
-            available: settings?.vacation ?? false,
+            available: settings?.available ?? false,
         },
     });
 

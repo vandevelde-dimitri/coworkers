@@ -8,13 +8,12 @@ import { AuthProvider } from "./src/contexts/authContext";
 import { MessageProvider } from "./src/contexts/messageContext";
 import { NotificationProvider } from "./src/contexts/notificationContext";
 
+export const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: { staleTime: 1000 * 60 * 5 },
+    },
+});
 export default function App() {
-    const queryClient = new QueryClient({
-        defaultOptions: {
-            queries: { staleTime: 1000 * 60 * 5 },
-        },
-    });
-
     return (
         <QueryClientProvider client={queryClient}>
             <AuthProvider>
