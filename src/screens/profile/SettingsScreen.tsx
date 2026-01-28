@@ -19,6 +19,7 @@ import { FormSwitch } from "../../components/ui/FormSwitch";
 import { useAuth } from "../../contexts/authContext";
 import { useSettingsUser, useUpdateSettings } from "../../hooks/user/useUsers";
 import { ProfileStackParamList } from "../../types/navigation/profileStackType";
+import { logger } from "../../../utils/logger";
 
 export default function SettingsScreen() {
     const { session } = useAuth();
@@ -83,6 +84,7 @@ export default function SettingsScreen() {
             await supabase.auth.signOut();
             showToast("success", "Compte supprimé définitivement");
         } catch (e) {
+            await logger.critical("delete_account", e, user?.id);
             showToast("error", "Impossible de supprimer le compte");
         }
     };
