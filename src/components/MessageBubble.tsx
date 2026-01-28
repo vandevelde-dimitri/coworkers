@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { Text, View } from "react-native";
 import SmartImage from "./ui/SmartImage";
 
@@ -16,7 +16,7 @@ type Props = {
     message: Message;
 };
 
-export default function MessageBubble({ message }: Props) {
+function MessageBubble({ message }: Props) {
     const {
         isMine,
         content,
@@ -77,3 +77,5 @@ export default function MessageBubble({ message }: Props) {
         </View>
     );
 }
+
+export default memo(MessageBubble);

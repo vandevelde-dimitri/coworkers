@@ -39,7 +39,7 @@ export default function ChatScreen({ route }: any) {
     // ---------------------------
     const loadMessages = useCallback(
         async (pageNumber = 0) => {
-            if (!conversationId || !hasMore) return;
+            if (!conversationId) return;
 
             try {
                 const from = pageNumber * PAGE_SIZE;
@@ -62,7 +62,7 @@ export default function ChatScreen({ route }: any) {
                     `,
                     )
                     .eq("conversation_id", conversationId)
-                    .order("created_at", { ascending: true })
+                    .order("created_at", { ascending: false })
                     .range(from, to);
 
                 if (error) throw error;
@@ -70,8 +70,8 @@ export default function ChatScreen({ route }: any) {
                 if (data) {
                     // prepend pour les anciens messages
                     setMessages((prev) => [
-                        ...transformMessages(data),
                         ...prev,
+                        ...transformMessages(data),
                     ]);
                     if (data.length < PAGE_SIZE) setHasMore(false);
                 }
@@ -85,7 +85,7 @@ export default function ChatScreen({ route }: any) {
                 setLoadingMore(false);
             }
         },
-        [conversationId, hasMore, session?.user.id],
+        [conversationId, session?.user.id],
     );
 
     // ---------------------------
@@ -115,8 +115,8 @@ export default function ChatScreen({ route }: any) {
                 },
                 (payload: any) => {
                     const newMessage = transformMessages([payload.new])[0];
-                    setMessages((prev) => [...prev, newMessage]);
-                    markConversationRead(conversationId); // nouveau message lu
+                    setMessages((prev) => [newMessage, ...prev]);
+                    markConversationRead(conversationId);
                 },
             )
             .subscribe();
@@ -148,7 +148,8 @@ export default function ChatScreen({ route }: any) {
     // Pagination scroll top
     // ---------------------------
     const onLoadMore = () => {
-        if (!loadingMore && hasMore) {
+        // On vérifie hasMore au moment du clic/scroll
+        if (!loadingMore && hasMore && messages.length >= PAGE_SIZE) {
             setLoadingMore(true);
             const nextPage = page + 1;
             setPage(nextPage);

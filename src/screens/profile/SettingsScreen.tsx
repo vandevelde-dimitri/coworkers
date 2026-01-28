@@ -3,7 +3,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { ScrollView, Switch, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import * as yup from "yup";
 import { showToast } from "../../../utils/showToast";
 import { supabase } from "../../../utils/supabase";
@@ -15,13 +15,17 @@ import ConfirmModal from "../../components/ui/ConfirmModal";
 import ScreenWrapper from "../../components/ui/CustomHeader";
 import { Section } from "../../components/ui/CustomSection";
 import { FormInput } from "../../components/ui/FormInput";
+import { FormSwitch } from "../../components/ui/FormSwitch";
 import { useAuth } from "../../contexts/authContext";
+import { useSettingsUser, useUpdateSettings } from "../../hooks/user/useUsers";
 import { ProfileStackParamList } from "../../types/navigation/profileStackType";
 
 export default function SettingsScreen() {
     const { session } = useAuth();
     const user = session?.user;
     const navigation = useNavigation<NavigationProp<ProfileStackParamList>>();
+    const { data: settings } = useSettingsUser();
+    const { mutate: updateSettings } = useUpdateSettings();
     const [openLogout, setOpenLogout] = useState(false);
     const [openDestroy, setOpenDestroy] = useState(false);
 
@@ -36,6 +40,13 @@ export default function SettingsScreen() {
             .required("Mot de passe requis"),
     });
 
+    const settingsSchema = yup.object({
+        vibrations: yup.boolean().default(false),
+        notification_push: yup.boolean().default(true),
+        to_convey: yup.boolean().default(false),
+        available: yup.boolean().default(false),
+    });
+
     const emailForm = useForm({
         resolver: yupResolver(emailSchema),
         defaultValues: {
@@ -47,6 +58,16 @@ export default function SettingsScreen() {
         resolver: yupResolver(passwordSchema),
         defaultValues: {
             password: "",
+        },
+    });
+
+    const settingsForm = useForm({
+        resolver: yupResolver(settingsSchema),
+        defaultValues: {
+            vibrations: settings?.vibrations ?? false,
+            notification_push: settings?.notification_push ?? true,
+            to_convey: settings?.to_convey ?? false,
+            available: settings?.vacation ?? false,
         },
     });
 
@@ -111,54 +132,39 @@ export default function SettingsScreen() {
                             padding: 16,
                         }}
                     >
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                            }}
-                        >
-                            <Text style={{ fontSize: 16, fontWeight: "600" }}>
-                                Vibrations
-                            </Text>
-                            <Switch />
-                        </View>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                            }}
-                        >
-                            <Text style={{ fontSize: 16, fontWeight: "600" }}>
-                                Véhiculer
-                            </Text>
-                            <Switch />
-                        </View>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                            }}
-                        >
-                            <Text style={{ fontSize: 16, fontWeight: "600" }}>
-                                Mode vacances
-                            </Text>
-                            <Switch />
-                        </View>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                            }}
-                        >
-                            <Text style={{ fontSize: 16, fontWeight: "600" }}>
-                                Notification push
-                            </Text>
-                            <Switch />
-                        </View>
+                        <FormSwitch
+                            name="vibrations"
+                            control={settingsForm.control}
+                            label="Vibrations"
+                            description="Activer le retour haptique lors des notifications"
+                            onAfterChange={(val) =>
+                                updateSettings({ vibrations: val })
+                            }
+                        />
+                        <FormSwitch
+                            name="to_convey"
+                            control={settingsForm.control}
+                            label="Véhiculer"
+                            onAfterChange={(val) =>
+                                updateSettings({ to_convey: val })
+                            }
+                        />
+                        <FormSwitch
+                            name="available"
+                            control={settingsForm.control}
+                            label="Mode vacances"
+                            onAfterChange={(val) =>
+                                updateSettings({ available: val })
+                            }
+                        />
+                        <FormSwitch
+                            name="notification_push"
+                            control={settingsForm.control}
+                            label="Notifications push"
+                            onAfterChange={(val) =>
+                                updateSettings({ notification_push: val })
+                            }
+                        />
                     </View>
                 </Section>
                 {/* SECTION SÉCURITÉ */}

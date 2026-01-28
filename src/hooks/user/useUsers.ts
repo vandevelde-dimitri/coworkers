@@ -1,7 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { showToast } from "../../../utils/showToast";
 import { getCurrentUser } from "../../api/user/getCurrentUser";
+import { getSettingUser } from "../../api/user/getSettingUser";
 import { getUser } from "../../api/user/getUser";
+import { updateSettingUser } from "../../api/user/updateSettingsUsers";
 import { updateUser } from "../../api/user/updateUser";
 import { uploadUserAvatar } from "../../api/user/uploadUserAvatar";
 import { useAuth } from "../../contexts/authContext";
@@ -74,6 +76,42 @@ export function useUpdateUser() {
             showToast(
                 "error",
                 "Une erreur est survenue lors de la mise à jour du profil.",
+            );
+        },
+    });
+}
+
+export function useSettingsUser() {
+    const { session } = useAuth();
+    const user_id = session?.user?.id;
+    return useQuery({
+        queryKey: ["settingsUser", user_id],
+        queryFn: () => getSettingUser(user_id),
+        enabled: !!user_id,
+    });
+}
+
+export function useUpdateSettings() {
+    const queryClient = useQueryClient();
+    const { session } = useAuth();
+    const user_id = session?.user?.id;
+    return useMutation({
+        mutationFn: (body) => updateSettingUser(body, user_id!),
+
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["settingsUser", user_id],
+            });
+        },
+        onError: (error) => {
+            if (__DEV__)
+                console.error(
+                    "useUpdateSettigs error:",
+                    (error as Error).message,
+                );
+            showToast(
+                "error",
+                "Une erreur est survenue lors de la mise à jour des paramétres.",
             );
         },
     });
