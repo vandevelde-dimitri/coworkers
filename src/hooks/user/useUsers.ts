@@ -102,6 +102,9 @@ export function useUpdateSettings() {
             queryClient.invalidateQueries({
                 queryKey: ["settingsUser", user_id],
             });
+            queryClient.invalidateQueries({
+                queryKey: ["announcements"],
+            });
         },
         onError: (error) => {
             if (__DEV__)
