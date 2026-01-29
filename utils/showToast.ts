@@ -1,7 +1,7 @@
 // utils/showToast.ts
 import Toast from "react-native-toast-message";
-import { queryClient } from "../App";
 import { haptic } from "./hapticToast";
+import { queryClient } from "./react-query";
 
 export function showToast(
     type: "success" | "error" | "info" | "warning",

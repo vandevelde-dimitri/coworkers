@@ -1,10 +1,11 @@
 import FeatherIcon from "@expo/vector-icons/Feather";
 import { useNavigation } from "@react-navigation/native";
-import { Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import {
     SafeAreaView,
     useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import { useCanPost } from "../hooks/user/useCanPost";
 import { containerStyles } from "../styles/container.styles";
 
 export default function SafeScreen({
@@ -18,7 +19,7 @@ export default function SafeScreen({
 }): React.JSX.Element {
     const insets = useSafeAreaInsets();
     const navigation = useNavigation<any>();
-
+    const { isVacationMode } = useCanPost();
     const isEditProfile =
         navigation.getState().routes[0].name === "ProfileHome";
     return (
@@ -67,7 +68,55 @@ export default function SafeScreen({
                     </View>
                 )}
             </View>
+            {true && (
+                <View style={styles.vacationBar}>
+                    <FeatherIcon
+                        name="sun"
+                        size={16}
+                        color="#92400E"
+                        style={{ marginRight: 8 }}
+                    />
+                    <Text style={styles.vacationText}>Mode vacances actif</Text>
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate("SettingsScreen")}
+                        style={styles.vacationLink}
+                    >
+                        <Text style={styles.vacationLinkText}>Modifier</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
             <View style={containerStyles.container}>{children}</View>
         </SafeAreaView>
     );
 }
+
+const styles = StyleSheet.create({
+    vacationBar: {
+        backgroundColor: "#FEF3C7",
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        borderBottomWidth: 1,
+        borderBottomColor: "#FDE68A",
+    },
+    vacationText: {
+        color: "#92400E",
+        fontSize: 13,
+        fontWeight: "600",
+    },
+    vacationLink: {
+        marginLeft: 10,
+        paddingHorizontal: 8,
+        paddingVertical: 2,
+        backgroundColor: "rgba(146, 64, 14, 0.1)",
+        borderRadius: 4,
+    },
+    vacationLinkText: {
+        color: "#92400E",
+        fontSize: 11,
+        fontWeight: "700",
+        textTransform: "uppercase",
+    },
+});

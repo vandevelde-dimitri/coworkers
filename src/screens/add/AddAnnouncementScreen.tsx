@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import * as yup from "yup";
 
+import { showToast } from "../../../utils/showToast";
 import ScreenWrapper from "../../components/ui/CustomHeader";
 import { FormDatePicker } from "../../components/ui/DatePicker";
 import { FormInput } from "../../components/ui/FormInput";
@@ -21,6 +22,7 @@ import {
     useAnnouncementById,
     useUpdateAnnouncement,
 } from "../../hooks/announcement/useAnnouncement";
+import { useCanPost } from "../../hooks/user/useCanPost";
 import { useRequireAuth } from "../../hooks/useRequireAuth";
 import { AnnouncementFormValues } from "../../types/announcement.interface";
 
@@ -32,6 +34,7 @@ export default function FormAnnouncementScreen() {
     const route = useRoute();
     const { id } = route.params ?? {}; // params peut être undefined
     const isEditMode = !!id;
+    const { canPost, isLoading: isLoadingCanPost } = useCanPost();
     const { mutate: createAnnouncement, isPending } = useAddAnnouncement();
     const { mutate: updateAnnouncement, isPending: isUpdating } =
         useUpdateAnnouncement();
@@ -81,6 +84,7 @@ export default function FormAnnouncementScreen() {
     }
 
     const onSubmit: SubmitHandler<AnnouncementFormValues> = (data) => {
+        // Cas 1 : Mode Édition (on autorise toujours la modif d'une annonce existante)
         if (isEditMode) {
             updateAnnouncement(
                 { id: id as string, body: data },
@@ -96,12 +100,21 @@ export default function FormAnnouncementScreen() {
             return;
         }
 
-        createAnnouncement(data, {
-            onSuccess: () => {
-                reset();
-                navigation.navigate("HomeStack", { screen: "HomeScreen" });
-            },
-        });
+        // Cas 2 : Création d'une nouvelle annonce
+        if (canPost) {
+            createAnnouncement(data, {
+                onSuccess: () => {
+                    reset();
+                    navigation.navigate("HomeStack", { screen: "HomeScreen" });
+                },
+            });
+        } else {
+            showToast(
+                "warning",
+                "Action impossible",
+                "Désactivez le mode vacances pour publier une nouvelle annonce.",
+            );
+        }
     };
 
     return (
@@ -150,10 +163,11 @@ export default function FormAnnouncementScreen() {
                 <TouchableOpacity
                     style={[
                         styles.button,
-                        (isPending || isUpdating) && styles.buttonDisabled,
+                        (isPending || isUpdating || isLoadingCanPost) &&
+                            styles.buttonDisabled,
                     ]}
                     onPress={handleSubmit(onSubmit)}
-                    disabled={isPending || isUpdating}
+                    disabled={isPending || isUpdating || isLoadingCanPost}
                 >
                     <Text style={styles.buttonText}>
                         {isEditMode

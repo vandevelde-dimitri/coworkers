@@ -1,4 +1,4 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import Toast from "react-native-toast-message";
@@ -7,12 +7,8 @@ import { toastConfig } from "./src/components/ui/ToastConfig";
 import { AuthProvider } from "./src/contexts/authContext";
 import { MessageProvider } from "./src/contexts/messageContext";
 import { NotificationProvider } from "./src/contexts/notificationContext";
+import { queryClient } from "./utils/react-query";
 
-export const queryClient = new QueryClient({
-    defaultOptions: {
-        queries: { staleTime: 1000 * 60 * 5 },
-    },
-});
 export default function App() {
     return (
         <QueryClientProvider client={queryClient}>

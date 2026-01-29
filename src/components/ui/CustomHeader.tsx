@@ -3,6 +3,7 @@ import { useNavigation } from "@react-navigation/native";
 import { ReactNode } from "react";
 import {
     StyleProp,
+    StyleSheet,
     Text,
     TouchableOpacity,
     View,
@@ -12,6 +13,7 @@ import {
     SafeAreaView,
     useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import { useCanPost } from "../../hooks/user/useCanPost";
 
 type ScreenWrapperProps = {
     title?: string;
@@ -30,6 +32,7 @@ export default function ScreenWrapper({
 }: ScreenWrapperProps) {
     const navigation = useNavigation();
     const insets = useSafeAreaInsets();
+    const { isVacationMode } = useCanPost();
 
     // On affiche le header si on a un titre, un bouton retour OU des actions
     const hasHeader = title || back || rightActions;
@@ -114,6 +117,28 @@ export default function ScreenWrapper({
                 </View>
             )}
 
+            {isVacationMode && (
+                <View style={styles.vacationBar}>
+                    <FeatherIcon
+                        name="sun"
+                        size={16}
+                        color="#92400E"
+                        style={{ marginRight: 8 }}
+                    />
+                    <Text style={styles.vacationText}>Mode vacances actif</Text>
+                    <TouchableOpacity
+                        onPress={() =>
+                            navigation.navigate("ProfileStack", {
+                                screen: "SettingsScreen",
+                            })
+                        }
+                        style={styles.vacationLink}
+                    >
+                        <Text style={styles.vacationLinkText}>Modifier</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+
             {/* Contenu de l’écran */}
             <View
                 style={[
@@ -129,3 +154,35 @@ export default function ScreenWrapper({
         </SafeAreaView>
     );
 }
+
+const styles = StyleSheet.create({
+    vacationBar: {
+        backgroundColor: "#FEF3C7",
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        marginBottom: 16,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        borderBottomWidth: 1,
+        borderBottomColor: "#FDE68A",
+    },
+    vacationText: {
+        color: "#92400E",
+        fontSize: 13,
+        fontWeight: "600",
+    },
+    vacationLink: {
+        marginLeft: 10,
+        paddingHorizontal: 8,
+        paddingVertical: 2,
+        backgroundColor: "rgba(146, 64, 14, 0.1)",
+        borderRadius: 4,
+    },
+    vacationLinkText: {
+        color: "#92400E",
+        fontSize: 11,
+        fontWeight: "700",
+        textTransform: "uppercase",
+    },
+});
