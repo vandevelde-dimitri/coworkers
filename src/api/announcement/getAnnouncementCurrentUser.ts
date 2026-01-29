@@ -24,7 +24,8 @@ export async function getAnnouncementByCurrentUser(): Promise<AnnonceDetail> {
       image_profile,
       city,
         avatar_updated_at,
-        contract
+        contract,
+        settings:settings!user_id (to_convey)
     ),
     participant_requests (
       id,
@@ -36,13 +37,14 @@ export async function getAnnouncementByCurrentUser(): Promise<AnnonceDetail> {
         image_profile,
         city,
         avatar_updated_at,
-        contract
+        contract,
+        settings:settings!user_id (to_convey)
       )
     )
   `,
         )
         .eq("user_id", userId)
-        .maybeSingle(); // <-- ici on filtre sur le propriétaire
+        .maybeSingle();
 
     if (error) {
         console.error("Error fetching announcement:", error);

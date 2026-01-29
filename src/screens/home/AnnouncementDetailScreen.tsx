@@ -1,3 +1,4 @@
+import FeatherIcon from "@expo/vector-icons/Feather";
 import {
     NavigationProp,
     useNavigation,
@@ -55,6 +56,20 @@ export default function AnnouncementDetailScreen() {
                     <Text style={{ marginTop: 6 }}>
                         Places disponibles : {announcement.number_of_places}
                     </Text>
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 6,
+                        }}
+                    >
+                        <FeatherIcon name="truck" size={16} color="#2563eb" />
+                        <Text style={{ color: "#2563eb", fontWeight: "600" }}>
+                            {announcement.owner.settings.to_convey
+                                ? "véhiculer"
+                                : "non véhiculer"}
+                        </Text>
+                    </View>
                 </Card>
 
                 {/* Propriétaire */}
@@ -82,7 +97,6 @@ export default function AnnouncementDetailScreen() {
                     <Text style={{ fontWeight: "600", marginBottom: 10 }}>
                         Participants
                     </Text>
-
                     {announcement.participant_requests.filter(
                         (p) => p.status === "accepted",
                     ).length === 0 ? (
@@ -92,53 +106,91 @@ export default function AnnouncementDetailScreen() {
                     ) : (
                         announcement.participant_requests
                             .filter((p) => p.status === "accepted")
-                            .map((p) => (
-                                <View
-                                    key={p.user_id}
-                                    style={{
-                                        flexDirection: "row",
-                                        alignItems: "center",
-                                        justifyContent: "space-between",
-                                        marginBottom: 12,
-                                    }}
-                                >
+                            .map((p) => {
+                                return (
                                     <View
+                                        key={p.user_id}
                                         style={{
                                             flexDirection: "row",
                                             alignItems: "center",
+                                            justifyContent: "space-between",
+                                            marginBottom: 12,
                                         }}
                                     >
-                                        <SmartImage
-                                            size={44}
-                                            userData={p.users}
-                                        />
-                                        <View style={{ marginLeft: 12 }}>
-                                            <Text
-                                                style={{
-                                                    fontWeight: "500",
-                                                }}
-                                            >
-                                                {p.users.firstname}
-                                            </Text>
-                                            <Text
-                                                style={{
-                                                    fontSize: 12,
-                                                    color: "#6b7280",
-                                                }}
-                                            >
-                                                {p.users.city}
-                                            </Text>
-                                        </View>
-                                    </View>
+                                        <View
+                                            style={{
+                                                flexDirection: "row",
+                                                alignItems: "center",
+                                            }}
+                                        >
+                                            <SmartImage
+                                                size={44}
+                                                userData={p.users}
+                                            />
+                                            <View style={{ marginLeft: 12 }}>
+                                                <Text
+                                                    style={{
+                                                        fontWeight: "500",
+                                                    }}
+                                                >
+                                                    {p.users.firstname}
+                                                </Text>
 
-                                    {isOwner && (
-                                        <RemoveParticipantButton
-                                            annonce={announcement}
-                                            participant={p}
-                                        />
-                                    )}
-                                </View>
-                            ))
+                                                {/* ✅ Affichage conditionnel plus élégant */}
+                                                <View
+                                                    style={{
+                                                        flexDirection: "row",
+                                                        alignItems: "center",
+                                                        gap: 4,
+                                                    }}
+                                                >
+                                                    <FeatherIcon
+                                                        name="truck"
+                                                        size={12}
+                                                        color={
+                                                            p.users.settings
+                                                                .to_convey
+                                                                ? "#2563eb"
+                                                                : "#94a3b8"
+                                                        }
+                                                    />
+                                                    <Text
+                                                        style={{
+                                                            fontSize: 11,
+                                                            color: p.users
+                                                                .settings
+                                                                .to_convey
+                                                                ? "#2563eb"
+                                                                : "#6b7280",
+                                                        }}
+                                                    >
+                                                        {p.users.settings
+                                                            .to_convey
+                                                            ? "Véhiculé"
+                                                            : "Non véhiculé"}
+                                                    </Text>
+                                                </View>
+
+                                                <Text
+                                                    style={{
+                                                        fontSize: 11,
+                                                        color: "#94a3b8",
+                                                    }}
+                                                >
+                                                    {p.users.city}
+                                                </Text>
+                                            </View>
+                                        </View>
+
+                                        {isOwner && (
+                                            <RemoveParticipantButton
+                                                annonce={announcement}
+                                                participant={p}
+                                            />
+                                        )}
+                                    </View>
+                                );
+                            })
                     )}
                 </Card>
 

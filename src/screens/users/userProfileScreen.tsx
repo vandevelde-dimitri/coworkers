@@ -18,8 +18,10 @@ export default function UserScreen() {
     const formatedDate = formatDate(session?.user.created_at || "");
     if (!user) return <ActivityIndicator />;
 
+    console.log("user => ", user);
+
     return (
-        <ScreenWrapper title="Profil de ....utilisateur">
+        <ScreenWrapper title={`Profil de ${user.firstname} `}>
             <ScrollView showsVerticalScrollIndicator={false}>
                 {/* Carte utilisateur */}
                 <ProfileCardUser user={user} />

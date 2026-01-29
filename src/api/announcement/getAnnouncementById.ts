@@ -23,27 +23,19 @@ export async function getAnnouncementById(
                 `
         *,
         owner:users (
-          id,
-          firstname,
-          image_profile,
-          city,
-          avatar_updated_at,
-          contract
+            id, firstname, image_profile, city, avatar_updated_at, contract,
+            settings:settings!user_id (to_convey)
         ),
         participant_requests (
-          id,
-          status,
-          user_id,
-          users (
             id,
-            firstname,
-            image_profile,
-            city,
-            avatar_updated_at,
-            contract
-          )
+            status,
+            user_id,
+            users (
+                id, firstname, image_profile, city, avatar_updated_at, contract,
+                settings:settings!user_id (to_convey)
+            )
         )
-      `,
+    `,
             )
             .eq("id", annonce_id)
             .single();
@@ -57,6 +49,8 @@ export async function getAnnouncementById(
         const myRequest = annonce.participant_requests.find(
             (r: ParticipantRequest) => r.user_id === userId,
         );
+
+        console.log("annonce => ", JSON.stringify(annonce, null, 3));
 
         return { ...annonce, myStatus: myRequest?.status ?? null };
     } catch (err) {

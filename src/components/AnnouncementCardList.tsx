@@ -1,3 +1,4 @@
+import FeatherIcon from "@expo/vector-icons/Feather";
 import { useNavigation } from "@react-navigation/native";
 import { Text, TouchableOpacity, View } from "react-native";
 import { formatDate } from "../../utils/formatedDate";
@@ -37,8 +38,32 @@ export default function AnnouncementCardList({
                         user_id: data.user_id || data.users?.user_id || "",
                     }}
                 />
+
                 <View style={{ marginLeft: 12 }}>
                     <Text style={{ fontWeight: "600" }}>{data.user_name}</Text>
+                    {/* ✅ LE BADGE VÉHICULE */}
+                    <View
+                        style={{
+                            backgroundColor: "#DBEAFE",
+                            paddingHorizontal: 6,
+                            paddingVertical: 2,
+                            borderRadius: 6,
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 4,
+                        }}
+                    >
+                        <FeatherIcon name="truck" size={10} color="#1E40AF" />
+                        <Text
+                            style={{
+                                color: "#1E40AF",
+                                fontSize: 10,
+                                fontWeight: "700",
+                            }}
+                        >
+                            {data.to_convey ? "Véhiculer" : "non véhiculer"}
+                        </Text>
+                    </View>
                     <Text style={{ fontSize: 12, color: "#6b7280" }}>
                         {new Date(data.date_start).toLocaleString()}
                     </Text>
