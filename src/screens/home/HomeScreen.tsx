@@ -1,5 +1,6 @@
-import { useNavigation } from "@react-navigation/native";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useQueryClient } from "@tanstack/react-query";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
     FlatList,
     Text,
@@ -23,6 +24,7 @@ const PAGE_SIZE = 5;
 
 export default function HomeScreen() {
     const navigation = useNavigation();
+    const queryClient = useQueryClient();
     const { session } = useAuth();
     const { data: currentUser } = useCurrentUser();
     const { data: floors } = useFloorsAll();
@@ -33,20 +35,59 @@ export default function HomeScreen() {
     const [sortBy, setSortBy] = useState<SortBy>("date");
     const [selectedCenter, setSelectedCenter] = useState<string>("all");
 
-    // Initialiser le centre par défaut avec celui de l'utilisateur
+    // Invalider le cache et réinitialiser quand la session change
     useEffect(() => {
-        // Si on a un utilisateur et qu'on est encore sur "all" (premier chargement)
-        if (currentUser?.fc_id && selectedCenter === "all") {
+        console.log(
+            "[HomeScreen] Session changed:",
+            session?.user?.id ?? "guest",
+        );
+
+        // Invalider le cache des annonces lors du changement de session
+        queryClient.invalidateQueries({ queryKey: ["announcements"] });
+
+        if (session && currentUser?.fc_id) {
+            // Utilisateur connecté : définir son centre
+            console.log(
+                "[HomeScreen] Setting center to user fc_id:",
+                currentUser.fc_id,
+            );
             setSelectedCenter(currentUser.fc_id);
+        } else if (!session) {
+            // Mode invité : remettre à "all" pour voir toutes les annonces
+            console.log("[HomeScreen] Guest mode: setting center to 'all'");
+            setSelectedCenter("all");
         }
-    }, [session, currentUser]);
+    }, [session, currentUser?.fc_id, queryClient]);
 
     // On passe selectedCenter au hook pour filtrer au niveau de la DB
-    const { data, isLoading, error } = useAnnouncementByFc(
+    const { data, isLoading, error, refetch } = useAnnouncementByFc(
         page,
         PAGE_SIZE,
         selectedCenter,
     );
+
+    // Refetch quand l'écran redevient visible (après login/logout)
+    const isFirstRender = useRef(true);
+    useFocusEffect(
+        useCallback(() => {
+            if (isFirstRender.current) {
+                isFirstRender.current = false;
+                return;
+            }
+            console.log("[HomeScreen] Screen focused - refetching");
+            refetch();
+        }, [refetch]),
+    );
+
+    // Log pour déboguer
+    useEffect(() => {
+        console.log(
+            "[HomeScreen] selectedCenter:",
+            selectedCenter,
+            "| data count:",
+            data?.data?.length ?? 0,
+        );
+    }, [selectedCenter, data]);
 
     const announcements = data?.data || [];
     const totalCount = data?.totalCount || 0;

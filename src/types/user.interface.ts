@@ -11,7 +11,8 @@ export interface User {
     floor?: string;
     image_profile?: string | null;
     to_convey?: boolean;
-    fc: { name: string };
+    fc_id?: string;
+    fc: { id: string; name: string };
     avatar_updated_at?: string | Date;
 }
 
