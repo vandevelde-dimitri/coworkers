@@ -8,13 +8,9 @@ export async function getAnnouncementById(
     annonce_id: string,
 ): Promise<AnnonceDetail> {
     try {
-        // 🔒 Récupération session
-        const { data: sessionData, error: sessionError } =
-            await supabase.auth.getSession();
-        if (sessionError || !sessionData?.session) {
-            throw new Error("Utilisateur non authentifié");
-        }
-        const userId = sessionData.session.user.id;
+        // 🔒 Récupération session (optionnelle pour le mode invité)
+        const { data: sessionData } = await supabase.auth.getSession();
+        const userId = sessionData?.session?.user?.id ?? null;
 
         // 🔒 Récupération annonce + relations
         const { data: annonce, error } = await supabase
@@ -45,12 +41,12 @@ export async function getAnnouncementById(
             throw error ?? new Error("Annonce introuvable");
         }
 
-        // 🔎 Cherche la candidature de l'utilisateur connecté
-        const myRequest = annonce.participant_requests.find(
-            (r: ParticipantRequest) => r.user_id === userId,
-        );
-
-        console.log("annonce => ", JSON.stringify(annonce, null, 3));
+        // 🔎 Cherche la candidature de l'utilisateur connecté (null si invité)
+        const myRequest = userId
+            ? annonce.participant_requests.find(
+                  (r: ParticipantRequest) => r.user_id === userId,
+              )
+            : null;
 
         return { ...annonce, myStatus: myRequest?.status ?? null };
     } catch (err) {

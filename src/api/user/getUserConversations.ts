@@ -13,6 +13,10 @@ export type ConversationPreview = {
 export async function getUserConversationsPreview(
     userId: string,
 ): Promise<ConversationPreview[]> {
+    if (!userId) {
+        throw new Error("User ID is required to fetch conversations.");
+    }
+
     const { data, error } = await supabase
         .from("conversation_participants")
         .select(

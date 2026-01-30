@@ -10,7 +10,7 @@ export default function FavoriteButton({ annonceId }: { annonceId: string }) {
 
     const { isFavorite, toggleFavorite } = useFavorite(
         session?.user.id,
-        annonceId
+        annonceId,
     );
 
     const onPress = async () => {
@@ -20,10 +20,10 @@ export default function FavoriteButton({ annonceId }: { annonceId: string }) {
                 JSON.stringify({
                     screen: "AnnonceDetail",
                     params: { id: annonceId },
-                })
+                }),
             );
 
-            navigation.navigate("Public" as never);
+            navigation.navigate("PublicStack" as never);
             return;
         }
 

@@ -95,7 +95,7 @@ export function useUpdateAnnouncement() {
             queryClient.invalidateQueries({
                 queryKey: ["announcement", "currentUser"],
             });
-            showToast("success", "Votre annonce à était modifié avec succès !");
+            showToast("success", "Votre annonce a été modifiée");
         },
         onError: () => {
             showToast(
@@ -127,10 +127,7 @@ export function useDeleteAnnouncement() {
             showToast("success", "Votre annonce à était supprimé !");
         },
         onError: () => {
-            showToast(
-                "error",
-                "Une erreur est survenue lors de la suppression de l'annonce.",
-            );
+            showToast("error", "Erreur lors de la suppression de l'annonce");
         },
     });
 }

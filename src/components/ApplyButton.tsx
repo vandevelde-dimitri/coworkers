@@ -39,7 +39,7 @@ export default function ApplyButton({ annonce }: { annonce: AnnonceDetail }) {
                     params: { id: annonce.id },
                 }),
             );
-            navigation.navigate("Public" as never);
+            navigation.navigate("PublicStack" as never);
             return;
         }
         if (isCancelAction) {

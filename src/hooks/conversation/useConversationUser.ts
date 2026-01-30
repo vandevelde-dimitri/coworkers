@@ -4,11 +4,12 @@ import { useAuth } from "../../contexts/authContext";
 
 export function useUserConversations() {
     const { session } = useAuth();
+    const userId = session?.user?.id;
 
     return useQuery({
-        queryKey: ["user-conversations", session?.user.id],
-        queryFn: getUserConversationsPreview.bind(null, session?.user.id!),
-        enabled: !!session?.user.id,
+        queryKey: ["user-conversations", userId],
+        queryFn: () => getUserConversationsPreview(userId!),
+        enabled: !!userId,
         refetchOnWindowFocus: true,
         refetchOnMount: true,
     });

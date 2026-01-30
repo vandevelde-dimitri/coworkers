@@ -1,4 +1,8 @@
-import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+    CommonActions,
+    useNavigation,
+    useRoute,
+} from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
 import { useEffect } from "react";
 import { useAuth } from "../contexts/authContext";
@@ -18,8 +22,13 @@ export function useRequireAuth(stackName: string = "HomeStack") {
 
             SecureStore.setItemAsync("redirectTo", JSON.stringify(redirect));
 
-            // Redirige vers le Login
-            navigation.navigate("PublicStack" as never);
+            // Réinitialise la navigation pour éviter la page blanche au retour
+            navigation.dispatch(
+                CommonActions.reset({
+                    index: 0,
+                    routes: [{ name: "PublicStack" }],
+                }),
+            );
         }
     }, [loading, session, route, navigation, stackName]);
 }
