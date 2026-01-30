@@ -22,7 +22,7 @@ export function useApply(annonceId?: string, userId?: string) {
                 await cancelApplication(
                     annonceId!,
                     userId!,
-                    requestQuery.data.status
+                    requestQuery.data.status,
                 );
                 return null;
             } else {
@@ -43,7 +43,7 @@ export function useApply(annonceId?: string, userId?: string) {
                           annonce_id: annonceId,
                           user_id: userId,
                           status: "pending",
-                      }
+                      },
             );
 
             return { previous };
@@ -69,7 +69,7 @@ export function useApply(annonceId?: string, userId?: string) {
 
     return {
         request: requestQuery.data,
-        isLoading: requestQuery.isLoading || toggleMutation.isLoading,
+        isLoading: requestQuery.isLoading || toggleMutation.isPending,
         toggleApply: toggleMutation.mutateAsync,
     };
 }

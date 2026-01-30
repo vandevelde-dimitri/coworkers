@@ -2,16 +2,21 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createClient, processLock } from "@supabase/supabase-js";
 import "react-native-url-polyfill/auto";
 
-export const supabase = createClient(
-    process.env.EXPO_PUBLIC_SUPABASE_URL!,
-    process.env.EXPO_PUBLIC_SUPABASE_KEY!,
-    {
-        auth: {
-            storage: AsyncStorage,
-            autoRefreshToken: true,
-            persistSession: true,
-            detectSessionInUrl: false,
-            lock: processLock,
-        },
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.EXPO_PUBLIC_SUPABASE_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+    throw new Error(
+        "Supabase URL or Key is not defined in environment variables",
+    );
+}
+
+export const supabase = createClient(supabaseUrl, supabaseKey, {
+    auth: {
+        storage: AsyncStorage,
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: false,
+        lock: processLock,
     },
-);
+});
