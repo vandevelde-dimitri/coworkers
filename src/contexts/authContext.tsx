@@ -7,6 +7,7 @@ import React, {
     useState,
 } from "react";
 import { AppState } from "react-native";
+import { logger } from "../../utils/logger";
 import { supabase } from "../../utils/supabase";
 
 type AuthContextType = {
@@ -30,9 +31,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
         // 1. Récupération initiale de la session
         const initSession = async () => {
-            const { data } = await supabase.auth.getSession();
-            setSession(data.session);
-            setLoading(false);
+            try {
+                const { data, error } = await supabase.auth.getSession();
+                if (error) throw error;
+                setSession(data.session);
+            } catch (err) {
+                // Log l'erreur mais ne bloque pas l'utilisateur
+                await logger.critical("session_init_failed", err);
+                setSession(null);
+            } finally {
+                setLoading(false);
+            }
         };
 
         initSession();
