@@ -7,7 +7,6 @@ export async function getAllAnnouncementByFc(
     fc_id?: string | null,
 ): Promise<{ data: AnnouncementWithUser[]; totalCount: number }> {
     const cleanFcId = fc_id === "all" ? null : fc_id;
-    console.log("clean FC => ", cleanFcId);
 
     const { data, error } = await supabase.rpc("get_annonces_for_user", {
         p_fc_id: cleanFcId,
@@ -15,9 +14,7 @@ export async function getAllAnnouncementByFc(
         p_offset: (page - 1) * pageSize,
     });
 
-    if (error) console.log(error);
-
-    console.log(data);
+    if (error) console.error("getAllAnnouncementByFc error:", error);
 
     return {
         data: (data as AnnouncementWithUser[]) || [],
