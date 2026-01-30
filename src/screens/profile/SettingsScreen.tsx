@@ -7,7 +7,7 @@ import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import * as yup from "yup";
 import { showToast } from "../../../utils/showToast";
 import { supabase } from "../../../utils/supabase";
-import { onUpdateEmail } from "../../../utils/updateEmail";
+import { useUpdateEmail } from "../../../utils/updateEmail";
 import { onUpdatePassword } from "../../../utils/updatePassword";
 import { deleteAccount } from "../../api/account/deleteAccount";
 import Button from "../../components/ui/Button";
@@ -26,6 +26,7 @@ export default function SettingsScreen() {
     const user = session?.user;
     const navigation = useNavigation<NavigationProp<ProfileStackParamList>>();
     const { data: settings } = useSettingsUser();
+    const { updateEmail } = useUpdateEmail();
     const { mutate: updateSettings } = useUpdateSettings();
     const [openLogout, setOpenLogout] = useState(false);
     const [openDestroy, setOpenDestroy] = useState(false);
@@ -89,6 +90,9 @@ export default function SettingsScreen() {
         }
     };
 
+    const onChangeEmail = async (data: { email: string }) => {
+        await updateEmail(data.email);
+    };
     /* ===================== UI ===================== */
 
     return (
@@ -192,7 +196,7 @@ export default function SettingsScreen() {
                         <Button
                             label="Modifier mon email"
                             variant="secondary"
-                            onPress={emailForm.handleSubmit(onUpdateEmail)}
+                            onPress={emailForm.handleSubmit(onChangeEmail)}
                             disabled={emailForm.formState.isSubmitting}
                         />
                     </View>
@@ -263,7 +267,7 @@ export default function SettingsScreen() {
                         />
                         <ConfirmModal
                             visible={openDestroy}
-                            title="Voulez-vous vraiement supprimer votre compte ?"
+                            title="Voulez-vous vraiment supprimer votre compte ?"
                             description="Vous perdrez toutes vos données de manière définitive."
                             confirmLabel="Oui"
                             cancelLabel="Non"

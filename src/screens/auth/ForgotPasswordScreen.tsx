@@ -76,7 +76,7 @@ export default function ForgotPwdScreen() {
                             type="email"
                         />
                         <Button
-                            label="S'inscrire"
+                            label="Réinitialiser mon mot de passe"
                             onPress={handleSubmit(onSubmit)}
                         />
                     </View>

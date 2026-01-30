@@ -2,16 +2,30 @@ import { Alert } from "react-native";
 import { useAuth } from "../src/contexts/authContext";
 import { supabase } from "./supabase";
 
-export const onUpdateEmail = async ({ email }) => {
-    const { refreshSession } = useAuth();
+// ✅ On transforme la fonction en Hook (commence par 'use')
+export function useUpdateEmail() {
+    const { refreshSession } = useAuth(); // Ici, le hook est autorisé !
 
-    try {
-        await supabase.auth.updateUser({ email });
+    const updateEmail = async (email: string) => {
+        try {
+            const { error } = await supabase.auth.updateUser({ email });
 
-        await refreshSession();
+            if (error) throw error;
 
-        Alert.alert("Succès", "Email mis à jour");
-    } catch (e: any) {
-        Alert.alert("Erreur", e.message);
-    }
-};
+            // On rafraîchit la session pour que l'UI affiche le nouvel email
+            await refreshSession();
+
+            Alert.alert(
+                "Succès",
+                "Un email de confirmation a été envoyé à votre nouvelle adresse.",
+            );
+        } catch (e: any) {
+            Alert.alert(
+                "Erreur",
+                e.message || "Impossible de mettre à jour l'email",
+            );
+        }
+    };
+
+    return { updateEmail };
+}
