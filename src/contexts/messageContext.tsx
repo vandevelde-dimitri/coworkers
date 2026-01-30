@@ -1,5 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { logger } from "../../utils/logger";
 import { supabase } from "../../utils/supabase";
 import { useAuth } from "./authContext";
 
@@ -39,7 +40,7 @@ export const MessageProvider = ({
         });
 
         if (error) {
-            console.error("❌ get_unread_conversations:", error);
+            await logger.critical("get_unread_conversations", error, userId);
             return;
         }
 
@@ -86,7 +87,7 @@ export const MessageProvider = ({
                     queryClient.invalidateQueries({
                         queryKey: ["user-conversations", userId],
                     });
-                }
+                },
             )
             .subscribe();
 

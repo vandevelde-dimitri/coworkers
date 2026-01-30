@@ -17,7 +17,7 @@ export const logger = {
                 user_id: userId,
                 context: {
                     platform: Platform.OS,
-                    version: "1.0.0", // Idéalement via expo-constants
+                    version: "1.0.0",
                     timestamp: new Date().toISOString(),
                 },
             });

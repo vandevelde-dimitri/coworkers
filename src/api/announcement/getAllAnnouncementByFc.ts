@@ -6,13 +6,18 @@ export async function getAllAnnouncementByFc(
     pageSize: number = 5,
     fc_id?: string | null,
 ): Promise<{ data: AnnouncementWithUser[]; totalCount: number }> {
+    const cleanFcId = fc_id === "all" ? null : fc_id;
+    console.log("clean FC => ", cleanFcId);
+
     const { data, error } = await supabase.rpc("get_annonces_for_user", {
-        p_fc_id: fc_id ? fc_id : null,
+        p_fc_id: cleanFcId,
         p_limit: pageSize,
         p_offset: (page - 1) * pageSize,
     });
 
     if (error) console.log(error);
+
+    console.log(data);
 
     return {
         data: (data as AnnouncementWithUser[]) || [],

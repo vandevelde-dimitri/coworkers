@@ -31,20 +31,21 @@ export default function HomeScreen() {
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState("");
     const [sortBy, setSortBy] = useState<SortBy>("date");
-    const [selectedCenter, setSelectedCenter] = useState<string | null>(null);
+    const [selectedCenter, setSelectedCenter] = useState<string>("all");
 
     // Initialiser le centre par défaut avec celui de l'utilisateur
     useEffect(() => {
-        if (currentUser?.fc_id && !selectedCenter) {
+        // Si on a un utilisateur et qu'on est encore sur "all" (premier chargement)
+        if (currentUser?.fc_id && selectedCenter === "all") {
             setSelectedCenter(currentUser.fc_id);
         }
-    }, [currentUser]);
+    }, [session, currentUser]);
 
     // On passe selectedCenter au hook pour filtrer au niveau de la DB
     const { data, isLoading, error } = useAnnouncementByFc(
         page,
         PAGE_SIZE,
-        selectedCenter
+        selectedCenter,
     );
 
     const announcements = data?.data || [];
@@ -59,15 +60,16 @@ export default function HomeScreen() {
                 value: c.id,
             })) || [];
         // On peut ajouter une option pour tout voir
-        return [{ label: "Tous les centres", value: "" }, ...options];
+        return [{ label: "Tous les centres", value: "all" }, ...options];
     }, [floors]);
 
     // Label du centre actuellement sélectionné (pour le titre)
     const selectedCenterLabel = useMemo(() => {
         const center = centersOptions.find(
-            (opt) => opt.value === selectedCenter
+            (opt) => opt.value === selectedCenter,
         );
-        return center?.value === "" ? "" : center?.label;
+        // Si c'est "all", on retourne null pour afficher le titre par défaut
+        return center?.value === "all" ? null : center?.label;
     }, [selectedCenter, centersOptions]);
 
     const sortOptions = [
@@ -87,7 +89,7 @@ export default function HomeScreen() {
                 (a) =>
                     a.title.toLowerCase().includes(q) ||
                     a.content.toLowerCase().includes(q) ||
-                    a.city.toLowerCase().includes(q)
+                    a.city.toLowerCase().includes(q),
             );
         }
 
@@ -96,12 +98,12 @@ export default function HomeScreen() {
                 filteredData.sort(
                     (a, b) =>
                         new Date(b.date_start).getTime() -
-                        new Date(a.date_start).getTime()
+                        new Date(a.date_start).getTime(),
                 );
                 break;
             case "seats":
                 filteredData.sort(
-                    (a, b) => b.number_of_places - a.number_of_places
+                    (a, b) => b.number_of_places - a.number_of_places,
                 );
                 break;
             case "from":
@@ -115,7 +117,7 @@ export default function HomeScreen() {
         ({ item }: { item: AnnouncementWithUser }) => (
             <AnnouncementCardList data={item} key={item.id} />
         ),
-        []
+        [],
     );
 
     if (isLoading)
