@@ -42,7 +42,23 @@ export default function RegisterScreen() {
         );
 
         if (errorAuth) {
-            showToast("error", "Inscription échouée : ");
+            if (__DEV__) console.error("Register error:", errorAuth);
+
+            // ✅ Cas : L'email est déjà utilisé
+            // Supabase renvoie souvent "User already registered"
+            if (
+                errorAuth.message.includes("already registered") ||
+                errorAuth.status === 422
+            ) {
+                showToast(
+                    "error",
+                    "Compte existant",
+                    "Cet email est déjà utilisé. Essaie de te connecter ou réinitialise ton mot de passe.",
+                );
+            } else {
+                // Autre erreur (ex: mot de passe trop court)
+                showToast("error", "Inscription échouée", errorAuth.message);
+            }
             return;
         }
 
