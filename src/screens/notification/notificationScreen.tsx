@@ -59,6 +59,9 @@ export default function NotificationsScreen() {
     }
 
     const onAccept = async (annonceId: string, candidate_id: string) => {
+        console.log("candidat id dans notification screen: ", candidate_id);
+        console.log("annonce id dans notification screen: ", annonceId);
+
         try {
             await acceptRequest({ candidate_id, annonce_id: annonceId });
             showToast("success", "Candidature acceptée");
@@ -83,6 +86,8 @@ export default function NotificationsScreen() {
     };
 
     const renderItem = ({ item }: { item: NotificationResponse }) => {
+        console.log("item dans notification screen : ", item.user_id);
+
         const isPending = item.status === StatusNotification.PENDING;
 
         return (
@@ -122,7 +127,7 @@ export default function NotificationsScreen() {
                         <TouchableOpacity
                             style={[styles.actionBtn, styles.accept]}
                             onPress={() =>
-                                onAccept(item.annonceId, item.userId)
+                                onAccept(item.annonceId, item.user_id)
                             }
                         >
                             <Text style={styles.actionText}>Accepter</Text>

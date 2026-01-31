@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import * as yup from "yup";
+import { logger } from "../../../utils/logger";
 import { showToast } from "../../../utils/showToast";
 import { supabase } from "../../../utils/supabase";
 import { useUpdateEmail } from "../../../utils/updateEmail";
@@ -19,7 +20,6 @@ import { FormSwitch } from "../../components/ui/FormSwitch";
 import { useAuth } from "../../contexts/authContext";
 import { useSettingsUser, useUpdateSettings } from "../../hooks/user/useUsers";
 import { ProfileStackParamList } from "../../types/navigation/profileStackType";
-import { logger } from "../../../utils/logger";
 
 export default function SettingsScreen() {
     const { session } = useAuth();
@@ -142,7 +142,7 @@ export default function SettingsScreen() {
                             name="vibrations"
                             control={settingsForm.control}
                             label="Vibrations"
-                            description="Activer le retour haptique lors des notifications"
+                            description="Activer les vibrations lors des notifications"
                             onAfterChange={(val) =>
                                 updateSettings({ vibrations: val })
                             }
