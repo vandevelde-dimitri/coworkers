@@ -32,7 +32,7 @@ export default function FormAnnouncementScreen() {
 
     const navigation = useNavigation();
     const route = useRoute();
-    const { id } = route.params ?? {}; // params peut être undefined
+    const { id } = route.params ?? {};
     const isEditMode = !!id;
     const { canPost, isLoading: isLoadingCanPost } = useCanPost();
     const { mutate: createAnnouncement, isPending } = useAddAnnouncement();
@@ -60,7 +60,6 @@ export default function FormAnnouncementScreen() {
         resolver: yupResolver(schema),
     });
 
-    // Préremplir le formulaire en édition
     useEffect(() => {
         if (isEditMode && existingAnnouncement) {
             reset({
@@ -73,7 +72,7 @@ export default function FormAnnouncementScreen() {
         }
     }, [isEditMode, existingAnnouncement, reset]);
     if (!session) {
-        return <ActivityIndicator />; // ou un splash / loader léger
+        return <ActivityIndicator />;
     }
     if (isEditMode && isLoading) {
         return (
@@ -84,7 +83,6 @@ export default function FormAnnouncementScreen() {
     }
 
     const onSubmit: SubmitHandler<AnnouncementFormValues> = (data) => {
-        // Cas 1 : Mode Édition (on autorise toujours la modif d'une annonce existante)
         if (isEditMode) {
             updateAnnouncement(
                 { id: id as string, body: data },
@@ -100,7 +98,6 @@ export default function FormAnnouncementScreen() {
             return;
         }
 
-        // Cas 2 : Création d'une nouvelle annonce
         if (canPost) {
             createAnnouncement(data, {
                 onSuccess: () => {

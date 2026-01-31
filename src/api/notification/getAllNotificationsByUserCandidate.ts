@@ -6,7 +6,6 @@ export async function getAllNotificationsByUserCandidate(): Promise<
     NotificationResponse[]
 > {
     try {
-        // 🔹 Récupération session
         const {
             data: { session },
             error: sessionError,
@@ -17,7 +16,6 @@ export async function getAllNotificationsByUserCandidate(): Promise<
             return [];
         }
 
-        // 🔹 Requête notifications pour le propriétaire
         const { data, error } = await supabase.rpc(
             "get_my_candidate_notifications",
         );
@@ -27,7 +25,6 @@ export async function getAllNotificationsByUserCandidate(): Promise<
             throw error;
         }
 
-        // 🔹 Transformation pour l’écran
         const formatted: NotificationResponse[] = (data ?? []).map(
             (item: NotificationResponse) => {
                 return {
@@ -57,7 +54,6 @@ export async function getAllNotificationsByUserCandidate(): Promise<
     }
 }
 
-// 🔹 Génération message
 function getMessageByStatus(status: string, annonce_title: string) {
     switch (status) {
         case StatusNotification.ACCEPTED:

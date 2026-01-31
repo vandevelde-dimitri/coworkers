@@ -36,7 +36,6 @@ export function useUploadAvatar() {
             uploadUserAvatar(imageUri),
 
         onSuccess: () => {
-            // Met à jour le cache du user actuel
             queryClient.invalidateQueries({ queryKey: ["current-user"] });
             queryClient.invalidateQueries({
                 queryKey: ["currentUser", session?.user?.id],
@@ -66,7 +65,6 @@ export function useUpdateUser() {
             updateUser(body),
 
         onSuccess: () => {
-            // Met à jour le cache du user actuel
             queryClient.invalidateQueries({ queryKey: ["current-user"] });
             queryClient.invalidateQueries({ queryKey: ["announcements"] });
             showToast("success", "Profil mis à jour avec succès !");

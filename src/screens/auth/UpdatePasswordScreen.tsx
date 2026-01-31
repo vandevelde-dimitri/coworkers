@@ -79,7 +79,6 @@ export default function UpdatePasswordScreen({ route, navigation }: any) {
         } catch (error: any) {
             let friendlyMessage = "Une erreur est survenue.";
 
-            // Gestion spécifique des codes d'erreur Supabase Auth
             if (error.message.includes("different from the old password")) {
                 friendlyMessage =
                     "Le nouveau mot de passe doit être différent de l'ancien.";

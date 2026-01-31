@@ -12,7 +12,6 @@ const Pagination = ({
     totalPages,
     onPageChange,
 }: PaginationProps) => {
-    // Si une seule page ou aucune, on n'affiche rien
     if (totalPages <= 1) return <View style={{ height: 20 }} />;
 
     return (
@@ -91,7 +90,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         flexWrap: "wrap",
         justifyContent: "center",
-        maxWidth: "70%", // Évite que les chiffres ne mangent les flèches sur petits écrans
+        maxWidth: "70%",
     },
     arrowButton: {
         padding: 12,

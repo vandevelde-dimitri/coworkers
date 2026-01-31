@@ -12,7 +12,6 @@ interface CandidateResponse {
 
 export async function getAllCandidate(): Promise<CandidateResponse[]> {
     try {
-        // 🔹 Récupération session
         const {
             data: { session },
             error: sessionError,
@@ -22,7 +21,6 @@ export async function getAllCandidate(): Promise<CandidateResponse[]> {
             return [];
         }
 
-        // 🔹 Requête candidats
         const { data, error } = await supabase
             .from("participant_requests")
             .select(`*`)
@@ -32,7 +30,6 @@ export async function getAllCandidate(): Promise<CandidateResponse[]> {
             throw error;
         }
 
-        // 🔹 Transformation pour l'écran
         const formatted: CandidateResponse[] = (data ?? []).map(
             (item: CandidateResponse) => {
                 return {

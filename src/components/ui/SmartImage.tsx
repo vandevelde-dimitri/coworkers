@@ -1,4 +1,4 @@
-import { useNavigation } from "@react-navigation/native"; // Utilisation de useNavigation
+import { useNavigation } from "@react-navigation/native";
 import { Image } from "expo-image";
 import React from "react";
 import { Pressable } from "react-native";
@@ -22,7 +22,7 @@ const SmartImage = ({
 }: SmartImageProps) => {
     const { image_profile, avatar_updated_at, contract, user_id, id } =
         userData;
-    const navigation = useNavigation<any>(); // On récupère l'objet navigation
+    const navigation = useNavigation<any>();
 
     const imageSource = image_profile
         ? `${image_profile}?v=${new Date(avatar_updated_at).getTime()}`
@@ -32,7 +32,6 @@ const SmartImage = ({
         "https://ctkoosixwtoxxtilcuqh.supabase.co/storage/v1/object/public/avatars/1903ad4c-4a65-4cb0-a21c-9590c00b6b63/avatar.webp";
 
     const handlePress = () => {
-       
         if ((!disablePress && user_id) || id) {
             navigation.navigate("ProfileUserScreen", { id: user_id || id });
         }
@@ -42,7 +41,7 @@ const SmartImage = ({
         <Pressable
             onPress={handlePress}
             style={({ pressed }) => ({
-                opacity: pressed ? 0.7 : 1, // Feedback visuel plus marqué
+                opacity: pressed ? 0.7 : 1,
             })}
         >
             <Image
@@ -50,7 +49,7 @@ const SmartImage = ({
                 style={{
                     width: size,
                     height: size,
-                    borderRadius: size / 2, // Plus précis que 9999
+                    borderRadius: size / 2,
                     borderColor: getColor(contract),
                     borderWidth: 2,
                 }}

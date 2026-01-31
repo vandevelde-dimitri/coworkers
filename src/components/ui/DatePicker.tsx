@@ -34,7 +34,6 @@ export const FormDatePicker: React.FC<FormDatePickerProps> = ({
                         onChange(formatted);
                     }
                 };
-                // Si value est une string, on la convertit en Date
                 const displayDate = value ? new Date(value) : new Date();
                 return (
                     <View style={{ marginBottom: 16 }}>
@@ -62,8 +61,8 @@ export const FormDatePicker: React.FC<FormDatePickerProps> = ({
                             <Text style={{ color: "#111827" }}>
                                 {value
                                     ? new Date(value).toLocaleDateString(
-                                          "fr-FR"
-                                      ) // Affiche en format français
+                                          "fr-FR",
+                                      )
                                     : "Sélectionner une date"}
                             </Text>
                         </TouchableOpacity>

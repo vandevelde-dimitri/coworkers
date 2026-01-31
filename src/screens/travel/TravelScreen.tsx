@@ -32,7 +32,6 @@ export default function TravelScreen() {
 
     if (!session) return <ActivityIndicator />;
 
-    // 1️⃣ Loading
     if (isLoading) {
         return (
             <SafeScreen title="Mon annonce">
@@ -41,7 +40,6 @@ export default function TravelScreen() {
         );
     }
 
-    // 2️⃣ Erreur
     if (error) {
         return (
             <SafeScreen title="Mon annonce">
@@ -67,13 +65,11 @@ export default function TravelScreen() {
         );
     }
 
-    // ---------- FORMATTING ----------
     const dateStart = formatDate(announcement.date_start);
     const dateEnd = announcement.date_end
         ? formatDate(announcement.date_end)
         : null;
 
-    // ---------- RENDER ----------
     return (
         <ScreenWrapper title="Mon annonce">
             <ScrollView>

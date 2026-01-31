@@ -58,12 +58,8 @@ export default function NotificationsScreen() {
         );
     }
 
-    /* ===================== ACTIONS ===================== */
-
     const onAccept = async (annonceId: string, candidate_id: string) => {
         try {
-            // 1️⃣ Accepter la candidature
-
             await acceptRequest({ candidate_id, annonce_id: annonceId });
             showToast("success", "Candidature acceptée");
         } catch (e: any) {
@@ -85,8 +81,6 @@ export default function NotificationsScreen() {
             showToast("error", "Impossible de refuser la candidature");
         }
     };
-
-    /* ===================== RENDER ===================== */
 
     const renderItem = ({ item }: { item: NotificationResponse }) => {
         const isPending = item.status === StatusNotification.PENDING;
@@ -114,10 +108,8 @@ export default function NotificationsScreen() {
                     )}
                 </View>
 
-                {/* Message */}
                 <Text style={styles.message}>{item.message}</Text>
 
-                {/* Date */}
                 <Text style={styles.date}>
                     {new Date(item.created_at).toLocaleString("fr-FR", {
                         dateStyle: "short",
@@ -125,7 +117,6 @@ export default function NotificationsScreen() {
                     })}
                 </Text>
 
-                {/* Actions */}
                 {isPending && (
                     <View style={styles.actions}>
                         <TouchableOpacity
@@ -186,8 +177,6 @@ export default function NotificationsScreen() {
         </ScreenWrapper>
     );
 }
-
-/* ===================== STYLES ===================== */
 
 const styles = StyleSheet.create({
     card: {

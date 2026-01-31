@@ -48,7 +48,7 @@ export interface ParticipantRequest {
     id: string;
     user_id: string;
     status: "pending" | "accepted" | "refused";
-    users: User; // les infos du participant
+    users: User;
 }
 
 export interface AnnonceDetail {
@@ -61,5 +61,5 @@ export interface AnnonceDetail {
     owner: User;
     conversation_id: string;
     participant_requests: ParticipantRequest[];
-    myStatus: "pending" | "accepted" | "refused" | null; // status de l'utilisateur connecté
+    myStatus: "pending" | "accepted" | "refused" | null;
 }

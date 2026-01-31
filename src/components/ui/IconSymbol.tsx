@@ -17,7 +17,6 @@ type IconSymbolName = keyof typeof MAPPING;
  * - see SF Symbols in the [SF Symbols](https://developer.apple.com/sf-symbols/) app.
  */
 const MAPPING = {
-    // Navigation principale
     "house.fill": "home", // Accueil
     "car.fill": "directions-car", // Mes trajets
     "plus.circle": "add", // Ajouter

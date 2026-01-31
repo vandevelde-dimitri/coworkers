@@ -9,7 +9,6 @@ import { useAnnouncementsFavorites } from "../../hooks/announcement/useAnnouncem
 
 const PAGE_SIZE = 5;
 const FavoriteScreen = () => {
-    // Simulated data fetching
     const [page, setPage] = useState(1);
 
     const { data, isLoading } = useAnnouncementsFavorites(page, PAGE_SIZE);
@@ -23,8 +22,6 @@ const FavoriteScreen = () => {
             </View>
         );
     }
-
-   
 
     return (
         <ScreenWrapper back title="Mes favoris">

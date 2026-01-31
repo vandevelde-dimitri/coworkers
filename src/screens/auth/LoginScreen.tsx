@@ -39,7 +39,6 @@ export default function LoginScreen() {
         }
 
         showToast("success", "Connexion réussie !");
-        // Login réussi → récupérer la redirection
         const redirectStr = await SecureStore.getItemAsync("redirectTo");
         if (redirectStr) {
             const redirect = JSON.parse(redirectStr);
@@ -57,7 +56,7 @@ export default function LoginScreen() {
 
             await SecureStore.deleteItemAsync("redirectTo");
         } else {
-            navigation.navigate("AppTabs"); // par défaut
+            navigation.navigate("AppTabs");
         }
     };
 

@@ -78,18 +78,15 @@ export default function OnboardingScreen() {
         }
 
         const values = getValues();
-        const userId = session?.user.id; // 👈 Plus besoin de getSession() lent
+        const userId = session?.user.id;
 
         if (!userId) {
             showToast("error", "Session expirée", "Veuillez vous reconnecter.");
             return;
         }
         try {
-            // 1. D'abord on sauve les données métier (Table users)
             await updateUser(userId, values);
 
-            // 2. ENSUITE on marque le profil comme complété dans l'Auth
-            // Cela déclenchera la redirection automatique via ton AuthContext
             const { error: authError } = await supabase.auth.updateUser({
                 data: { profile_completed: true },
             });

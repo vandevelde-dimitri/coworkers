@@ -1,6 +1,5 @@
 import { supabase } from "../../../utils/supabase";
 
-// src/api/settings.ts
 export async function getSettingUser(userId: string | undefined) {
     const { data, error } = await supabase
         .from("settings")

@@ -3,29 +3,27 @@ import { AnnouncementWithUser } from "../../types/announcement.interface";
 
 export async function getAllAnnouncementFavorite(
     page: number,
-    pageSize: number = 5
+    pageSize: number = 5,
 ): Promise<{ data: AnnouncementWithUser[]; totalCount: number }> {
     const { data: sessionData } = await supabase.auth.getSession();
     const userId = sessionData?.session?.user?.id;
     if (!userId) return { data: [], totalCount: 0 };
 
-    // 1. On récupère les IDs des favoris ET le compte total
     const {
         data: userAnnonces,
         count,
         error: countError,
     } = await supabase
         .from("user_annonces")
-        .select("annonce_id", { count: "exact" }) // On demande le total ici
+        .select("annonce_id", { count: "exact" })
         .eq("user_id", userId)
         .eq("favorite", true)
-        .range((page - 1) * pageSize, page * pageSize - 1); // Pagination Supabase
+        .range((page - 1) * pageSize, page * pageSize - 1);
 
     if (countError) throw countError;
     if (!userAnnonces || userAnnonces.length === 0)
         return { data: [], totalCount: 0 };
 
-    // 2. On récupère les détails des annonces pour la page actuelle
     const { data: annonces, error: detailError } = await supabase
         .from("annonces")
         .select(
@@ -41,11 +39,11 @@ export async function getAllAnnouncementFavorite(
                 avatar_updated_at,
                 fc:fc_id (name)
             )
-        `
+        `,
         )
         .in(
             "id",
-            userAnnonces.map((ua) => ua.annonce_id)
+            userAnnonces.map((ua) => ua.annonce_id),
         );
 
     if (detailError) throw detailError;
@@ -58,7 +56,7 @@ export async function getAllAnnouncementFavorite(
 
 export async function getFavoriteStatus(
     userId: string,
-    annonceId: string
+    annonceId: string,
 ): Promise<boolean> {
     const { data, error } = await supabase
         .from("user_annonces")
@@ -75,7 +73,7 @@ export async function getFavoriteStatus(
 export async function toggleFavorite(
     userId: string,
     annonceId: string,
-    value: boolean
+    value: boolean,
 ) {
     const { error } = await supabase.from("user_annonces").upsert(
         [
@@ -85,7 +83,7 @@ export async function toggleFavorite(
                 favorite: value,
             },
         ],
-        { onConflict: "user_id,annonce_id" }
+        { onConflict: "user_id,annonce_id" },
     );
 
     if (error) throw error;

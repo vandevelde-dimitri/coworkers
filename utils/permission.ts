@@ -1,4 +1,3 @@
-// permissions.ts
 import * as ImagePicker from "expo-image-picker";
 import { Alert, Linking, Platform } from "react-native";
 
@@ -20,7 +19,6 @@ export async function requestPermission(type: PermissionType) {
             throw new Error(`Permission inconnue : ${type}`);
     }
 
-    // Vérification
     if (!permissionResult.granted) {
         Alert.alert(
             "Permission refusée",
@@ -34,7 +32,7 @@ export async function requestPermission(type: PermissionType) {
                             ? Linking.openURL("app-settings:")
                             : Linking.openSettings(),
                 },
-            ]
+            ],
         );
         return false;
     }

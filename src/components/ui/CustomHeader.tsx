@@ -34,7 +34,6 @@ export default function ScreenWrapper({
     const insets = useSafeAreaInsets();
     const { isVacationMode } = useCanPost();
 
-    // On affiche le header si on a un titre, un bouton retour OU des actions
     const hasHeader = title || back || rightActions;
 
     return (
@@ -54,7 +53,7 @@ export default function ScreenWrapper({
                         justifyContent: "center",
                         paddingHorizontal: 16,
                         paddingVertical: 12,
-                        minHeight: 56, // On ajoute une hauteur minimale
+                        minHeight: 56,
                         backgroundColor: "#fff",
                         borderRadius: 18,
                         marginBottom: 16,
@@ -64,14 +63,13 @@ export default function ScreenWrapper({
                         position: "relative",
                     }}
                 >
-                    {/* Bouton Back - Sorti de la condition title */}
                     {back && (
                         <TouchableOpacity
                             onPress={() => navigation.goBack()}
                             style={{
                                 position: "absolute",
                                 left: 16,
-                                zIndex: 10, // S'assure qu'il est cliquable
+                                zIndex: 10,
                             }}
                         >
                             <FeatherIcon
@@ -82,7 +80,6 @@ export default function ScreenWrapper({
                         </TouchableOpacity>
                     )}
 
-                    {/* Titre centré - Toujours présent si fourni */}
                     {title ? (
                         <Text
                             style={{
@@ -90,17 +87,16 @@ export default function ScreenWrapper({
                                 fontWeight: "700",
                                 color: "#111827",
                                 textAlign: "center",
-                                maxWidth: "70%", // Évite de chevaucher les boutons
+                                maxWidth: "70%",
                             }}
                             numberOfLines={1}
                         >
                             {title}
                         </Text>
                     ) : (
-                        <View style={{ height: 24 }} /> // Espaceur si pas de titre
+                        <View style={{ height: 24 }} />
                     )}
 
-                    {/* Boutons à droite - Sorti de la condition title */}
                     {rightActions && (
                         <View
                             style={{
@@ -146,7 +142,7 @@ export default function ScreenWrapper({
                         flex: 1,
                         paddingHorizontal: 16,
                     },
-                    style, // Utilisation propre du style array/object
+                    style,
                 ]}
             >
                 {children}

@@ -3,7 +3,13 @@ import type { NavigationProp } from "@react-navigation/native";
 
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
-import { ActivityIndicator, Linking, ScrollView, TouchableOpacity, View } from "react-native";
+import {
+    ActivityIndicator,
+    Linking,
+    ScrollView,
+    TouchableOpacity,
+    View,
+} from "react-native";
 import { formatDate } from "../../../utils/formatedDate";
 import { ProfileCard } from "../../components/ProfileCard";
 import { ActionRow } from "../../components/ui/ActionRaw";
@@ -25,13 +31,12 @@ export default function ProfileScreen() {
     const formatedDate = formatDate(session?.user.created_at || "");
     if (!user) return <ActivityIndicator />;
 
- 
     const right_buttons = (
         <>
             <TouchableOpacity
                 onPress={() => {
-                    clearNotifications(); // 🔹 Supprime la bulle
-                    navigation.navigate("NotificationsScreen"); // 🔹 Va sur l’écran
+                    clearNotifications();
+                    navigation.navigate("NotificationsScreen");
                 }}
             >
                 <FeatherIcon name="bell" size={22} color="#1D2A32" />
@@ -95,7 +100,7 @@ export default function ProfileScreen() {
                         icon="external-link"
                         onPress={() =>
                             Linking.openURL(
-                                "https://coworkers-legal.vercel.app/politique_confidentialite"
+                                "https://coworkers-legal.vercel.app/politique_confidentialite",
                             )
                         }
                     />
@@ -104,7 +109,7 @@ export default function ProfileScreen() {
                         icon="external-link"
                         onPress={() =>
                             Linking.openURL(
-                                "https://coworkers-legal.vercel.app/"
+                                "https://coworkers-legal.vercel.app/",
                             )
                         }
                     />

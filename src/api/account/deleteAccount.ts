@@ -14,14 +14,13 @@ export async function deleteAccount() {
             {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json", // Toujours mieux de le préciser
+                    "Content-Type": "application/json",
                     Authorization: `Bearer ${session.access_token}`,
                 },
             },
         );
 
         if (!res.ok) {
-            // On essaie de récupérer le message d'erreur du backend si dispo
             const errorData = await res.json().catch(() => ({}));
             throw new Error(errorData.message || "Erreur suppression compte");
         }

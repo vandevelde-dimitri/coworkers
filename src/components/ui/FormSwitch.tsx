@@ -6,8 +6,8 @@ interface FormSwitchProps {
     name: string;
     control: Control<any>;
     label: string;
-    description?: string; // Optionnel : pour ajouter un petit texte explicatif
-    onAfterChange?: (value: boolean) => void; // Pour lancer la mutation direct après le switch
+    description?: string;
+    onAfterChange?: (value: boolean) => void;
 }
 
 export const FormSwitch: React.FC<FormSwitchProps> = ({
@@ -33,15 +33,13 @@ export const FormSwitch: React.FC<FormSwitchProps> = ({
                     </View>
 
                     <Switch
-                        // Force le booléen pour éviter les erreurs de type
                         value={!!value}
                         onValueChange={(newValue) => {
-                            onChange(newValue); // Met à jour React Hook Form
+                            onChange(newValue);
                             if (onAfterChange) {
-                                onAfterChange(newValue); // Lance l'api/mutation
+                                onAfterChange(newValue);
                             }
                         }}
-                        // Optionnel : couleurs personnalisées
                         trackColor={{ false: "#d1d5db", true: "#10b981" }}
                         thumbColor={"#ffffff"}
                     />

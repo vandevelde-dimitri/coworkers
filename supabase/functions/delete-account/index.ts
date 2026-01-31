@@ -21,7 +21,6 @@ serve(async (req) => {
 
         const userId = user.id;
 
-        // 1️⃣ Appel de la fonction SQL (Transaction atomique)
         const { error: dbError } = await supabaseAdmin.rpc(
             "delete_user_complete",
             {
@@ -34,7 +33,6 @@ serve(async (req) => {
             throw new Error("Erreur lors du nettoyage des données");
         }
 
-        // 2️⃣ Suppression du compte Auth (Action finale)
         const { error: authError } =
             await supabaseAdmin.auth.admin.deleteUser(userId);
 

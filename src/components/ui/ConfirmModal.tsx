@@ -1,4 +1,3 @@
-// ui/ConfirmModal.tsx
 import FeatherIcon from "@expo/vector-icons/Feather";
 import React from "react";
 import { Modal, Text, View } from "react-native";

@@ -1,4 +1,3 @@
-// hooks/useApply.ts
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
     applyToAnnonce,
@@ -35,7 +34,6 @@ export function useApply(annonceId?: string, userId?: string) {
 
             const previous = queryClient.getQueryData(queryKey);
 
-            // optimistic update
             queryClient.setQueryData(queryKey, (old: any) =>
                 old
                     ? null

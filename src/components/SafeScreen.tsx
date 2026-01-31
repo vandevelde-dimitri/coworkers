@@ -29,7 +29,7 @@ export default function SafeScreen({
                     flex: 1,
                     backgroundColor: "#fff",
                     paddingTop: 0,
-                    paddingBottom: -insets.bottom, // Pas de padding bottom ici pour permettre le scroll complet
+                    paddingBottom: -insets.bottom,
                 },
             ]}
         >

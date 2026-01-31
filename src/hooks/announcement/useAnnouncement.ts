@@ -17,8 +17,8 @@ export function useAnnouncementByFc(
     return useQuery({
         queryKey: ["announcements", page, pageSize, fc_id ?? "all"],
         queryFn: () => getAllAnnouncementByFc(page, pageSize, fc_id),
-        staleTime: 30000, // Toujours considérer les données comme périmées
-        refetchOnMount: "always", // Toujours refetch au montage
+        staleTime: 30000,
+        refetchOnMount: "always",
     });
 }
 

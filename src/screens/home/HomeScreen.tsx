@@ -29,34 +29,27 @@ export default function HomeScreen() {
     const { data: currentUser } = useCurrentUser();
     const { data: floors } = useFloorsAll();
 
-    // États de filtrage
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState("");
     const [sortBy, setSortBy] = useState<SortBy>("date");
     const [selectedCenter, setSelectedCenter] = useState<string>("all");
 
-    // Invalider le cache et réinitialiser quand la session change
     useEffect(() => {
-        // Invalider le cache des annonces lors du changement de session
         queryClient.invalidateQueries({ queryKey: ["announcements"] });
 
         if (session && currentUser?.fc_id) {
-            // Utilisateur connecté : définir son centre
             setSelectedCenter(currentUser.fc_id);
         } else if (!session) {
-            // Mode invité : remettre à "all" pour voir toutes les annonces
             setSelectedCenter("all");
         }
     }, [session, currentUser?.fc_id, queryClient]);
 
-    // On passe selectedCenter au hook pour filtrer au niveau de la DB
     const { data, isLoading, error, refetch } = useAnnouncementByFc(
         page,
         PAGE_SIZE,
         selectedCenter,
     );
 
-    // Refetch quand l'écran redevient visible (après login/logout)
     const isFirstRender = useRef(true);
     useFocusEffect(
         useCallback(() => {
@@ -72,23 +65,19 @@ export default function HomeScreen() {
     const totalCount = data?.totalCount || 0;
     const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
-    // Options pour le sélecteur (transformées depuis la DB)
     const centersOptions = useMemo(() => {
         const options =
             floors?.map((c) => ({
                 label: c.name,
                 value: c.id,
             })) || [];
-        // On peut ajouter une option pour tout voir
         return [{ label: "Tous les centres", value: "all" }, ...options];
     }, [floors]);
 
-    // Label du centre actuellement sélectionné (pour le titre)
     const selectedCenterLabel = useMemo(() => {
         const center = centersOptions.find(
             (opt) => opt.value === selectedCenter,
         );
-        // Si c'est "all", on retourne null pour afficher le titre par défaut
         return center?.value === "all" ? null : center?.label;
     }, [selectedCenter, centersOptions]);
 
@@ -98,7 +87,6 @@ export default function HomeScreen() {
         { label: "Près de moi", value: "from" },
     ];
 
-    // Logique de tri et recherche locale
     const rides = useMemo(() => {
         if (!announcements) return [];
         let filteredData = [...announcements];
@@ -234,13 +222,12 @@ export default function HomeScreen() {
                         </TouchableOpacity>
                     ))}
 
-                    {/* Nouveau Bouton Liste de choix pour les centres */}
                     <IconButtonSelect
                         options={centersOptions}
                         selectedValue={selectedCenter}
                         onSelect={(val) => {
                             setSelectedCenter(val);
-                            setPage(1); // On revient à la page 1 lors d'un changement de filtre
+                            setPage(1);
                         }}
                     />
                 </View>

@@ -58,10 +58,8 @@ export const MessageProvider = ({
     useEffect(() => {
         if (!userId) return;
 
-        // 🔥 1. Load unread on connect
         loadUnreadConversations();
 
-        // 🔥 2. Realtime new messages
         const channel = supabase
             .channel("messages-global")
             .on(
@@ -74,16 +72,13 @@ export const MessageProvider = ({
                 (payload) => {
                     const msg = payload.new;
 
-                    // ❌ ignore my own messages
                     if (msg.sender_id === userId) return;
 
-                    // 🔴 mark conversation as unread
                     setUnreadConversations((prev) => ({
                         ...prev,
                         [msg.conversation_id]: true,
                     }));
 
-                    // 🔄 refresh conversation previews
                     queryClient.invalidateQueries({
                         queryKey: ["user-conversations", userId],
                     });

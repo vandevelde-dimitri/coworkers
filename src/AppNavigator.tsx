@@ -38,7 +38,7 @@ export default function AppNavigator() {
         return () => subscription.remove();
     }, []);
 
-    if (loading) return <ActivityIndicator />; // splash screen si tu veux
+    if (loading) return <ActivityIndicator />;
 
     return (
         <NavigationContainer ref={navigationRef}>

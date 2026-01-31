@@ -29,14 +29,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // 1. Récupération initiale de la session
         const initSession = async () => {
             try {
                 const { data, error } = await supabase.auth.getSession();
                 if (error) throw error;
                 setSession(data.session);
             } catch (err) {
-                // Log l'erreur mais ne bloque pas l'utilisateur
                 await logger.critical("session_init_failed", err);
                 setSession(null);
             } finally {
@@ -46,7 +44,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         initSession();
 
-        // 2. Écouteur des changements d'Auth (Login, Logout, Token Refresh)
         const {
             data: { subscription: authSubscription },
         } = supabase.auth.onAuthStateChange((event, session) => {
@@ -56,11 +53,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 setSession(session);
             }
 
-            setLoading(false); // Sécurité supplémentaire
+            setLoading(false);
         });
 
-        // 3. Gestion de l'AppState (Unique Listener)
-        // ✅ C'est le seul endroit où on gère le start/stop auto refresh
         const subscriptionAppState = AppState.addEventListener(
             "change",
             (state) => {

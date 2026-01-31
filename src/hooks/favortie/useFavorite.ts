@@ -1,4 +1,3 @@
-// hooks/useFavorite.ts
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
     getFavoriteStatus,
@@ -20,7 +19,6 @@ export function useFavorite(userId?: string, annonceId?: string) {
         mutationFn: (value: boolean) =>
             toggleFavorite(userId!, annonceId!, value),
 
-        // 🔥 OPTIMISTIC UPDATE
         onMutate: async (newValue) => {
             await queryClient.cancelQueries({ queryKey });
 

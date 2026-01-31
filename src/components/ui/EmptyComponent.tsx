@@ -52,25 +52,6 @@ export default function EmptyState({
 
             {/* Action */}
             {actionLabel && onAction && (
-                // <TouchableOpacity
-                //     onPress={onAction}
-                //     style={{
-                //         backgroundColor: "#2563EB",
-                //         paddingHorizontal: 20,
-                //         paddingVertical: 12,
-                //         borderRadius: 12,
-                //     }}
-                // >
-                //     <Text
-                //         style={{
-                //             color: "#ca1616",
-                //             fontWeight: "600",
-                //             fontSize: 15,
-                //         }}
-                //     >
-                //         {actionLabel}
-                //     </Text>
-                // </TouchableOpacity>
                 <Button label={actionLabel} onPress={onAction} />
             )}
         </View>

@@ -14,7 +14,6 @@ export default function CandidateProfile() {
     const [applications, setApplications] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // 🔄 Charger toutes mes candidatures
     const loadApplications = async () => {
         if (!session) return;
 

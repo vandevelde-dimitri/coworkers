@@ -10,7 +10,6 @@ import { useAuth } from "../../contexts/authContext";
 import { useGetUser } from "../../hooks/user/useUsers";
 
 export default function UserScreen() {
-    // useRequireAuth("ProfileStack");
     const route = useRoute();
     const { id } = route.params as { id: string };
     const { data: user } = useGetUser(id);

@@ -8,11 +8,9 @@ export async function getAnnouncementById(
     annonce_id: string,
 ): Promise<AnnonceDetail> {
     try {
-        // 🔒 Récupération session (optionnelle pour le mode invité)
         const { data: sessionData } = await supabase.auth.getSession();
         const userId = sessionData?.session?.user?.id ?? null;
 
-        // 🔒 Récupération annonce + relations
         const { data: annonce, error } = await supabase
             .from("annonces")
             .select(
@@ -41,7 +39,6 @@ export async function getAnnouncementById(
             throw error ?? new Error("Annonce introuvable");
         }
 
-        // 🔎 Cherche la candidature de l'utilisateur connecté (null si invité)
         const myRequest = userId
             ? annonce.participant_requests.find(
                   (r: ParticipantRequest) => r.user_id === userId,
@@ -51,6 +48,6 @@ export async function getAnnouncementById(
         return { ...annonce, myStatus: myRequest?.status ?? null };
     } catch (err) {
         if (__DEV__) console.error("getAnnouncementById error:", err);
-        throw err; // laisse la mutation ou le composant gérer l'erreur
+        throw err;
     }
 }

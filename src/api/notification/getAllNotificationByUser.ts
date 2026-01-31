@@ -6,19 +6,16 @@ export async function getAllNotificationByUser(): Promise<
     NotificationResponse[]
 > {
     try {
-        // 🔹 Récupération session
         const {
             data: { session },
             error: sessionError,
         } = await supabase.auth.getSession();
 
         if (sessionError || !session) {
-            if (__DEV__)
-                console.errorconsole.error("❌ Session error:", sessionError);
+            if (__DEV__) console.error("❌ Session error:", sessionError);
             return [];
         }
 
-        // 🔹 Requête notifications pour le propriétaire
         const { data, error } = await supabase.rpc("get_my_notifications");
 
         if (error) {
@@ -26,7 +23,6 @@ export async function getAllNotificationByUser(): Promise<
             throw error;
         }
 
-        // 🔹 Transformation pour l’écran
         const formatted: NotificationResponse[] = (data ?? []).map(
             (item: NotificationResponse) => {
                 const user = {
@@ -61,7 +57,6 @@ export async function getAllNotificationByUser(): Promise<
     }
 }
 
-// 🔹 Génération message
 function getMessageByStatus(
     status: string,
     annonce_title: string,

@@ -16,7 +16,6 @@ export function useAcceptRequest() {
         }) => AcceptRequest(candidate_id, annonce_id),
 
         onSuccess: (_, variables) => {
-            // 🔄 Rafraîchir les listes concernées
             queryClient.invalidateQueries({
                 queryKey: ["notifications_owner"],
             });
@@ -58,7 +57,6 @@ export function useRemoveParticipant() {
             conversationId: string;
         }) => removeParticipant({ annonceId, participantId, conversationId }),
         onSuccess: (_, variables) => {
-            // 🔄 Rafraîchir les listes concernées
             queryClient.invalidateQueries({
                 queryKey: ["announcement", variables.annonceId],
             });

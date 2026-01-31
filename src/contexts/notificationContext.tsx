@@ -25,7 +25,6 @@ export const NotificationProvider = ({
     useEffect(() => {
         if (!userId) return;
 
-        // 🔹 Charger les notifications initiales
         const loadInitialNotifications = async () => {
             try {
                 const { data } = await supabase.rpc("get_my_notifications");
@@ -38,7 +37,6 @@ export const NotificationProvider = ({
         };
         loadInitialNotifications();
 
-        // 🔹 Realtime listener
         const channel = supabase
             .channel("notifications-global")
             .on(
@@ -70,14 +68,12 @@ export const NotificationProvider = ({
         };
     }, [userId]);
 
-    // 🔹 Gestion de la bulle
     const handleNotification = async (
         request: any,
         event: "INSERT" | "UPDATE",
     ) => {
         if (!userId) return;
 
-        // 🔹 Récupérer le propriétaire de l'annonce si pas dans le payload
         let annonceOwnerId = request.annonce_owner_id;
         if (!annonceOwnerId) {
             const { data: annonceData, error } = await supabase
@@ -100,12 +96,11 @@ export const NotificationProvider = ({
         const isOwner = annonceOwnerId === userId;
         const isCandidate = request.user_id === userId;
 
-        // 🔹 Déclencher la bulle
         if (
-            (event === "INSERT" && isOwner) || // Nouveau candidat → propriétaire
+            (event === "INSERT" && isOwner) ||
             (event === "UPDATE" &&
                 isCandidate &&
-                ["accepted", "refused"].includes(request.status)) // Candidat → status accepté ou refusé
+                ["accepted", "refused"].includes(request.status))
         ) {
             setHasNewNotification(true);
         }
@@ -122,5 +117,4 @@ export const NotificationProvider = ({
     );
 };
 
-// 🔹 Hook pour utiliser le contexte
 export const useNotificationStatus = () => useContext(NotificationContext);

@@ -1,4 +1,3 @@
-// Exemple : src/screens/home/HomeScreen.tsx
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigation } from "@react-navigation/native";
 import * as Linking from "expo-linking";
@@ -24,7 +23,6 @@ export default function ForgotPwdScreen() {
 
     const onSubmit = async (data: { email: string }) => {
         const { email } = data;
-        // On génère l'URL de retour vers l'app
         const redirectTo = Linking.createURL("reset-password");
 
         const { error } = await supabase.auth.resetPasswordForEmail(email, {

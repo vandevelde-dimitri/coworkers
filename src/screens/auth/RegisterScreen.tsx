@@ -44,8 +44,6 @@ export default function RegisterScreen() {
         if (errorAuth) {
             if (__DEV__) console.error("Register error:", errorAuth);
 
-            // ✅ Cas : L'email est déjà utilisé
-            // Supabase renvoie souvent "User already registered"
             if (
                 errorAuth.message.includes("already registered") ||
                 errorAuth.status === 422
@@ -56,14 +54,10 @@ export default function RegisterScreen() {
                     "Cet email est déjà utilisé. Essaie de te connecter ou réinitialise ton mot de passe.",
                 );
             } else {
-                // Autre erreur (ex: mot de passe trop court)
                 showToast("error", "Inscription échouée", errorAuth.message);
             }
             return;
         }
-
-        // La navigation vers Onboarding est automatique via authContext
-        // car session && !profileCompleted déclenche l'affichage d'Onboarding
     };
 
     return (

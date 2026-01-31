@@ -22,7 +22,6 @@ export function useRequireAuth(stackName: string = "HomeStack") {
 
             SecureStore.setItemAsync("redirectTo", JSON.stringify(redirect));
 
-            // Réinitialise la navigation pour éviter la page blanche au retour
             navigation.dispatch(
                 CommonActions.reset({
                     index: 0,
