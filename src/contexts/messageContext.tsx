@@ -1,5 +1,12 @@
 import { useQueryClient } from "@tanstack/react-query";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from "react";
 import { logger } from "../../utils/logger";
 import { supabase } from "../../utils/supabase";
 import { useAuth } from "./authContext";
@@ -8,12 +15,14 @@ type MessageContextType = {
     unreadCount: number;
     unreadConversations: Record<string, boolean>;
     markConversationRead: (conversationId: string) => Promise<void>;
+    setActiveConversation: (conversationId: string | null) => void;
 };
 
 const MessageContext = createContext<MessageContextType>({
     unreadCount: 0,
     unreadConversations: {},
     markConversationRead: async () => {},
+    setActiveConversation: () => {},
 });
 
 export const MessageProvider = ({
@@ -28,6 +37,16 @@ export const MessageProvider = ({
     const [unreadConversations, setUnreadConversations] = useState<
         Record<string, boolean>
     >({});
+
+    // Track la conversation actuellement ouverte
+    const activeConversationRef = useRef<string | null>(null);
+
+    const setActiveConversation = useCallback(
+        (conversationId: string | null) => {
+            activeConversationRef.current = conversationId;
+        },
+        [],
+    );
 
     // ----------------------------------
     // 🔹 LOAD INITIAL UNREAD (BDD)
@@ -70,9 +89,17 @@ export const MessageProvider = ({
                     table: "messages",
                 },
                 (payload) => {
-                    const msg = payload.new;
+                    const msg = payload.new as {
+                        sender_id: string;
+                        conversation_id: string;
+                    };
 
+                    // Ignorer mes propres messages
                     if (msg.sender_id === userId) return;
+
+                    // Ignorer si c'est la conversation actuellement ouverte
+                    if (msg.conversation_id === activeConversationRef.current)
+                        return;
 
                     setUnreadConversations((prev) => ({
                         ...prev,
@@ -124,6 +151,7 @@ export const MessageProvider = ({
                 unreadCount: Object.keys(unreadConversations).length,
                 unreadConversations,
                 markConversationRead,
+                setActiveConversation,
             }}
         >
             {children}

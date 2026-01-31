@@ -14,7 +14,7 @@ const PAGE_SIZE = 50;
 export default function ChatScreen({ route }: any) {
     const { conversationId, title } = route.params;
     const { session } = useAuth();
-    const { markConversationRead } = useMessageStatus();
+    const { markConversationRead, setActiveConversation } = useMessageStatus();
     const flatListRef = useRef<FlatList>(null);
 
     const [messages, setMessages] = useState<any[]>([]);
@@ -22,6 +22,16 @@ export default function ChatScreen({ route }: any) {
     const [loadingMore, setLoadingMore] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const [page, setPage] = useState(0);
+
+    // Tracker la conversation active
+    useFocusEffect(
+        useCallback(() => {
+            setActiveConversation(conversationId);
+            return () => {
+                setActiveConversation(null);
+            };
+        }, [conversationId, setActiveConversation]),
+    );
 
     const transformMessages = (data: any[]) =>
         data.map((m) => ({
