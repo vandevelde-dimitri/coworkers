@@ -1,3 +1,4 @@
+import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, FlatList, Text, View } from "react-native";
 import { supabase } from "../../../utils/supabase";
@@ -98,33 +99,57 @@ export default function ChatScreen({ route }: any) {
     }, [conversationId]);
 
     // ---------------------------
-    // Realtime: ajout direct au state
+    // Realtime: ajout direct au state (seulement quand l'écran est focus)
     // ---------------------------
-    useEffect(() => {
-        if (!conversationId) return;
+    useFocusEffect(
+        useCallback(() => {
+            if (!conversationId) return;
 
-        const channel = supabase
-            .channel(`chat-${conversationId}`)
-            .on(
-                "postgres_changes",
-                {
-                    event: "INSERT",
-                    schema: "public",
-                    table: "messages",
-                    filter: `conversation_id=eq.${conversationId}`,
-                },
-                (payload: any) => {
-                    const newMessage = transformMessages([payload.new])[0];
-                    setMessages((prev) => [newMessage, ...prev]);
-                    markConversationRead(conversationId);
-                },
-            )
-            .subscribe();
+            if (__DEV__) {
+                console.log(
+                    `📡 [${session?.user.id?.slice(0, 8)}] Subscribing to chat-${conversationId}`,
+                );
+            }
 
-        return () => {
-            supabase.removeChannel(channel);
-        };
-    }, [conversationId, session?.user.id]);
+            const channel = supabase
+                .channel(`chat-${conversationId}`)
+                .on(
+                    "postgres_changes",
+                    {
+                        event: "INSERT",
+                        schema: "public",
+                        table: "messages",
+                        filter: `conversation_id=eq.${conversationId}`,
+                    },
+                    (payload: any) => {
+                        if (__DEV__) {
+                            console.log(
+                                `📡 [${session?.user.id?.slice(0, 8)}] Message reçu dans ChatScreen`,
+                            );
+                        }
+                        const newMessage = transformMessages([payload.new])[0];
+                        setMessages((prev) => {
+                            // Éviter les doublons
+                            if (prev.some((m) => m.id === newMessage.id)) {
+                                return prev;
+                            }
+                            return [newMessage, ...prev];
+                        });
+                        markConversationRead(conversationId);
+                    },
+                )
+                .subscribe();
+
+            return () => {
+                if (__DEV__) {
+                    console.log(
+                        `📡 [${session?.user.id?.slice(0, 8)}] Unsubscribing from chat-${conversationId}`,
+                    );
+                }
+                supabase.removeChannel(channel);
+            };
+        }, [conversationId, session?.user.id]),
+    );
 
     // ---------------------------
     // Envoi message

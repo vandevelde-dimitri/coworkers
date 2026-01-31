@@ -97,6 +97,12 @@ export const MessageProvider = ({
     const markConversationRead = async (conversationId: string) => {
         if (!userId) return;
 
+        if (__DEV__) {
+            console.log(
+                `🔴 markConversationRead appelé pour: ${conversationId} par user: ${userId.slice(0, 8)}`,
+            );
+        }
+
         await supabase
             .from("conversation_participants")
             .update({
