@@ -18,7 +18,7 @@ import { Team } from "../../types/enum/team.enum";
 import { EditProfileFormValues } from "../../types/user.interface";
 
 export default function OnboardingScreen() {
-    const { refreshSession } = useAuth();
+    const { session, refreshSession } = useAuth();
     const { data: floors } = useFloorsAll();
     const [step, setStep] = useState(1);
 
@@ -78,20 +78,30 @@ export default function OnboardingScreen() {
         }
 
         const values = getValues();
+        const userId = session?.user.id; // 👈 Plus besoin de getSession() lent
 
-        await supabase.auth.updateUser({
-            data: {
-                profile_completed: true,
-            },
-        });
+        if (!userId) {
+            showToast("error", "Session expirée", "Veuillez vous reconnecter.");
+            return;
+        }
+        try {
+            // 1. D'abord on sauve les données métier (Table users)
+            await updateUser(userId, values);
 
-        await updateUser(values);
-        showToast(
-            "success",
-            "Inscription réussie !",
-            "Un email de confirmation a été envoyé.",
-        );
-        refreshSession();
+            // 2. ENSUITE on marque le profil comme complété dans l'Auth
+            // Cela déclenchera la redirection automatique via ton AuthContext
+            const { error: authError } = await supabase.auth.updateUser({
+                data: { profile_completed: true },
+            });
+
+            if (authError) throw authError;
+
+            showToast("success", "Inscription réussie !");
+            refreshSession();
+        } catch (error) {
+            console.error(error);
+            showToast("error", "Erreur", "Impossible de finaliser le profil.");
+        }
     };
 
     const handlePrev = () => {

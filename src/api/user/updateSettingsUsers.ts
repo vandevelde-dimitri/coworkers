@@ -1,8 +1,6 @@
 import { supabase } from "../../../utils/supabase";
 
 export async function updateSettingUser(body: any, user_id: string) {
-    console.log("body => ", body);
-
     const { data, error } = await supabase
         .from("settings")
         .update(body)

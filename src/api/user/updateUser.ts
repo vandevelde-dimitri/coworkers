@@ -1,13 +1,11 @@
 import { supabase } from "../../../utils/supabase";
 import { EditProfileFormValues } from "../../types/user.interface";
 
-export async function updateUser(values: EditProfileFormValues) {
+export async function updateUser(
+    user_id: string,
+    values: EditProfileFormValues,
+) {
     try {
-        const { data, error: sessionError } = await supabase.auth.getSession();
-        if (sessionError) throw sessionError;
-        if (!data?.session) throw new Error("No active session found");
-        const session = data.session;
-
         const { data: user, error } = await supabase
             .from("users")
             .update({
@@ -18,7 +16,7 @@ export async function updateUser(values: EditProfileFormValues) {
                 team: values.team,
                 contract: values.contract,
             })
-            .eq("id", session.user.id);
+            .eq("id", user_id);
 
         if (error) throw error;
     } catch (error) {

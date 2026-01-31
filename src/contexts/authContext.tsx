@@ -49,8 +49,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         // 2. Écouteur des changements d'Auth (Login, Logout, Token Refresh)
         const {
             data: { subscription: authSubscription },
-        } = supabase.auth.onAuthStateChange((_event, session) => {
-            setSession(session);
+        } = supabase.auth.onAuthStateChange((event, session) => {
+
+            if (event === "SIGNED_OUT" || event === "USER_DELETED") {
+                setSession(null);
+            } else if (session) {
+                setSession(session);
+            }
+
+            setLoading(false); // Sécurité supplémentaire
         });
 
         // 3. Gestion de l'AppState (Unique Listener)

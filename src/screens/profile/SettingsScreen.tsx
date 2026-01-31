@@ -63,8 +63,6 @@ export default function SettingsScreen() {
         },
     });
 
-    console.log("setting => ", settings);
-
     const settingsForm = useForm({
         resolver: yupResolver(settingsSchema),
         values: {

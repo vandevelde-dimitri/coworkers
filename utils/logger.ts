@@ -5,7 +5,6 @@ export const logger = {
     async critical(action: string, error: any, userId?: string) {
         if (__DEV__) {
             console.error(`[CRITICAL] ${action}:`, error);
-            return;
         }
 
         try {

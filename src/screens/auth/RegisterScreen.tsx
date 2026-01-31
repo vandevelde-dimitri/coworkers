@@ -46,26 +46,6 @@ export default function RegisterScreen() {
             return;
         }
 
-        if (userAuth.user) {
-            const { error: errorUser } = await supabase.from("users").upsert(
-                [
-                    {
-                        id: userAuth.user.id,
-                    },
-                ],
-                { onConflict: "id" },
-            );
-
-            if (errorUser) {
-                if (__DEV__)
-                    console.log(
-                        "Erreur création user table:",
-                        errorUser.message,
-                    );
-                return;
-            }
-        }
-
         // La navigation vers Onboarding est automatique via authContext
         // car session && !profileCompleted déclenche l'affichage d'Onboarding
     };
