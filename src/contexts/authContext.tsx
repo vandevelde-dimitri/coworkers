@@ -50,7 +50,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const {
             data: { subscription: authSubscription },
         } = supabase.auth.onAuthStateChange((event, session) => {
-
             if (event === "SIGNED_OUT" || event === "USER_DELETED") {
                 setSession(null);
             } else if (session) {
@@ -83,7 +82,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const { data, error } = await supabase.auth.refreshSession();
 
         if (error) {
-            console.error("refreshSession error", error);
+            if (__DEV__) console.error("refreshSession error", error);
             return;
         }
 

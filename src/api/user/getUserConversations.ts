@@ -50,7 +50,7 @@ export async function getUserConversationsPreview(
         .limit(1, { foreignTable: "conversations.messages" });
 
     if (error) {
-        console.error("Erreur chargement conversations:", error);
+        if (__DEV__) console.error("Erreur chargement conversations:", error);
         throw error;
     }
 

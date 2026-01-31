@@ -46,10 +46,11 @@ export function useUploadAvatar() {
         },
         onError: (error) => {
             if (__DEV__)
-                console.error(
-                    "useUploadAvatar error:",
-                    (error as Error).message,
-                );
+                if (__DEV__)
+                    console.error(
+                        "useUploadAvatar error:",
+                        (error as Error).message,
+                    );
             showToast(
                 "error",
                 "Une erreur est survenue lors de la mise à jour de l'avatar.",

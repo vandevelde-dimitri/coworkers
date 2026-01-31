@@ -12,10 +12,12 @@ export async function getUserRequest(annonceId: string, userId: string) {
         if (error) throw error;
         return data;
     } catch (error) {
-        console.error(
-            "Erreur récupération de la demande de participation :",
-            error,
-        );
+        if (__DEV__)
+            if (__DEV__)
+                console.error(
+                    "Erreur récupération de la demande de participation :",
+                    error,
+                );
         throw error;
     }
 }
@@ -35,7 +37,8 @@ export async function applyToAnnonce(annonceId: string, userId: string) {
         if (error) throw error;
         return data;
     } catch (error) {
-        console.error("Erreur lors de la candidature à l'annonce :", error);
+        if (__DEV__)
+            console.error("Erreur lors de la candidature à l'annonce :", error);
         throw error;
     }
 }
@@ -68,7 +71,11 @@ export async function cancelApplication(
             }
         }
     } catch (error) {
-        console.error("Erreur lors de l'annulation de la candidature :", error);
+        if (__DEV__)
+            console.error(
+                "Erreur lors de l'annulation de la candidature :",
+                error,
+            );
         throw error;
     }
 }

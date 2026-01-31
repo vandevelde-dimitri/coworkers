@@ -37,7 +37,7 @@ export async function getAnnouncementById(
             .single();
 
         if (error || !annonce) {
-            console.error("Erreur récupération annonce :", error);
+            if (__DEV__) console.error("Erreur récupération annonce :", error);
             throw error ?? new Error("Annonce introuvable");
         }
 
@@ -50,7 +50,7 @@ export async function getAnnouncementById(
 
         return { ...annonce, myStatus: myRequest?.status ?? null };
     } catch (err) {
-        console.error("getAnnouncementById error:", err);
+        if (__DEV__) console.error("getAnnouncementById error:", err);
         throw err; // laisse la mutation ou le composant gérer l'erreur
     }
 }

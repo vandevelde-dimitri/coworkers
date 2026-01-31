@@ -79,7 +79,7 @@ export default function ChatScreen({ route }: any) {
                 // Marquer conversation lue
                 markConversationRead(conversationId);
             } catch (err) {
-                console.error("Erreur chargement messages:", err);
+                if (__DEV__) console.error("Erreur chargement messages:", err);
             } finally {
                 setLoading(false);
                 setLoadingMore(false);
@@ -140,7 +140,7 @@ export default function ChatScreen({ route }: any) {
             });
             if (error) throw error;
         } catch (err) {
-            console.error("Erreur envoi message:", err);
+            if (__DEV__) console.error("Erreur envoi message:", err);
         }
     };
 

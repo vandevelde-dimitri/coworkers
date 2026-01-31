@@ -50,7 +50,7 @@ export default function NotificationsScreen() {
     }
 
     if (error) {
-        console.error("Notifications error:", error);
+        if (__DEV__) console.error("Notifications error:", error);
         return (
             <SafeScreen backBtn title="Notifications">
                 <Text>Erreur lors du chargement des notifications.</Text>
@@ -145,7 +145,7 @@ export default function NotificationsScreen() {
                         </TouchableOpacity>
                         <ConfirmModal
                             visible={open}
-                            title="Voulez-vous vraiement refuser ce candidat ?"
+                            title="Voulez-vous vraiment refuser ce candidat ?"
                             description="Cette action est irréversible."
                             confirmLabel="Oui"
                             cancelLabel="Non"

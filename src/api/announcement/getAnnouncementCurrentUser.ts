@@ -47,7 +47,7 @@ export async function getAnnouncementByCurrentUser(): Promise<AnnonceDetail> {
         .maybeSingle();
 
     if (error) {
-        console.error("Error fetching announcement:", error);
+        if (__DEV__) console.error("Error fetching announcement:", error);
         throw error;
     }
 

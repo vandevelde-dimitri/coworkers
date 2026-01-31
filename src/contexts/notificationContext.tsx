@@ -33,7 +33,7 @@ export const NotificationProvider = ({
                     setHasNewNotification(true);
                 }
             } catch (err) {
-                console.error("Erreur load notifications", err);
+                if (__DEV__) console.error("Erreur load notifications", err);
             }
         };
         loadInitialNotifications();
@@ -87,10 +87,11 @@ export const NotificationProvider = ({
                 .single();
 
             if (error || !annonceData) {
-                console.error(
-                    "[NotificationContext] failed to fetch annonce:",
-                    error,
-                );
+                if (__DEV__)
+                    console.error(
+                        "[NotificationContext] failed to fetch annonce:",
+                        error,
+                    );
                 return;
             }
             annonceOwnerId = annonceData.user_id;
@@ -98,7 +99,6 @@ export const NotificationProvider = ({
 
         const isOwner = annonceOwnerId === userId;
         const isCandidate = request.user_id === userId;
-
 
         // 🔹 Déclencher la bulle
         if (

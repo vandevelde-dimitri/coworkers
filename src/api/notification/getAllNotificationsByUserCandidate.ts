@@ -13,7 +13,7 @@ export async function getAllNotificationsByUserCandidate(): Promise<
         } = await supabase.auth.getSession();
 
         if (sessionError || !session) {
-            console.error("❌ Session error:", sessionError);
+            if (__DEV__) console.error("❌ Session error:", sessionError);
             return [];
         }
 
@@ -23,7 +23,7 @@ export async function getAllNotificationsByUserCandidate(): Promise<
         );
 
         if (error) {
-            console.error("Error fetching notifications:", error);
+            if (__DEV__) console.error("Error fetching notifications:", error);
             throw error;
         }
 
@@ -48,7 +48,11 @@ export async function getAllNotificationsByUserCandidate(): Promise<
         return formatted;
     } catch (error) {
         if (__DEV__)
-            console.error("getAllNotificationsByUserCandidate error:", error);
+            if (__DEV__)
+                console.error(
+                    "getAllNotificationsByUserCandidate error:",
+                    error,
+                );
         throw error;
     }
 }

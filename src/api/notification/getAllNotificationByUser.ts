@@ -13,7 +13,8 @@ export async function getAllNotificationByUser(): Promise<
         } = await supabase.auth.getSession();
 
         if (sessionError || !session) {
-            console.error("❌ Session error:", sessionError);
+            if (__DEV__)
+                console.errorconsole.error("❌ Session error:", sessionError);
             return [];
         }
 
@@ -21,7 +22,7 @@ export async function getAllNotificationByUser(): Promise<
         const { data, error } = await supabase.rpc("get_my_notifications");
 
         if (error) {
-            console.error("Error fetching notifications:", error);
+            if (__DEV__) console.error("Error fetching notifications:", error);
             throw error;
         }
 

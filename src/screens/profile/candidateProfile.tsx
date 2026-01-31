@@ -38,7 +38,8 @@ export default function CandidateProfile() {
             .order("created_at", { ascending: false });
 
         if (error) {
-            console.error("Erreur chargement candidatures :", error);
+            if (__DEV__)
+                console.error("Erreur chargement candidatures :", error);
             setApplications([]);
         } else {
             setApplications(data ?? []);

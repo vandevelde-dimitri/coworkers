@@ -28,7 +28,7 @@ export async function deleteAccount() {
 
         return true;
     } catch (err) {
-        console.error("Delete account error:", err);
+        if (__DEV__) console.error("Delete account error:", err);
         throw err;
     }
 }

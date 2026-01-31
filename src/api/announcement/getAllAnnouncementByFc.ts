@@ -14,7 +14,9 @@ export async function getAllAnnouncementByFc(
         p_offset: (page - 1) * pageSize,
     });
 
-    if (error) console.error("getAllAnnouncementByFc error:", error);
+    if (error) {
+        if (__DEV__) console.error("getAllAnnouncementByFc error:", error);
+    }
 
     return {
         data: (data as AnnouncementWithUser[]) || [],

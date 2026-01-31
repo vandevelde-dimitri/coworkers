@@ -99,7 +99,7 @@ export default function OnboardingScreen() {
             showToast("success", "Inscription réussie !");
             refreshSession();
         } catch (error) {
-            console.error(error);
+            if (__DEV__) console.error(error);
             showToast("error", "Erreur", "Impossible de finaliser le profil.");
         }
     };

@@ -30,7 +30,7 @@ serve(async (req) => {
         );
 
         if (dbError) {
-            console.error("DB Cleanup Error:", dbError);
+            if (__DEV__) console.error("DB Cleanup Error:", dbError);
             throw new Error("Erreur lors du nettoyage des données");
         }
 

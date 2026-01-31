@@ -124,7 +124,7 @@ export function useDeleteAnnouncement() {
             queryClient.invalidateQueries({
                 queryKey: ["notifications_owner"],
             });
-            showToast("success", "Votre annonce à était supprimé !");
+            showToast("success", "Votre annonce a été supprimé !");
         },
         onError: () => {
             showToast("error", "Erreur lors de la suppression de l'annonce");
