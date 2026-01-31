@@ -45,14 +45,14 @@ export default function EditProfileScreen() {
             .mixed<Team>()
             .oneOf(
                 Object.values(Team),
-                "Veuillez sélectionner une équipe valide"
+                "Veuillez sélectionner une équipe valide",
             )
             .required("Une équipe est requis"),
         contract: yup
             .mixed<Contract>()
             .oneOf(
                 Object.values(Contract),
-                "Veuillez sélectionner un type de contrat valide"
+                "Veuillez sélectionner un type de contrat valide",
             )
             .required("Le type de contrat est requis"),
     });
@@ -75,6 +75,8 @@ export default function EditProfileScreen() {
     });
 
     const onSave: SubmitHandler<EditProfileFormValues> = (data) => {
+        console.log("data", data);
+
         updateUser({ body: data });
         reset();
         navigation.goBack();

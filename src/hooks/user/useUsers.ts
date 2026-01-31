@@ -36,7 +36,6 @@ export function useUploadAvatar() {
             uploadUserAvatar(imageUri),
 
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["current-user"] });
             queryClient.invalidateQueries({
                 queryKey: ["currentUser", session?.user?.id],
             });
@@ -59,13 +58,18 @@ export function useUploadAvatar() {
 }
 export function useUpdateUser() {
     const queryClient = useQueryClient();
+    const { session } = useAuth();
+
+    const user_id = session?.user?.id;
 
     return useMutation({
         mutationFn: ({ body }: { body: EditProfileFormValues }) =>
-            updateUser(body),
+            updateUser(user_id, body),
 
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["current-user"] });
+            queryClient.invalidateQueries({
+                queryKey: ["currentUser", user_id],
+            });
             queryClient.invalidateQueries({ queryKey: ["announcements"] });
             showToast("success", "Profil mis à jour avec succès !");
         },
