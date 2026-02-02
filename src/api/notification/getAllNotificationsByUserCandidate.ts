@@ -25,6 +25,8 @@ export async function getAllNotificationsByUserCandidate(): Promise<
             throw error;
         }
 
+        console.log("data notification", data);
+
         const formatted: NotificationResponse[] = (data ?? []).map(
             (item: NotificationResponse) => {
                 return {
@@ -59,7 +61,7 @@ function getMessageByStatus(status: string, annonce_title: string) {
         case StatusNotification.ACCEPTED:
             return `Votre candidature à ${annonce_title} a été acceptée`;
 
-        case StatusNotification.REJECTED:
+        case StatusNotification.REFUSED:
             return `Votre candidature à "${annonce_title}" a été refusée`;
 
         case StatusNotification.DELETE:

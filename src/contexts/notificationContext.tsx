@@ -4,12 +4,12 @@ import { useAuth } from "./authContext";
 
 type NotificationContextType = {
     hasNewNotification: boolean;
-    clearNotifications: () => void;
+    setHasNewNotification: (val: boolean) => void;
 };
 
 const NotificationContext = createContext<NotificationContextType>({
     hasNewNotification: false,
-    clearNotifications: () => {},
+    setHasNewNotification: () => {},
 });
 
 export const NotificationProvider = ({
@@ -19,46 +19,45 @@ export const NotificationProvider = ({
 }) => {
     const { session } = useAuth();
     const userId = session?.user.id;
-
     const [hasNewNotification, setHasNewNotification] = useState(false);
 
     useEffect(() => {
         if (!userId) return;
 
-        const loadInitialNotifications = async () => {
-            try {
-                const { data } = await supabase.rpc("get_my_notifications");
-                if (data && data.length > 0) {
-                    setHasNewNotification(true);
-                }
-            } catch (err) {
-                if (__DEV__) console.error("Erreur load notifications", err);
-            }
+        // 1. Vérification initiale
+        const checkUnread = async () => {
+            const { data } = await supabase.rpc("get_my_notifications");
+            if (data && data.length > 0) setHasNewNotification(true);
         };
-        loadInitialNotifications();
+        checkUnread();
 
+        // 2. Realtime : On écoute les changements sur participant_requests
         const channel = supabase
-            .channel("notifications-global")
+            .channel(`user-notifications-${userId}`)
             .on(
                 "postgres_changes",
-                {
-                    event: "INSERT",
-                    schema: "public",
-                    table: "participant_requests",
-                },
-                (payload) => {
-                    handleNotification(payload.new, "INSERT");
-                },
-            )
-            .on(
-                "postgres_changes",
-                {
-                    event: "UPDATE",
-                    schema: "public",
-                    table: "participant_requests",
-                },
-                (payload) => {
-                    handleNotification(payload.new, "UPDATE");
+                { event: "*", schema: "public", table: "participant_requests" },
+                async (payload) => {
+                    const { new: newRecord, eventType } = payload;
+
+                    // Cas A : Quelqu'un postule à MON annonce
+                    const { data: annonce } = await supabase
+                        .from("annonces")
+                        .select("user_id")
+                        .eq("id", newRecord.annonce_id)
+                        .single();
+
+                    const isOwner = annonce?.user_id === userId;
+                    const isMeCandidate = newRecord.user_id === userId;
+
+                    if (
+                        (eventType === "INSERT" && isOwner) ||
+                        (eventType === "UPDATE" &&
+                            isMeCandidate &&
+                            ["accepted", "refused"].includes(newRecord.status))
+                    ) {
+                        setHasNewNotification(true);
+                    }
                 },
             )
             .subscribe();
@@ -68,49 +67,9 @@ export const NotificationProvider = ({
         };
     }, [userId]);
 
-    const handleNotification = async (
-        request: any,
-        event: "INSERT" | "UPDATE",
-    ) => {
-        if (!userId) return;
-
-        let annonceOwnerId = request.annonce_owner_id;
-        if (!annonceOwnerId) {
-            const { data: annonceData, error } = await supabase
-                .from("annonces")
-                .select("user_id")
-                .eq("id", request.annonce_id)
-                .single();
-
-            if (error || !annonceData) {
-                if (__DEV__)
-                    console.error(
-                        "[NotificationContext] failed to fetch annonce:",
-                        error,
-                    );
-                return;
-            }
-            annonceOwnerId = annonceData.user_id;
-        }
-
-        const isOwner = annonceOwnerId === userId;
-        const isCandidate = request.user_id === userId;
-
-        if (
-            (event === "INSERT" && isOwner) ||
-            (event === "UPDATE" &&
-                isCandidate &&
-                ["accepted", "refused"].includes(request.status))
-        ) {
-            setHasNewNotification(true);
-        }
-    };
-
-    const clearNotifications = () => setHasNewNotification(false);
-
     return (
         <NotificationContext.Provider
-            value={{ hasNewNotification, clearNotifications }}
+            value={{ hasNewNotification, setHasNewNotification }}
         >
             {children}
         </NotificationContext.Provider>

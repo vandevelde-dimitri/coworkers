@@ -23,8 +23,9 @@ export async function getAllNotificationByUser(): Promise<
             throw error;
         }
 
-        const formatted: NotificationResponse[] = (data ?? []).map(
-            (item: NotificationResponse) => {
+        const formatted: NotificationResponse[] = (data ?? [])
+            .filter((item: any) => item.status === StatusNotification.PENDING)
+            .map((item: NotificationResponse) => {
                 const user = {
                     firstname: item.candidate_firstname,
                     lastname: item.candidate_lastname,
@@ -47,8 +48,7 @@ export async function getAllNotificationByUser(): Promise<
                     ),
                     created_at: item.created_at,
                 };
-            },
-        );
+            });
 
         return formatted;
     } catch (error) {
@@ -60,28 +60,10 @@ export async function getAllNotificationByUser(): Promise<
 function getMessageByStatus(
     status: string,
     annonce_title: string,
-    user: {
-        firstname: string;
-        lastname: string;
-    },
+    user: { firstname: string; lastname: string },
 ) {
-    switch (status) {
-        case StatusNotification.PENDING:
-            return `${user.firstname} ${user.lastname} a postulé à votre annonce "${annonce_title}"`;
-
-        case StatusNotification.ACCEPTED:
-            return `Vous avez accepté une candidature pour "${annonce_title}"`;
-
-        case StatusNotification.REJECTED:
-            return `Vous avez refusé une candidature pour "${annonce_title}"`;
-
-        case StatusNotification.DELETE:
-            return `Vous avez supprimée l'annonce "${annonce_title}"`;
-
-        case StatusNotification.REMOVE:
-            return `Vous avez retiré ${user.firstname} ${user.lastname} de l'annonce "${annonce_title}"`;
-
-        default:
-            return "Aucune notification disponible.";
+    if (status === StatusNotification.PENDING) {
+        return `${user.firstname} souhaite rejoindre votre activité "${annonce_title}"`;
     }
+    return "Notification archivée"; // Au cas où
 }

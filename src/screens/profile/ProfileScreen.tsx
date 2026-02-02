@@ -25,7 +25,7 @@ import { ProfileStackParamList } from "../../types/navigation/profileStackType";
 export default function ProfileScreen() {
     useRequireAuth("ProfileStack");
     const { data: user } = useCurrentUser();
-    const { hasNewNotification, clearNotifications } = useNotificationStatus();
+    const { hasNewNotification } = useNotificationStatus();
     const { session } = useAuth();
     const navigation = useNavigation<NavigationProp<ProfileStackParamList>>();
     const formatedDate = formatDate(session?.user.created_at || "");
@@ -35,7 +35,6 @@ export default function ProfileScreen() {
         <>
             <TouchableOpacity
                 onPress={() => {
-                    clearNotifications();
                     navigation.navigate("NotificationsScreen");
                 }}
             >
