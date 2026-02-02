@@ -78,6 +78,9 @@ function getMessageByStatus(
         case StatusNotification.DELETE:
             return `Vous avez supprimée l'annonce "${annonce_title}"`;
 
+        case StatusNotification.REMOVE:
+            return `Vous avez retiré ${user.firstname} ${user.lastname} de l'annonce "${annonce_title}"`;
+
         default:
             return "Aucune notification disponible.";
     }

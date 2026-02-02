@@ -3,4 +3,5 @@ export enum StatusNotification {
     ACCEPTED = "accepted",
     REJECTED = "refused",
     DELETE = "announce_deleted",
+    REMOVE = "removed_by_owner",
 }

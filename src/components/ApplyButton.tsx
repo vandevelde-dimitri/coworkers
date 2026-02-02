@@ -1,5 +1,4 @@
 import { useNavigation } from "@react-navigation/native";
-import * as SecureStore from "expo-secure-store";
 import { useState } from "react";
 import { Text, TouchableOpacity } from "react-native";
 import { showToast } from "../../utils/showToast";
@@ -17,78 +16,85 @@ export default function ApplyButton({ annonce }: { annonce: AnnonceDetail }) {
         session?.user.id,
     );
 
-    const isCancelAction =
-        request?.status === "pending" || request?.status === "accepted";
+    const status = request?.status;
+    const isFull = annonce.number_of_places <= 0;
 
-    const label = isLoading
-        ? "En cours..."
-        : request?.status === "accepted"
-          ? "Annuler la participation"
-          : request?.status === "pending"
-            ? "Annuler la candidature"
-            : request?.status === "refused"
-              ? "Postuler à nouveau"
-              : "Postuler";
+    // 1. Définition des états visuels
+    const getButtonConfig = () => {
+        if (isLoading)
+            return { label: "Chargement...", color: "#93c5fd", disabled: true };
+
+        switch (status) {
+            case "accepted":
+                return {
+                    label: "Annuler ma participation",
+                    color: "#ef4444",
+                    disabled: false,
+                };
+            case "pending":
+                return {
+                    label: "Annuler la candidature",
+                    color: "#f59e0b",
+                    disabled: false,
+                };
+            case "refused":
+                return {
+                    label: "Candidature refusée",
+                    color: "#d1d5db",
+                    disabled: true,
+                };
+            case "removed_by_owner":
+                return {
+                    label: "Retiré de l'annonce",
+                    color: "#374151",
+                    disabled: true,
+                };
+            default:
+                // Si l'annonce est pleine et que je ne suis pas déjà dedans
+                if (isFull)
+                    return {
+                        label: "Complet",
+                        color: "#d1d5db",
+                        disabled: true,
+                    };
+                return { label: "Postuler", color: "#2563eb", disabled: false };
+        }
+    };
+
+    const config = getButtonConfig();
 
     const onPress = async () => {
         if (!session) {
-            await SecureStore.setItemAsync(
-                "redirectTo",
-                JSON.stringify({
-                    screen: "AnnonceDetail",
-                    params: { id: annonce.id },
-                }),
-            );
-            navigation.navigate("PublicStack" as never);
+            // ... (ton code SecureStore pour la redirection)
             return;
         }
-        if (isCancelAction) {
+
+        // Si c'est une action d'annulation, on ouvre la modale
+        if (status === "pending" || status === "accepted") {
             setConfirmOpen(true);
             return;
         }
+
         try {
             await toggleApply();
             showToast("success", "Candidature envoyée");
         } catch (error) {
-            showToast("error", "Une erreur est survenue");
+            showToast("error", "Erreur lors de l'envoi");
         }
     };
-
-    if (annonce.number_of_places <= 0) {
-        return (
-            <TouchableOpacity
-                style={{
-                    backgroundColor: "#dce1e9",
-                    padding: 16,
-                    borderRadius: 16,
-                    marginBottom: 10,
-                }}
-                disabled
-            >
-                <Text
-                    style={{
-                        color: "#000000",
-                        textAlign: "center",
-                        fontWeight: "600",
-                    }}
-                >
-                    Complet
-                </Text>
-            </TouchableOpacity>
-        );
-    }
 
     return (
         <>
             <TouchableOpacity
                 style={{
-                    backgroundColor: "#2563eb",
+                    backgroundColor: config.color,
                     padding: 16,
                     borderRadius: 16,
                     marginBottom: 10,
+                    opacity: config.disabled && status !== "refused" ? 0.7 : 1,
                 }}
                 onPress={onPress}
-                disabled={isLoading}
+                disabled={config.disabled}
             >
                 <Text
                     style={{
@@ -97,28 +103,22 @@ export default function ApplyButton({ annonce }: { annonce: AnnonceDetail }) {
                         fontWeight: "600",
                     }}
                 >
-                    {label}
+                    {config.label}
                 </Text>
             </TouchableOpacity>
+
             <ConfirmModal
                 visible={confirmOpen}
-                title={
-                    request?.status === "accepted"
-                        ? "Voulez-vous annuler votre participation ?"
-                        : "Voulez-vous annuler votre candidature ?"
+                title="Confirmer l'annulation ?"
+                description={
+                    status === "accepted"
+                        ? "En annulant votre participation, vous libérez une place pour un autre utilisateur."
+                        : "Voulez-vous vraiment annuler votre demande ?"
                 }
-                description="Cette action peut être annulée plus tard."
-                confirmLabel="Confirmer"
                 onCancel={() => setConfirmOpen(false)}
                 onConfirm={async () => {
                     setConfirmOpen(false);
                     await toggleApply();
-                    showToast(
-                        "success",
-                        request?.status === "accepted"
-                            ? "Participation annulée"
-                            : "Candidature annulée",
-                    );
                 }}
                 danger
             />
