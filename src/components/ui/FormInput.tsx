@@ -1,6 +1,7 @@
-import React from "react";
+import { Ionicons } from "@expo/vector-icons"; // Inclus par défaut dans Expo
+import React, { useState } from "react";
 import { Control, Controller } from "react-hook-form";
-import { Text, TextInput } from "react-native";
+import { Text, TextInput, TouchableOpacity, View } from "react-native";
 
 type InputType = "text" | "number" | "textarea" | "password" | "email";
 
@@ -21,6 +22,9 @@ export const FormInput: React.FC<FormInputProps> = ({
     type = "text",
     rules,
 }) => {
+    // État pour gérer la visibilité du mot de passe
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
     const getKeyboardType = () => {
         switch (type) {
             case "number":
@@ -41,7 +45,7 @@ export const FormInput: React.FC<FormInputProps> = ({
                 field: { onChange, onBlur, value },
                 fieldState: { error },
             }) => (
-                <>
+                <View style={{ marginBottom: 15 }}>
                     <Text
                         style={{
                             fontWeight: "600",
@@ -52,46 +56,79 @@ export const FormInput: React.FC<FormInputProps> = ({
                         {label}
                     </Text>
 
-                    <TextInput
-                        style={[
-                            {
-                                borderWidth: 1,
-                                borderRadius: 12,
-                                padding: 12,
-                                backgroundColor: "#f9fafb",
-                                marginBottom: 8,
-                                fontSize: 16,
-                                borderColor: error ? "red" : "#e5e7eb",
-                                minHeight: type === "textarea" ? 100 : 40,
-                            },
-                        ]}
-                        placeholder={placeholder}
-                        value={value?.toString() ?? ""}
-                        onBlur={onBlur}
-                        onChangeText={(text) => {
-                            if (type === "number") {
-                                onChange(Number(text));
-                            } else {
-                                onChange(text);
-                            }
+                    <View
+                        style={{
+                            position: "relative",
+                            justifyContent: "center",
                         }}
-                        secureTextEntry={type === "password"}
-                        keyboardType={getKeyboardType()}
-                        autoCapitalize={
-                            type === "email" || type === "password"
-                                ? "none"
-                                : "sentences"
-                        }
-                        autoCorrect={type !== "email" && type !== "password"}
-                        multiline={type === "textarea"}
-                    />
+                    >
+                        <TextInput
+                            style={[
+                                {
+                                    borderWidth: 1,
+                                    borderRadius: 12,
+                                    padding: 12,
+                                    paddingRight: type === "password" ? 45 : 12, // On laisse de la place pour l'icône
+                                    backgroundColor: "#f9fafb",
+                                    fontSize: 16,
+                                    borderColor: error ? "red" : "#e5e7eb",
+                                    minHeight: type === "textarea" ? 100 : 48,
+                                },
+                            ]}
+                            placeholder={placeholder}
+                            value={value?.toString() ?? ""}
+                            onBlur={onBlur}
+                            onChangeText={(text) => {
+                                if (type === "number") {
+                                    onChange(Number(text));
+                                } else {
+                                    onChange(text);
+                                }
+                            }}
+                            // On gère le masquage dynamiquement
+                            secureTextEntry={
+                                type === "password" && !isPasswordVisible
+                            }
+                            keyboardType={getKeyboardType()}
+                            autoCapitalize={
+                                type === "email" || type === "password"
+                                    ? "none"
+                                    : "sentences"
+                            }
+                            autoCorrect={
+                                type !== "email" && type !== "password"
+                            }
+                            multiline={type === "textarea"}
+                        />
+
+                        {/* Icône pour afficher/masquer le mot de passe */}
+                        {type === "password" && (
+                            <TouchableOpacity
+                                style={{
+                                    position: "absolute",
+                                    right: 15,
+                                    height: "100%",
+                                    justifyContent: "center",
+                                }}
+                                onPress={() =>
+                                    setIsPasswordVisible(!isPasswordVisible)
+                                }
+                            >
+                                <Ionicons
+                                    name={isPasswordVisible ? "eye-off" : "eye"}
+                                    size={20}
+                                    color="#6b7280"
+                                />
+                            </TouchableOpacity>
+                        )}
+                    </View>
 
                     {error && (
-                        <Text style={{ color: "red", paddingBottom: 12 }}>
+                        <Text style={{ color: "red", marginTop: 4 }}>
                             {error.message}
                         </Text>
                     )}
-                </>
+                </View>
             )}
         />
     );
