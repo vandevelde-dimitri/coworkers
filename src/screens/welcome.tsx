@@ -29,7 +29,7 @@ export default function WelcomeScreen() {
             <View style={{ marginBottom: 32, alignItems: "center" }}>
                 <Image
                     source={require("../../assets/logo.png")}
-                    style={{ width: 180, height: 180, marginBottom: 16 }}
+                    style={{ width: 220, height: 220, marginBottom: 16 }}
                     resizeMode="contain"
                 />
                 <Text

@@ -1,6 +1,6 @@
 {
     "expo": {
-        "name": "coworkers",
+        "name": "Coworkers",
         "slug": "coworkers",
         "version": "1.0.0",
         "orientation": "portrait",
@@ -9,9 +9,9 @@
         "newArchEnabled": true,
         "scheme": "com.coworkersapp",
         "splash": {
-            "image": "./assets/splash-icon.png",
+            "image": "./assets/splash.png",
             "resizeMode": "contain",
-            "backgroundColor": "#ffffff"
+            "backgroundColor": "#1e3a8a"
         },
         "ios": {
             "supportsTablet": true,
@@ -26,7 +26,7 @@
         "android": {
             "adaptiveIcon": {
                 "foregroundImage": "./assets/adaptive-icon.png",
-                "backgroundColor": "#ffffff"
+                "backgroundColor": "#1e3a8a"
             },
             "edgeToEdgeEnabled": true,
             "predictiveBackGestureEnabled": false,
