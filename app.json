@@ -33,7 +33,8 @@
             "permissions": [
                 "CAMERA",
                 "READ_EXTERNAL_STORAGE",
-                "WRITE_EXTERNAL_STORAGE"
+                "WRITE_EXTERNAL_STORAGE",
+                "android.permission.CAMERA"
             ],
             "package": "com.dimitrivandevelde.coworkers",
             "versionCode": 1
@@ -50,6 +51,12 @@
                     "recordAudioAndroid": false
                 }
             ]
-        ]
+        ],
+        "extra": {
+            "eas": {
+                "projectId": "2c79308a-1bc8-42ed-96d8-252ef7d9214d"
+            }
+        },
+        "owner": "protoxine"
     }
 }
