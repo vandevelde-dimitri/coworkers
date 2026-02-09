@@ -1,6 +1,6 @@
+import { logger } from "@/utils/logger";
 import { UpdateUserPayload } from "../../../domain/entities/user/User";
 import { IUserRepository } from "../../../domain/repositories/UserRepository";
-import { logger } from "../../../utils/logger";
 
 export class UpdateUserProfileUseCase {
     constructor(private userRepo: IUserRepository) {}

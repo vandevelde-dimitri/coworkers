@@ -1,10 +1,10 @@
+import { logger } from "@/utils/logger";
 import {
     Announcement,
     CreateAnnouncementPayload,
 } from "../../../domain/entities/announcement/Announcement";
 import { IAnnouncementRepository } from "../../../domain/repositories/AnnouncementRepository";
 import { IMessagingRepository } from "../../../domain/repositories/MessagingRepository";
-import { logger } from "../../../utils/logger";
 
 export class CreateAnnouncementUseCase {
     constructor(

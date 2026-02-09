@@ -1,6 +1,6 @@
+import { logger } from "@/utils/logger";
 import { UpdateAnnouncementPayload } from "../../../domain/entities/announcement/Announcement";
 import { IAnnouncementRepository } from "../../../domain/repositories/AnnouncementRepository";
-import { logger } from "../../../utils/logger";
 
 export class UpdateAnnouncementUseCase {
     constructor(private announcementRepo: IAnnouncementRepository) {}

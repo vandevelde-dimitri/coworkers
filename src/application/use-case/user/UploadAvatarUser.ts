@@ -1,6 +1,6 @@
+import { convertToWebp } from "@/utils/convertToWebp";
+import { logger } from "@/utils/logger";
 import { IUserRepository } from "../../../domain/repositories/UserRepository";
-import { convertToWebp } from "../../../utils/convertToWebp";
-import { logger } from "../../../utils/logger";
 
 export class UpdateAvatarUserUseCase {
     constructor(private userRepo: IUserRepository) {}
@@ -13,8 +13,11 @@ export class UpdateAvatarUserUseCase {
 
             await this.userRepo.updateImageProfile(avatarUrl);
         } catch (error) {
-            // if (__DEV__)
-            console.error("Erreur lors de la mise à jour de l'avatar", error);
+            if (__DEV__)
+                console.error(
+                    "Erreur lors de la mise à jour de l'avatar",
+                    error,
+                );
             const userId = await this.userRepo.getCurrentSessionId();
             logger.critical(
                 "ERR_USR_UPDATE_AVATAR",
