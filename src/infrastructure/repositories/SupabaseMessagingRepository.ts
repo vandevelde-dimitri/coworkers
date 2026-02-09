@@ -1,4 +1,4 @@
-import { supabase } from "@/utils/supabase";
+import { supabase } from "@/src/infrastructure/supabase";
 import { IMessagingRepository } from "../../domain/repositories/MessagingRepository";
 
 export class SupabaseMessagingRepository implements IMessagingRepository {

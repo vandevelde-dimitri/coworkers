@@ -1,4 +1,4 @@
-import { supabase } from "@/utils/supabase";
+import { supabase } from "@/src/infrastructure/supabase";
 import { uriToArrayBuffer } from "@/utils/uriToArrayBuffer";
 import {
     UpdateUserPayload,

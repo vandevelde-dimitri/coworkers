@@ -1,5 +1,5 @@
 import { Platform } from "react-native";
-import { supabase } from "./supabase";
+import { supabase } from "../src/infrastructure/supabase";
 
 export const logger = {
     async critical(
