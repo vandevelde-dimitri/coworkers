@@ -7,7 +7,7 @@ import {
     ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
@@ -56,31 +56,24 @@ export default function RootLayout() {
 function RootLayoutNav() {
     const colorScheme = useColorScheme();
     const { session, loading } = useAuth();
+    const router = useRouter();
 
-    const isLoggedIn = !!session;
-
-    // Show a loading screen while checking the auth state.
-    if (loading) {
-        return null;
-    }
-
+    useEffect(() => {
+        if (!loading) {
+            if (session) {
+                router.replace("/(tabs)");
+            } else {
+                router.replace("/(auth)/welcome");
+            }
+        }
+    }, [session, loading]);
     return (
         <ThemeProvider
             value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
         >
             <Stack screenOptions={{ headerShown: false }}>
-                <Stack.Protected guard={isLoggedIn}>
-                    <Stack.Screen name="(tabs)/add" />
-                    <Stack.Screen name="(tabs)/messaging" />
-                    <Stack.Screen name="(tabs)/profile" />
-                    <Stack.Screen name="(tabs)/travel" />
-                </Stack.Protected>
-                <Stack.Protected guard={!isLoggedIn}>
-                    <Stack.Screen name="(auth)/welcome" />
-                    <Stack.Screen name="(auth)/login" />
-                    <Stack.Screen name="(auth)/register" />
-                    <Stack.Screen name="(tabs)/index" />
-                </Stack.Protected>
+                <Stack.Screen name="(auth)" />
+                <Stack.Screen name="(tabs)" />
             </Stack>
         </ThemeProvider>
     );

@@ -1,9 +1,10 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Tabs } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
 import React from "react";
 
 import { useColorScheme } from "@/components/useColorScheme";
 import Colors from "@/constants/Colors";
+import { useAuth } from "@/src/presentation/hooks/authContext";
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -14,14 +15,20 @@ function TabBarIcon(props: {
 }
 
 export default function TabLayout() {
+    const { session } = useAuth();
+    const router = useRouter();
+    const isLoggedIn = !!session;
     const colorScheme = useColorScheme();
-
+    const protectedAction = (e: any) => {
+        if (!isLoggedIn) {
+            e.preventDefault();
+            router.push("/(auth)/welcome");
+        }
+    };
     return (
         <Tabs
             screenOptions={{
                 tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-                // Disable the static render of the header on web
-                // to prevent a hydration error in React Navigation v6.
                 headerShown: false,
             }}
         >
@@ -42,6 +49,7 @@ export default function TabLayout() {
                         <TabBarIcon name="car" color={color} />
                     ),
                 }}
+                listeners={{ tabPress: protectedAction }}
             />
             <Tabs.Screen
                 name="add"
@@ -51,6 +59,7 @@ export default function TabLayout() {
                         <TabBarIcon name="plus-circle" color={color} />
                     ),
                 }}
+                listeners={{ tabPress: protectedAction }}
             />
             <Tabs.Screen
                 name="messaging"
@@ -60,6 +69,7 @@ export default function TabLayout() {
                         <TabBarIcon name="envelope" color={color} />
                     ),
                 }}
+                listeners={{ tabPress: protectedAction }}
             />
             <Tabs.Screen
                 name="profile"
@@ -69,6 +79,7 @@ export default function TabLayout() {
                         <TabBarIcon name="user" color={color} />
                     ),
                 }}
+                listeners={{ tabPress: protectedAction }}
             />
         </Tabs>
     );
