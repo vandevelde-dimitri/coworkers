@@ -1,10 +1,10 @@
-import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { CurvedBottomTabs } from "@/components/ui/base/curved-bottom-tabs";
+import { useAuth } from "@/src/presentation/hooks/authContext";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { Tabs, useRouter } from "expo-router";
 import React from "react";
-
-import { useColorScheme } from "@/components/useColorScheme";
-import Colors from "@/constants/Colors";
-import { useAuth } from "@/src/presentation/hooks/authContext";
+import { useColorScheme } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -25,62 +25,95 @@ export default function TabLayout() {
             router.push("/(auth)/welcome");
         }
     };
+
     return (
-        <Tabs
-            screenOptions={{
-                tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-                headerShown: false,
-            }}
-        >
-            <Tabs.Screen
-                name="index"
-                options={{
-                    title: "Accueil",
-                    tabBarIcon: ({ color }) => (
-                        <TabBarIcon name="home" color={color} />
-                    ),
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <Tabs
+                tabBar={(props) => <CurvedBottomTabs {...props} />}
+                screenOptions={{
+                    headerShown: false,
                 }}
-            />
-            <Tabs.Screen
-                name="travel"
-                options={{
-                    title: "Mes trajets",
-                    tabBarIcon: ({ color }) => (
-                        <TabBarIcon name="car" color={color} />
-                    ),
-                }}
-                listeners={{ tabPress: protectedAction }}
-            />
-            <Tabs.Screen
-                name="add"
-                options={{
-                    title: "add",
-                    tabBarIcon: ({ color }) => (
-                        <TabBarIcon name="plus-circle" color={color} />
-                    ),
-                }}
-                listeners={{ tabPress: protectedAction }}
-            />
-            <Tabs.Screen
-                name="messaging"
-                options={{
-                    title: "Messages",
-                    tabBarIcon: ({ color }) => (
-                        <TabBarIcon name="envelope" color={color} />
-                    ),
-                }}
-                listeners={{ tabPress: protectedAction }}
-            />
-            <Tabs.Screen
-                name="profile"
-                options={{
-                    title: "Profile",
-                    tabBarIcon: ({ color }) => (
-                        <TabBarIcon name="user" color={color} />
-                    ),
-                }}
-                listeners={{ tabPress: protectedAction }}
-            />
-        </Tabs>
+            >
+                <Tabs.Screen
+                    name="index"
+                    options={{
+                        title: "Acceuil",
+
+                        tabBarIcon: ({ focused, color, size }) => (
+                            <Ionicons
+                                name={focused ? "home" : "home-outline"}
+                                size={20}
+                                color={focused ? "#FFFFFF" : "#B9B9B9"}
+                            />
+                        ),
+                    }}
+                />
+                <Tabs.Screen
+                    name="travel"
+                    options={{
+                        title: "Mes trajets",
+                        tabBarIcon: ({ focused, color, size }) => (
+                            <Ionicons
+                                name={focused ? "car" : "car-outline"}
+                                size={20}
+                                color={focused ? "#FFFFFF" : "#B9B9B9"}
+                            />
+                        ),
+                    }}
+                    listeners={{ tabPress: (e) => protectedAction(e) }}
+                />
+
+                <Tabs.Screen
+                    name="add"
+                    options={{
+                        title: "Ajouter",
+                        tabBarIcon: ({ focused, color, size }) => (
+                            <Ionicons
+                                name={
+                                    focused
+                                        ? "add-circle"
+                                        : "add-circle-outline"
+                                }
+                                size={20}
+                                color={focused ? "#FFFFFF" : "#B9B9B9"}
+                            />
+                        ),
+                    }}
+                    listeners={{ tabPress: (e) => protectedAction(e) }}
+                />
+                <Tabs.Screen
+                    name="messaging"
+                    options={{
+                        title: "Messages",
+                        tabBarIcon: ({ focused, color, size }) => (
+                            <Ionicons
+                                name={focused ? "chatbox" : "chatbox-outline"}
+                                size={20}
+                                color={focused ? "#FFFFFF" : "#B9B9B9"}
+                            />
+                        ),
+                    }}
+                    listeners={{ tabPress: (e) => protectedAction(e) }}
+                />
+                <Tabs.Screen
+                    name="profile"
+                    options={{
+                        title: "Profil",
+                        tabBarIcon: ({ focused, color, size }) => (
+                            <Ionicons
+                                name={
+                                    focused
+                                        ? "person-circle"
+                                        : "person-circle-outline"
+                                }
+                                size={20}
+                                color={focused ? "#FFFFFF" : "#B9B9B9"}
+                            />
+                        ),
+                    }}
+                    listeners={{ tabPress: (e) => protectedAction(e) }}
+                />
+            </Tabs>
+        </GestureHandlerRootView>
     );
 }
