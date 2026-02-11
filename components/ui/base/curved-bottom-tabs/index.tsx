@@ -314,7 +314,10 @@ const CurvedBottomTabsCore: React.FC<CurvedBottomTabsProps> =
                         <BackgroundCurve
                             position={curvePosition}
                             gradient={processedGradient}
-                            height={Math.ceil(VIEWPORT_HEIGHT * barHeight)}
+                            height={
+                                Math.ceil(VIEWPORT_HEIGHT * barHeight) +
+                                safeAreaBottom
+                            }
                         />
                     </View>
 
@@ -419,7 +422,7 @@ const createStyles = <T extends StyleConfig>({
         },
         backgroundContainer: {
             position: "absolute",
-            bottom: safeAreaBottom,
+            bottom: 0,
             zIndex: 20,
             width: "100%",
         },
@@ -470,7 +473,8 @@ export const CurvedBottomTabs: React.FC<
             state,
             descriptors,
             navigation,
-            gradients = ["#121212", "#1A1A1A"],
+            gradients = ["#12b4e6", "#1A1A1A"],
+            // gradients = ["#121212", "#1A1A1A"],
         }) => {
             const tabs: Tab[] = state.routes.map((route, index) => {
                 const { options } = descriptors[route.key];
