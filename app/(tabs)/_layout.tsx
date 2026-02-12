@@ -1,4 +1,4 @@
-import { CurvedBottomTabs } from "@/components/ui/base/curved-bottom-tabs";
+import { CurvedBottomTabs } from "@/src/presentation/components/ui/base/curved-bottom-tabs";
 import { useAuth } from "@/src/presentation/hooks/authContext";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { Tabs, useRouter } from "expo-router";

@@ -12,11 +12,15 @@ export default function AnnouncementCardListItem({
     return (
         <View>
             <LinearGradient
-                colors={
-                    item.places > 2
-                        ? ["#4FACFE", "#00F2FE"]
-                        : ["#667EEA", "#764BA2"]
-                }
+                colors={["#243B55", "#141E30"]}
+                // colors={["#FF0844", "#FFB199"]}
+                // colors={["#667EEA", "#764BA2"]}
+                // colors={["#4FACFE", "#00F2FE"]}
+                // colors={["#141414", "#000000"]}
+                // colors={["#FF0080", "#7928CA"]}
+                // colors={["#00DBDE", "#FC00FF"]}
+                // colors={["#007AFF", "#00D2FF"]}
+                // colors={["#12b4e6", "#1A1A1A"]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.card}
@@ -35,20 +39,18 @@ export default function AnnouncementCardListItem({
                                 <Text style={styles.driverName}>
                                     {item.owner.firstName}
                                 </Text>
-                                {true && (
-                                    <View style={styles.carBadge}>
-                                        <SymbolView
-                                            name="car.fill"
-                                            size={10}
-                                            tintColor="#fff"
-                                        />
-                                        <Text style={styles.carBadgeText}>
-                                            {item.owner.settings.toConvey
-                                                ? "Véhiculer"
-                                                : "Pas de véhicule"}
-                                        </Text>
-                                    </View>
-                                )}
+                                <View style={styles.carBadge}>
+                                    <SymbolView
+                                        name="car.fill"
+                                        size={10}
+                                        tintColor="#fff"
+                                    />
+                                    <Text style={styles.carBadgeText}>
+                                        {item.owner.settings.toConvey
+                                            ? "Véhiculer"
+                                            : "Pas de véhicule"}
+                                    </Text>
+                                </View>
                             </View>
                             <Text style={styles.dateText}>{dateStr}</Text>
                         </View>

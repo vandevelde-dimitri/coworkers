@@ -1,5 +1,6 @@
-import AnnouncementCardListItem from "@/components/ui/AnnouncementCardListItem";
-import { MOCK_ANNOUNCEMENTS } from "@/src/mocks/announcements";
+import AnnouncementCardListItem from "@/src/presentation/components/ui/AnnouncementCardListItem";
+import AnnouncementSkeleton from "@/src/presentation/components/ui/skeleton/AnnouncementSkeleton";
+import { useAnnouncements } from "@/src/presentation/hooks/queries/useAnnouncement";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { SymbolView } from "expo-symbols";
@@ -16,6 +17,8 @@ import {
 
 export default function HomeScreen() {
     const router = useRouter();
+
+    const { data, isLoading } = useAnnouncements(1, null); // TODO: Passer le fcId de l'utilisateur connecté
 
     return (
         <View style={styles.container}>
@@ -52,16 +55,22 @@ export default function HomeScreen() {
                     </TouchableOpacity>
                 </ScrollView>
             </View>
-
-            <FlatList
-                data={MOCK_ANNOUNCEMENTS}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                    <AnnouncementCardListItem item={item} />
-                )}
-                contentContainerStyle={styles.listContent}
-                showsVerticalScrollIndicator={false}
-            />
+            {isLoading ? (
+                <View style={{ padding: 20 }}>
+                    <AnnouncementSkeleton />
+                    <AnnouncementSkeleton />
+                </View>
+            ) : (
+                <FlatList
+                    data={data?.announcements}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) => (
+                        <AnnouncementCardListItem item={item} />
+                    )}
+                    contentContainerStyle={styles.listContent}
+                    showsVerticalScrollIndicator={false}
+                />
+            )}
         </View>
     );
 }

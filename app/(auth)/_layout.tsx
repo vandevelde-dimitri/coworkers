@@ -1,4 +1,4 @@
-import { useColorScheme } from "@/components/useColorScheme";
+import { useColorScheme } from "@/src/presentation/components/useColorScheme.web";
 import {
     DarkTheme,
     DefaultTheme,
