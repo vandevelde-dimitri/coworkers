@@ -11,6 +11,7 @@ export interface IAnnouncementRepository {
         page: number,
         pageSize: number,
         search: string,
+        sortBy: string,
         fcId?: string | null,
     ): Promise<{ announcements: Announcement[]; totalCount: number }>;
     createAnnouncement(

@@ -44,15 +44,16 @@ export class SupabaseAnnouncementRepository implements IAnnouncementRepository {
         page: number,
         pageSize: number = 5,
         searchTerm: string,
+        sortBy: string,
         fcId?: string | null,
     ): Promise<{ announcements: Announcement[]; totalCount: number }> {
         const cleanFcId = fcId === "all" ? null : fcId;
-
         const { data, error } = await supabase.rpc("get_annonces_for_user", {
             p_fc_id: cleanFcId,
             p_limit: pageSize,
             p_offset: (page - 1) * pageSize,
             p_search: searchTerm,
+            p_sort_by: sortBy,
         });
 
         if (error) throw error;

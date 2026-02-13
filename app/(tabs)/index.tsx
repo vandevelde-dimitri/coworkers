@@ -17,12 +17,24 @@ import {
 } from "react-native";
 
 const PAGE_SIZE = 5;
+const FILTER_OPTIONS = [
+    { id: "recent", label: "Plus récent", icon: "time-outline" },
+    { id: "places", label: "Places", icon: "people-outline" },
+    {
+        id: "near",
+        label: "Près de moi",
+        icon: "location-outline",
+        disabled: true,
+    },
+];
 
 export default function HomeScreen() {
     const router = useRouter();
     const [page, setPage] = useState<number>(1);
     const [search, setSearch] = useState("");
+    const [activeFilter, setActiveFilter] = useState("recent");
     const debouncedSearch = useDebounce(search, 300);
+    const sortBy = activeFilter === "near" ? "recent" : activeFilter;
 
     const {
         data: { announcements, totalCount } = {
@@ -30,7 +42,7 @@ export default function HomeScreen() {
             totalCount: 0,
         },
         isLoading,
-    } = useAnnouncements(page, PAGE_SIZE, debouncedSearch, null); // TODO: Passer le fcId de l'utilisateur connecté
+    } = useAnnouncements(page, PAGE_SIZE, debouncedSearch, sortBy, null); // TODO: Passer le fcId de l'utilisateur connecté
 
     const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
@@ -55,18 +67,40 @@ export default function HomeScreen() {
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     style={styles.filterList}
+                    contentContainerStyle={styles.filterListContent}
                 >
-                    <TouchableOpacity
-                        style={[styles.filterBtn, styles.filterBtnActive]}
-                    >
-                        <Text style={styles.filterTextActive}>Plus récent</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.filterBtn}>
-                        <Text style={styles.filterText}>Places</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.filterBtn}>
-                        <Text style={styles.filterText}>Près de moi</Text>
-                    </TouchableOpacity>
+                    {FILTER_OPTIONS.map((option) => (
+                        <TouchableOpacity
+                            key={option.id}
+                            disabled={option.disabled}
+                            onPress={() => {
+                                if (!option.disabled) {
+                                    setActiveFilter(option.id);
+                                    setPage(1);
+                                }
+                            }}
+                            style={[
+                                styles.filterBtn,
+                                option.disabled && styles.filterBtnDisabled,
+                                activeFilter === option.id &&
+                                    !option.disabled &&
+                                    styles.filterBtnActive,
+                            ]}
+                        >
+                            <Text
+                                style={[
+                                    styles.filterText,
+                                    option.disabled &&
+                                        styles.filterTextDisabled,
+                                    activeFilter === option.id &&
+                                        !option.disabled &&
+                                        styles.filterTextActive,
+                                ]}
+                            >
+                                {option.label}
+                            </Text>
+                        </TouchableOpacity>
+                    ))}
                 </ScrollView>
             </View>
 
@@ -135,20 +169,50 @@ const styles = StyleSheet.create({
         height: 50,
     },
     searchInput: { flex: 1, marginLeft: 10, fontSize: 16 },
-    filterList: { marginTop: 15 },
-    filterBtn: {
-        backgroundColor: "#E9ECEF",
-        paddingHorizontal: 18,
-        paddingVertical: 10,
-        borderRadius: 12,
-        marginRight: 10,
-    },
-    filterBtnActive: { backgroundColor: "#228BE6" },
-    filterText: { fontWeight: "600", color: "#495057" },
-    filterTextActive: { color: "#FFF", fontWeight: "600" },
+
     listContent: {
         paddingHorizontal: 20,
         paddingTop: 20,
         paddingBottom: 130,
+    },
+    filterList: {
+        marginTop: 20,
+        marginBottom: 5,
+    },
+    filterListContent: {
+        paddingRight: 40, // Pour éviter que le dernier bouton colle au bord
+    },
+    filterBtn: {
+        backgroundColor: "#FFFFFF", // Fond blanc par défaut
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 25, // Forme pilule
+        marginRight: 10,
+        borderWidth: 1,
+        borderColor: "#E9ECEF",
+        // Petite ombre pour la profondeur
+        elevation: 2,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
+    },
+    filterBtnActive: {
+        backgroundColor: "#141E30", // Slate (Ardoise)
+        borderColor: "#141E30",
+    },
+    filterBtnDisabled: {
+        opacity: 0.45,
+    },
+    filterText: {
+        fontWeight: "600",
+        color: "#6C757D", // Gris moyen
+        fontSize: 14,
+    },
+    filterTextActive: {
+        color: "#FFFFFF", // Blanc sur fond sombre
+    },
+    filterTextDisabled: {
+        color: "#ADB5BD",
     },
 });

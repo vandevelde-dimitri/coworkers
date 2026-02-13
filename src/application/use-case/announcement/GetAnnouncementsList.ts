@@ -3,17 +3,18 @@ import { IAnnouncementRepository } from "../../../domain/repositories/Announceme
 
 export class GetAnnouncementsList {
     constructor(private announcementRepo: IAnnouncementRepository) {}
-
     async execute(
         page: number,
         pageSize: number = 5,
         search: string,
+        sortBy: string,
         fcId?: string | null,
     ): Promise<{ announcements: Announcement[]; totalCount: number }> {
         const result = await this.announcementRepo.getAllAnnouncements(
             page,
             pageSize,
             search,
+            sortBy,
             fcId,
         );
 
