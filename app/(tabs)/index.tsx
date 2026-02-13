@@ -1,10 +1,11 @@
 import AnnouncementCardListItem from "@/src/presentation/components/ui/AnnouncementCardListItem";
+import { Pagination } from "@/src/presentation/components/ui/molecules/pagination/Pagination";
 import AnnouncementSkeleton from "@/src/presentation/components/ui/skeleton/AnnouncementSkeleton";
 import { useAnnouncements } from "@/src/presentation/hooks/queries/useAnnouncement";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { SymbolView } from "expo-symbols";
-import React from "react";
+import React, { useState } from "react";
 import {
     FlatList,
     ScrollView,
@@ -15,10 +16,21 @@ import {
     View,
 } from "react-native";
 
+const PAGE_SIZE = 5;
+
 export default function HomeScreen() {
     const router = useRouter();
+    const [page, setPage] = useState<number>(1);
 
-    const { data, isLoading } = useAnnouncements(1, null); // TODO: Passer le fcId de l'utilisateur connecté
+    const {
+        data: { announcements, totalCount } = {
+            announcements: [],
+            totalCount: 0,
+        },
+        isLoading,
+    } = useAnnouncements(page, PAGE_SIZE, null); // TODO: Passer le fcId de l'utilisateur connecté
+
+    const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
     return (
         <View style={styles.container}>
@@ -55,21 +67,40 @@ export default function HomeScreen() {
                     </TouchableOpacity>
                 </ScrollView>
             </View>
+
             {isLoading ? (
-                <View style={{ padding: 20 }}>
+                <View style={{ paddingHorizontal: 20, paddingTop: 20 }}>
                     <AnnouncementSkeleton />
                     <AnnouncementSkeleton />
                 </View>
             ) : (
-                <FlatList
-                    data={data?.announcements}
-                    keyExtractor={(item) => item.id}
-                    renderItem={({ item }) => (
-                        <AnnouncementCardListItem item={item} />
-                    )}
-                    contentContainerStyle={styles.listContent}
-                    showsVerticalScrollIndicator={false}
-                />
+                <>
+                    <FlatList
+                        data={announcements}
+                        keyExtractor={(item) => item.id}
+                        renderItem={({ item }) => (
+                            <AnnouncementCardListItem item={item} />
+                        )}
+                        contentContainerStyle={styles.listContent}
+                        showsVerticalScrollIndicator={false}
+                        ListFooterComponentStyle={{
+                            paddingHorizontal: 20,
+                            paddingBottom: 30,
+                            paddingTop: 10,
+                            alignItems: "flex-end",
+                        }}
+                        ListFooterComponent={
+                            totalPages > 1 ? (
+                                <Pagination
+                                    activeIndex={page - 1}
+                                    totalItems={totalPages}
+                                    onIndexChange={(i) => setPage(i + 1)}
+                                    dotSize={10}
+                                />
+                            ) : null
+                        }
+                    />
+                </>
             )}
         </View>
     );
