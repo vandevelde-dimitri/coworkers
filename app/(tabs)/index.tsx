@@ -1,17 +1,17 @@
 import AnnouncementCardListItem from "@/src/presentation/components/ui/AnnouncementCardListItem";
 import { Pagination } from "@/src/presentation/components/ui/molecules/pagination/Pagination";
+import { SearchBar } from "@/src/presentation/components/ui/molecules/search-bar/SearchBar";
 import AnnouncementSkeleton from "@/src/presentation/components/ui/skeleton/AnnouncementSkeleton";
 import { useAnnouncements } from "@/src/presentation/hooks/queries/useAnnouncement";
+import { useDebounce } from "@/src/presentation/hooks/useDebounce";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { SymbolView } from "expo-symbols";
 import React, { useState } from "react";
 import {
     FlatList,
     ScrollView,
     StyleSheet,
     Text,
-    TextInput,
     TouchableOpacity,
     View,
 } from "react-native";
@@ -21,6 +21,8 @@ const PAGE_SIZE = 5;
 export default function HomeScreen() {
     const router = useRouter();
     const [page, setPage] = useState<number>(1);
+    const [search, setSearch] = useState("");
+    const debouncedSearch = useDebounce(search, 300);
 
     const {
         data: { announcements, totalCount } = {
@@ -28,7 +30,7 @@ export default function HomeScreen() {
             totalCount: 0,
         },
         isLoading,
-    } = useAnnouncements(page, PAGE_SIZE, null); // TODO: Passer le fcId de l'utilisateur connecté
+    } = useAnnouncements(page, PAGE_SIZE, debouncedSearch, null); // TODO: Passer le fcId de l'utilisateur connecté
 
     const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
@@ -38,17 +40,17 @@ export default function HomeScreen() {
 
             <View style={styles.header}>
                 <Text style={styles.mainTitle}>Annonces disponibles</Text>
-                <View style={styles.searchBar}>
-                    <SymbolView
-                        name="magnifyingglass"
-                        size={18}
-                        tintColor="#999"
-                    />
-                    <TextInput
-                        placeholder="Rechercher une ville..."
-                        style={styles.searchInput}
-                    />
-                </View>
+
+                <SearchBar
+                    placeholder="Rechercher..."
+                    containerWidth={350}
+                    tint="#141E30"
+                    centerWhenUnfocused={false}
+                    onSearch={(text) => {
+                        setSearch(text);
+                        setPage(1);
+                    }}
+                />
                 <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}

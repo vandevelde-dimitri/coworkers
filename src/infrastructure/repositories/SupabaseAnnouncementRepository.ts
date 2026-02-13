@@ -43,6 +43,7 @@ export class SupabaseAnnouncementRepository implements IAnnouncementRepository {
     async getAllAnnouncements(
         page: number,
         pageSize: number = 5,
+        searchTerm: string,
         fcId?: string | null,
     ): Promise<{ announcements: Announcement[]; totalCount: number }> {
         const cleanFcId = fcId === "all" ? null : fcId;
@@ -51,29 +52,26 @@ export class SupabaseAnnouncementRepository implements IAnnouncementRepository {
             p_fc_id: cleanFcId,
             p_limit: pageSize,
             p_offset: (page - 1) * pageSize,
+            p_search: searchTerm,
         });
 
         if (error) throw error;
 
-        // On transforme chaque ligne reçue via le Mapper
         const announcements = (data || []).map((raw: any) =>
             AnnouncementListMapper.toDomain(raw),
         );
 
-        // On récupère le totalCount depuis la première ligne (logique de ta RPC)
         const totalCount = data && data.length > 0 ? data[0].total_count : 0;
 
         return { announcements, totalCount };
     }
     async findOwnerAnnouncement(): Promise<Announcement | null> {
-        // 1. Récupérer l'ID de la session active
         const {
             data: { user: authUser },
         } = await supabase.auth.getUser();
 
         if (!authUser) throw new UnauthorizedError();
 
-        // 2. Récupérer les infos profil liées à cet ID
         const { data: annonce, error } = await supabase
             .from("annonces")
             .select(this.baseSelect)

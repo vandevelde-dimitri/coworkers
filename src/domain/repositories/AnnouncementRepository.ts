@@ -10,6 +10,7 @@ export interface IAnnouncementRepository {
     getAllAnnouncements(
         page: number,
         pageSize: number,
+        search: string,
         fcId?: string | null,
     ): Promise<{ announcements: Announcement[]; totalCount: number }>;
     createAnnouncement(

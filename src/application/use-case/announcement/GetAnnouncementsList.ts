@@ -7,11 +7,13 @@ export class GetAnnouncementsList {
     async execute(
         page: number,
         pageSize: number = 5,
+        search: string,
         fcId?: string | null,
     ): Promise<{ announcements: Announcement[]; totalCount: number }> {
         const result = await this.announcementRepo.getAllAnnouncements(
             page,
             pageSize,
+            search,
             fcId,
         );
 
