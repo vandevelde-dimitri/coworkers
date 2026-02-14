@@ -1,12 +1,17 @@
 import AnnouncementCardListItem from "@/src/presentation/components/ui/AnnouncementCardListItem";
+import { IconButtonSelect } from "@/src/presentation/components/ui/IconButtonSelect";
 import { Pagination } from "@/src/presentation/components/ui/molecules/pagination/Pagination";
 import { SearchBar } from "@/src/presentation/components/ui/molecules/search-bar/SearchBar";
 import AnnouncementSkeleton from "@/src/presentation/components/ui/skeleton/AnnouncementSkeleton";
+import { useAuth } from "@/src/presentation/hooks/authContext";
 import { useAnnouncements } from "@/src/presentation/hooks/queries/useAnnouncement";
+import { useFloors } from "@/src/presentation/hooks/queries/useFloor";
+import { useCurrentUser } from "@/src/presentation/hooks/queries/useUser";
 import { useDebounce } from "@/src/presentation/hooks/useDebounce";
+import { queryClient } from "@/utils/react-query";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
     FlatList,
     ScrollView,
@@ -30,11 +35,26 @@ const FILTER_OPTIONS = [
 
 export default function HomeScreen() {
     const router = useRouter();
+    const { session } = useAuth();
+    const { data: currentUser } = useCurrentUser();
+
     const [page, setPage] = useState<number>(1);
     const [search, setSearch] = useState("");
+    const [selectedCenter, setSelectedCenter] = useState<string>("all");
     const [activeFilter, setActiveFilter] = useState("recent");
     const debouncedSearch = useDebounce(search, 300);
     const sortBy = activeFilter === "near" ? "recent" : activeFilter;
+    const { data: floors } = useFloors();
+
+    useEffect(() => {
+        queryClient.invalidateQueries({ queryKey: ["announcements"] });
+
+        if (session && currentUser?.fcId) {
+            setSelectedCenter(currentUser.fcId);
+        } else if (!session) {
+            setSelectedCenter("all");
+        }
+    }, [session, currentUser?.fcId, queryClient]);
 
     const {
         data: { announcements, totalCount } = {
@@ -42,7 +62,29 @@ export default function HomeScreen() {
             totalCount: 0,
         },
         isLoading,
-    } = useAnnouncements(page, PAGE_SIZE, debouncedSearch, sortBy, null); // TODO: Passer le fcId de l'utilisateur connecté
+    } = useAnnouncements(
+        page,
+        PAGE_SIZE,
+        debouncedSearch,
+        sortBy,
+        selectedCenter,
+    );
+
+    const centersOptions = useMemo(() => {
+        const options =
+            floors?.map((c) => ({
+                label: c.name,
+                value: c.id,
+            })) || [];
+        return [{ label: "Tous les centres", value: "all" }, ...options];
+    }, [floors]);
+
+    const selectedCenterLabel = useMemo(() => {
+        const center = centersOptions.find(
+            (opt) => opt.value === selectedCenter,
+        );
+        return center?.value === "all" ? null : center?.label;
+    }, [selectedCenter, centersOptions]);
 
     const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
@@ -51,7 +93,11 @@ export default function HomeScreen() {
             <StatusBar style="dark" />
 
             <View style={styles.header}>
-                <Text style={styles.mainTitle}>Annonces disponibles</Text>
+                <Text style={styles.mainTitle}>
+                    {selectedCenterLabel
+                        ? `Annonces pour ${selectedCenterLabel}`
+                        : "Annonces disponibles"}
+                </Text>
 
                 <SearchBar
                     placeholder="Rechercher..."
@@ -101,6 +147,14 @@ export default function HomeScreen() {
                             </Text>
                         </TouchableOpacity>
                     ))}
+                    <IconButtonSelect
+                        onSelect={(val) => {
+                            setSelectedCenter(val);
+                            setPage(1);
+                        }}
+                        options={centersOptions}
+                        selectedValue={selectedCenter}
+                    />
                 </ScrollView>
             </View>
 
