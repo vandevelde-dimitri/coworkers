@@ -20,39 +20,47 @@ export const StackHeader = ({
     title,
     showBackButton = true,
     rightElement,
-    backgroundColor = "#FFF",
+    backgroundColor = "#141E30",
 }: StackHeaderProps) => {
     const router = useRouter();
+
+    const isDark =
+        backgroundColor === "#141E30" || backgroundColor === "transparent";
+    const contentColor = isDark ? "#FFFFFF" : "#1A1A1A";
+    const buttonBg = isDark ? "rgba(255, 255, 255, 0.1)" : "#F8F9FA";
 
     return (
         <View style={[styles.container, { backgroundColor }]}>
             <View style={styles.content}>
-                {/* Section Gauche */}
                 <View style={styles.sideContainer}>
                     {showBackButton && (
                         <TouchableOpacity
                             onPress={() => router.back()}
-                            style={styles.backButton}
+                            style={[
+                                styles.backButton,
+                                { backgroundColor: buttonBg },
+                            ]}
                         >
                             <Ionicons
                                 name="chevron-back"
-                                size={24}
-                                color="#141E30"
+                                size={22}
+                                color={contentColor}
                             />
                         </TouchableOpacity>
                     )}
                 </View>
 
-                {/* Section Centre */}
                 <View style={styles.centerContainer}>
                     {title && (
-                        <Text numberOfLines={1} style={styles.title}>
+                        <Text
+                            numberOfLines={1}
+                            style={[styles.title, { color: contentColor }]}
+                        >
                             {title}
                         </Text>
                     )}
                 </View>
 
-                {/* Section Droite */}
                 <View
                     style={[styles.sideContainer, { alignItems: "flex-end" }]}
                 >
@@ -69,44 +77,36 @@ export const StackHeader = ({
 
 const styles = StyleSheet.create({
     container: {
-        paddingTop: Platform.OS === "ios" ? 50 : 40,
-        paddingBottom: 15,
+        paddingTop: Platform.OS === "ios" ? 50 : 50,
+        paddingBottom: 10,
         paddingHorizontal: 20,
-        borderBottomLeftRadius: 30,
-        borderBottomRightRadius: 30,
-        elevation: 4,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
         zIndex: 10,
     },
     content: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        height: 40,
+        height: 44,
     },
     sideContainer: {
         flex: 1,
         justifyContent: "center",
     },
     centerContainer: {
-        flex: 3,
+        flex: 4,
         justifyContent: "center",
         alignItems: "center",
     },
     backButton: {
-        width: 40,
-        height: 40,
-        backgroundColor: "#F8F9FA",
+        width: 38,
+        height: 38,
         borderRadius: 12,
         justifyContent: "center",
         alignItems: "center",
     },
     title: {
-        fontSize: 17,
+        fontSize: 16,
         fontWeight: "700",
-        color: "#1A1A1A",
+        letterSpacing: -0.3,
     },
 });

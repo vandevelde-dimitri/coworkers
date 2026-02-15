@@ -10,7 +10,6 @@ import {
     ViewStyle,
 } from "react-native";
 
-// Types des variantes pour la cohérence du design
 type ButtonVariant = "primary" | "secondary" | "danger" | "outline";
 
 interface AppButtonProps {
@@ -32,17 +31,16 @@ export const AppButton = ({
     disabled = false,
     style,
 }: AppButtonProps) => {
-    // Configuration des gradients selon ton thème Slate & Sky
     const getGradientColors = (): readonly [string, string, ...string[]] => {
-        if (disabled) return ["#D1D5DB", "#9CA3AF"]; // État désactivé (Gris)
+        if (disabled) return ["#D1D5DB", "#9CA3AF"];
 
         switch (variant) {
             case "primary":
-                return ["#243B55", "#141E30"]; // Slate & Sky
+                return ["#243B55", "#141E30"];
             case "secondary":
-                return ["#4B5563", "#1F2937"]; // Ardoise moyen
+                return ["#4B5563", "#1F2937"];
             case "danger":
-                return ["#991B1B", "#7F1D1D"]; // Rouge profond (Pro)
+                return ["#991B1B", "#7F1D1D"];
             case "outline":
                 return ["transparent", "transparent"];
             default:
@@ -100,7 +98,7 @@ export const AppButton = ({
 const styles = StyleSheet.create({
     wrapper: {
         borderRadius: 14,
-        overflow: "hidden", // Important pour que le gradient suive le radius
+        overflow: "hidden",
     },
     button: {
         flexDirection: "row",
@@ -108,7 +106,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         paddingVertical: 14,
         paddingHorizontal: 20,
-        minHeight: 52, // Taille standard "Pro" pour le tactile
+        minHeight: 52,
     },
     buttonOutline: {
         borderWidth: 1.5,

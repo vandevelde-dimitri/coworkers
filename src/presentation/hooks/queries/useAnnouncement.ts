@@ -1,4 +1,3 @@
-// presentation/hooks/queries/useAnnouncements.ts
 import { useQuery } from "@tanstack/react-query";
 import { GetAnnouncementsList } from "../../../application/use-case/announcement/GetAnnouncementsList";
 import { SupabaseAnnouncementRepository } from "../../../infrastructure/repositories/SupabaseAnnouncementRepository";

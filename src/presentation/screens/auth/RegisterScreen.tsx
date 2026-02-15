@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
     termsBottom: {
         marginTop: 40,
         fontSize: 12,
-        opacity: 0.6, // Plus discret en bas de page
+        opacity: 0.6,
         textAlign: "center",
     },
 });

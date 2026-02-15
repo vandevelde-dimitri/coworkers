@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     },
     overlay: {
         flex: 1,
-        backgroundColor: "rgba(20, 30, 48, 0.4)", // Ton bleu ardoise avec opacité
+        backgroundColor: "rgba(20, 30, 48, 0.4)",
         justifyContent: "center",
         padding: 24,
     },

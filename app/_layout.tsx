@@ -64,33 +64,20 @@ function RootLayoutNav() {
     const router = useRouter();
 
     useEffect(() => {
-        // 1. Si on charge encore les données de session, on ne fait rien
         if (loading) return;
 
         const inOnboarding = segments[0] === "onboarding";
         const inAuthGroup = segments[0] === "(auth)";
 
-        // CAS : L'utilisateur est connecté via Supabase
         if (session) {
-            // MAIS il n'a pas encore rempli son profil
             if (!profileCompleted) {
-                // S'il n'est pas déjà sur la page onboarding, on l'y force
                 router.replace("/onboarding");
-            }
-            // ET son profil est complet
-            else {
-                // S'il essaie de retourner sur Login ou Onboarding par erreur,
-                // on le renvoie vers le contenu principal
+            } else {
                 if (inAuthGroup || inOnboarding) {
                     router.replace("/(tabs)/home");
                 }
             }
-        }
-        // CAS : Pas de session (Invité)
-        // On ne fait RIEN. L'invité peut naviguer librement dans (auth) ou (tabs).
-        // S'il essaie d'aller sur /onboarding manuellement, ça n'a aucun sens,
-        // on peut éventuellement le renvoyer vers welcome.
-        else if (inOnboarding) {
+        } else if (inOnboarding) {
             router.replace("/(auth)/welcome");
         }
     }, [session, profileCompleted, loading, segments]);

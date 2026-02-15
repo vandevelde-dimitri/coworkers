@@ -3,6 +3,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { SymbolView } from "expo-symbols";
 import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+
 export default function AnnouncementCardListItem({
     item,
     onPress,
@@ -11,25 +12,21 @@ export default function AnnouncementCardListItem({
     onPress: () => void;
 }) {
     const dateStr = new Date(item.dateStart).toLocaleDateString("fr-FR");
+
     return (
-        <View>
+        <TouchableOpacity activeOpacity={0.9} onPress={onPress}>
             <LinearGradient
-                colors={["#243B55", "#141E30"]}
-                // colors={["#FF0844", "#FFB199"]}
-                // colors={["#667EEA", "#764BA2"]}
-                // colors={["#4FACFE", "#00F2FE"]}
-                // colors={["#141414", "#000000"]}
-                // colors={["#FF0080", "#7928CA"]}
-                // colors={["#00DBDE", "#FC00FF"]}
-                // colors={["#007AFF", "#00D2FF"]}
-                // colors={["#12b4e6", "#1A1A1A"]}
+                colors={[
+                    "rgba(255, 255, 255, 0.08)",
+                    "rgba(255, 255, 255, 0.03)",
+                ]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.card}
             >
                 <View style={styles.cardHeader}>
                     <View style={styles.driverSection}>
-                        <View style={styles.avatarCircle}>
+                        <View style={styles.avatarWrapper}>
                             <Image
                                 source={{ uri: item.owner?.profileAvatar }}
                                 style={styles.avatar}
@@ -40,22 +37,47 @@ export default function AnnouncementCardListItem({
                                 <Text style={styles.driverName}>
                                     {item.owner?.firstName}
                                 </Text>
-                                <View style={styles.carBadge}>
+                                <View
+                                    style={[
+                                        styles.carBadge,
+                                        {
+                                            backgroundColor: item.owner
+                                                ?.settings.toConvey
+                                                ? "rgba(79, 172, 254, 0.2)"
+                                                : "rgba(255,255,255,0.1)",
+                                        },
+                                    ]}
+                                >
                                     <SymbolView
                                         name="car.fill"
                                         size={10}
-                                        tintColor="#fff"
+                                        tintColor={
+                                            item.owner?.settings.toConvey
+                                                ? "#4FACFE"
+                                                : "#FFF"
+                                        }
                                     />
-                                    <Text style={styles.carBadgeText}>
+                                    <Text
+                                        style={[
+                                            styles.carBadgeText,
+                                            {
+                                                color: item.owner?.settings
+                                                    .toConvey
+                                                    ? "#4FACFE"
+                                                    : "#FFF",
+                                            },
+                                        ]}
+                                    >
                                         {item.owner?.settings.toConvey
-                                            ? "Véhiculé"
-                                            : "Pas de véhicule"}
+                                            ? "Conducteur"
+                                            : "Passager"}
                                     </Text>
                                 </View>
                             </View>
                             <Text style={styles.dateText}>{dateStr}</Text>
                         </View>
                     </View>
+
                     <View style={styles.placesBadge}>
                         <Text style={styles.placesText}>
                             {item.places} places
@@ -71,111 +93,108 @@ export default function AnnouncementCardListItem({
                 </View>
 
                 <View style={styles.cardFooter}>
-                    <View />
-                    <TouchableOpacity
-                        onPress={onPress}
-                        style={styles.actionButton}
-                    >
-                        <Text style={styles.actionButtonText}>
-                            Voir détails
-                        </Text>
+                    <View style={styles.tagsRow}>
+                        {/* On peut imaginer des petits tags ici */}
+                        <Text style={styles.tagText}>#LIL1</Text>
+                    </View>
+                    <View style={styles.actionButton}>
+                        <Text style={styles.actionButtonText}>Voir</Text>
                         <SymbolView
                             name="chevron.right"
                             size={12}
                             tintColor="#fff"
                         />
-                    </TouchableOpacity>
+                    </View>
                 </View>
             </LinearGradient>
-        </View>
+        </TouchableOpacity>
     );
 }
 
 const styles = StyleSheet.create({
     card: {
-        borderRadius: 28,
+        borderRadius: 30,
         padding: 20,
-        marginBottom: 20,
-        elevation: 5,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.1,
-        shadowRadius: 10,
+        marginBottom: 16,
+        borderWidth: 1,
+        borderColor: "rgba(255, 255, 255, 0.1)",
     },
     cardHeader: {
         flexDirection: "row",
         justifyContent: "space-between",
-        alignItems: "center",
+        alignItems: "flex-start",
     },
-    driverSection: { flexDirection: "row", alignItems: "center", gap: 10 },
-    avatarCircle: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        backgroundColor: "rgba(255,255,255,0.2)",
-        justifyContent: "center",
-        alignItems: "center",
+    driverSection: { flexDirection: "row", alignItems: "center", gap: 12 },
+    avatarWrapper: {
+        padding: 2,
+        borderRadius: 20,
+        backgroundColor: "rgba(255,255,255,0.1)",
     },
     avatar: {
-        width: 40,
-        height: 40,
-        borderRadius: 30,
-        backgroundColor: "#E9ECEF",
+        width: 38,
+        height: 38,
+        borderRadius: 19,
     },
-    driverName: { color: "#fff", fontWeight: "700", fontSize: 15 },
-    dateText: { color: "rgba(255,255,255,0.7)", fontSize: 11 },
-    placesBadge: {
-        backgroundColor: "rgba(255,255,255,0.25)",
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderRadius: 10,
-    },
-    placesText: { color: "#fff", fontWeight: "700", fontSize: 11 },
-    cardContent: { marginVertical: 15 },
-    cardTitle: {
-        fontSize: 24,
-        fontWeight: "800",
-        color: "#fff",
-        marginBottom: 5,
-    },
-    cardSubtitle: {
-        fontSize: 14,
-        color: "rgba(255,255,255,0.85)",
-        lineHeight: 20,
-    },
-    cardFooter: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-    },
-    actionButton: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 6,
-        backgroundColor: "rgba(0,0,0,0.15)",
-        paddingHorizontal: 14,
-        paddingVertical: 8,
-        borderRadius: 12,
-    },
-    actionButtonText: { color: "#fff", fontWeight: "600", fontSize: 13 },
-    nameRow: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 6,
-    },
+    nameRow: { flexDirection: "row", alignItems: "center", gap: 8 },
+    driverName: { color: "#fff", fontWeight: "700", fontSize: 16 },
+    dateText: { color: "rgba(255,255,255,0.4)", fontSize: 12, marginTop: 2 },
+
     carBadge: {
         flexDirection: "row",
         alignItems: "center",
         gap: 4,
-        backgroundColor: "rgba(255,255,255,0.2)",
-        paddingHorizontal: 6,
-        paddingVertical: 2,
-        borderRadius: 6,
+        paddingHorizontal: 8,
+        paddingVertical: 3,
+        borderRadius: 8,
     },
     carBadgeText: {
-        color: "#fff",
-        fontSize: 10,
-        fontWeight: "600",
+        fontSize: 9,
+        fontWeight: "800",
         textTransform: "uppercase",
     },
+
+    placesBadge: {
+        backgroundColor: "#FFF",
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 12,
+    },
+    placesText: { color: "#141E30", fontWeight: "800", fontSize: 12 },
+
+    cardContent: { marginVertical: 18 },
+    cardTitle: {
+        fontSize: 22,
+        fontWeight: "800",
+        color: "#fff",
+        marginBottom: 6,
+    },
+    cardSubtitle: {
+        fontSize: 14,
+        color: "rgba(255,255,255,0.6)",
+        lineHeight: 20,
+    },
+
+    cardFooter: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginTop: 5,
+    },
+    tagsRow: { flexDirection: "row", gap: 8 },
+    tagText: {
+        color: "rgba(255,255,255,0.3)",
+        fontSize: 12,
+        fontWeight: "600",
+    },
+
+    actionButton: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 6,
+        backgroundColor: "rgba(255,255,255,0.1)",
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 14,
+    },
+    actionButtonText: { color: "#fff", fontWeight: "700", fontSize: 13 },
 });

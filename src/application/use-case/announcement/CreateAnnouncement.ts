@@ -16,23 +16,19 @@ export class CreateAnnouncementUseCase {
         let createdAnnouncementId: string | undefined;
 
         try {
-            // 1. Création de l'annonce
             const announcement =
                 await this.announcementRepo.createAnnouncement(payload);
             createdAnnouncementId = announcement.id;
 
-            // 2. Création de la conversation
             const conversationId = await this.messagingRepo.createConversation(
                 announcement.id,
             );
 
-            // 3. Mise à jour de l'annonce avec l'ID de conv
             await this.announcementRepo.updateConversationId(
                 announcement.id,
                 conversationId,
             );
 
-            // 4. Ajout du conducteur comme participant
             await this.messagingRepo.addParticipant(
                 conversationId,
                 announcement.owner.id,

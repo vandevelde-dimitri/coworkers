@@ -93,7 +93,7 @@ export default function AnnouncementHomeScreen() {
 
     return (
         <View style={styles.container}>
-            <StatusBar style="dark" />
+            <StatusBar style="light" />
 
             <View style={styles.header}>
                 <Text style={styles.mainTitle}>
@@ -103,15 +103,15 @@ export default function AnnouncementHomeScreen() {
                 </Text>
 
                 <SearchBar
-                    placeholder="Rechercher..."
-                    containerWidth={350}
-                    tint="#141E30"
+                    placeholder="Rechercher un trajet..."
+                    tint="rgba(255,255,255,0.1)"
                     centerWhenUnfocused={false}
                     onSearch={(text) => {
                         setSearch(text);
                         setPage(1);
                     }}
                 />
+
                 <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
@@ -167,125 +167,107 @@ export default function AnnouncementHomeScreen() {
                     <AnnouncementSkeleton />
                 </View>
             ) : (
-                <>
-                    <FlatList
-                        data={announcements}
-                        keyExtractor={(item) => item.id}
-                        renderItem={({ item }) => (
-                            <AnnouncementCardListItem
-                                item={item}
-                                onPress={() =>
-                                    router.push({
-                                        pathname: "/(tabs)/home/[id]",
-                                        params: { id: item.id },
-                                    })
-                                }
+                <FlatList
+                    data={announcements}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) => (
+                        <AnnouncementCardListItem
+                            item={item}
+                            onPress={() =>
+                                router.push({
+                                    pathname: "/(tabs)/home/[id]",
+                                    params: { id: item.id },
+                                })
+                            }
+                        />
+                    )}
+                    ListEmptyComponent={
+                        <EmptyState
+                            iconName="search-outline"
+                            description="Aucune annonce ne correspond à votre recherche."
+                            title="Aucune annonce"
+                            onPress={() => navigateSafely("../add")}
+                        />
+                    }
+                    contentContainerStyle={styles.listContent}
+                    showsVerticalScrollIndicator={false}
+                    ListFooterComponentStyle={styles.footerPagination}
+                    ListFooterComponent={
+                        totalPages > 1 ? (
+                            <Pagination
+                                activeIndex={page - 1}
+                                totalItems={totalPages}
+                                onIndexChange={(i) => setPage(i + 1)}
+                                dotSize={10}
                             />
-                        )}
-                        ListEmptyComponent={
-                            <EmptyState
-                                iconName="search-outline"
-                                title="Aucune annonce trouvée"
-                                description="Il n'y a pas encore de trajets pour ce centre."
-                                buttonText="Créer une annonce"
-                                onPress={() => navigateSafely("../add")}
-                            />
-                        }
-                        contentContainerStyle={styles.listContent}
-                        showsVerticalScrollIndicator={false}
-                        ListFooterComponentStyle={{
-                            paddingHorizontal: 20,
-                            paddingBottom: 30,
-                            paddingTop: 10,
-                            alignItems: "flex-end",
-                        }}
-                        ListFooterComponent={
-                            totalPages > 1 ? (
-                                <Pagination
-                                    activeIndex={page - 1}
-                                    totalItems={totalPages}
-                                    onIndexChange={(i) => setPage(i + 1)}
-                                    dotSize={10}
-                                />
-                            ) : null
-                        }
-                    />
-                </>
+                        ) : null
+                    }
+                />
             )}
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: "#F8F9FA" },
+    container: {
+        flex: 1,
+        backgroundColor: "#141E30",
+    },
     header: {
         paddingTop: 60,
         paddingHorizontal: 20,
-        backgroundColor: "#FFF",
-        paddingBottom: 20,
-        borderBottomLeftRadius: 30,
-        borderBottomRightRadius: 30,
-        elevation: 4,
+        paddingBottom: 10,
     },
     mainTitle: {
-        fontSize: 22,
+        fontSize: 24,
         fontWeight: "800",
-        color: "#1A1A1A",
-        textAlign: "center",
+        color: "#FFFFFF",
+        textAlign: "left",
         marginBottom: 20,
     },
-    searchBar: {
-        flexDirection: "row",
-        alignItems: "center",
-        backgroundColor: "#F1F3F5",
-        borderRadius: 15,
-        paddingHorizontal: 15,
-        height: 50,
-    },
-    searchInput: { flex: 1, marginLeft: 10, fontSize: 16 },
-
     listContent: {
         paddingHorizontal: 20,
-        paddingTop: 20,
+        paddingTop: 10,
         paddingBottom: 150,
     },
     filterList: {
         marginTop: 20,
-        marginBottom: 5,
     },
     filterListContent: {
         paddingRight: 40,
+        alignItems: "center",
+        gap: 8,
     },
     filterBtn: {
-        backgroundColor: "#FFFFFF",
-        paddingHorizontal: 20,
+        backgroundColor: "rgba(255, 255, 255, 0.05)",
+        paddingHorizontal: 18,
         paddingVertical: 10,
-        borderRadius: 25,
-        marginRight: 10,
+        borderRadius: 15,
         borderWidth: 1,
-        borderColor: "#E9ECEF",
-        elevation: 2,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.05,
-        shadowRadius: 2,
+        borderColor: "rgba(255, 255, 255, 0.1)",
     },
     filterBtnActive: {
-        backgroundColor: "#141E30",
-        borderColor: "#141E30",
+        backgroundColor: "#FFFFFF",
+        borderColor: "#FFFFFF",
     },
     filterBtnDisabled: {
-        opacity: 0.45,
+        opacity: 0.2,
     },
     filterText: {
         fontWeight: "600",
-        color: "#6C757D",
+        color: "rgba(255, 255, 255, 0.6)",
         fontSize: 14,
     },
     filterTextActive: {
-        color: "#FFFFFF",
+        color: "#141E30",
     },
     filterTextDisabled: {
-        color: "#ADB5BD",
+        color: "#FFFFFF",
+    },
+    footerPagination: {
+        paddingHorizontal: 20,
+        paddingBottom: 40,
+        paddingTop: 10,
+        alignItems: "center",
     },
 });

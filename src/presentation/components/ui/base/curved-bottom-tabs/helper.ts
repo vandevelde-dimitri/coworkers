@@ -3,7 +3,6 @@ import type { GradientTuple } from "./types";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
-// Ces valeurs restent les bases de calcul pour la largeur
 export const VIEWPORT_WIDTH: number = SCREEN_WIDTH / 100;
 export const VIEWPORT_HEIGHT: number = SCREEN_HEIGHT / 100;
 

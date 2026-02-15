@@ -474,8 +474,6 @@ export const CurvedBottomTabs: React.FC<
             descriptors,
             navigation,
             gradients = ["#0F2027", "#203A43"],
-            // gradients = ["#12b4e6", "#1A1A1A"],
-            // gradients = ["#121212", "#1A1A1A"],
         }) => {
             const tabs: Tab[] = state.routes.map((route, index) => {
                 const { options } = descriptors[route.key];

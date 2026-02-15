@@ -1,6 +1,5 @@
+import { isMyAnnouncement } from "@/utils/announcementUtils";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import React from "react";
 import {
     ActivityIndicator,
@@ -11,7 +10,9 @@ import {
     View,
 } from "react-native";
 import { AppButton } from "../../components/ui/AppButton";
-import { StackHeader } from "../../components/ui/Header";
+import { RemoveParticipantButton } from "../../components/ui/RemoveParticipantButton";
+import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
+import { useAuth } from "../../hooks/authContext";
 import { useAnnouncementDetails } from "../../hooks/queries/useAnnouncementDetails";
 
 export default function AnnouncementDetailScreen({
@@ -19,77 +20,75 @@ export default function AnnouncementDetailScreen({
 }: {
     announcementId: string;
 }) {
-    const router = useRouter();
     const { data: item, isLoading } = useAnnouncementDetails(announcementId);
+    const { session } = useAuth();
 
     if (isLoading) {
         return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#141E30" />
+            <View style={[styles.container, styles.loadingContainer]}>
+                <ActivityIndicator size="large" color="#FFF" />
             </View>
         );
     }
 
     if (!item) {
         return (
-            <View style={styles.loadingContainer}>
-                <Text style={{ color: "#6C757D", fontSize: 16 }}>
+            <View style={[styles.container, styles.loadingContainer]}>
+                <Text style={{ color: "rgba(255,255,255,0.5)", fontSize: 16 }}>
                     Annonce introuvable
                 </Text>
             </View>
         );
     }
+    const isOwner = isMyAnnouncement(item, session?.user.id);
 
     return (
-        <View style={styles.container}>
-            <StatusBar style="dark" />
-            <StackHeader
-                title={`Annonce de ${item.owner.firstName} `}
-                showBackButton
-            />
+        <ScreenWrapper
+            title={item ? `Annonce de ${item.owner.firstName}` : "Détails"}
+            showBackButton={true}
+        >
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContent}
             >
-                <View style={styles.ownerCard}>
-                    <Image
-                        source={{ uri: item.owner.profileAvatar }}
-                        style={styles.avatar}
-                    />
-                    <View style={styles.ownerInfo}>
-                        <Text style={styles.ownerName}>
-                            {item.owner.firstName} {item.owner.lastName}
-                        </Text>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                gap: 8,
-                                marginTop: 4,
-                            }}
-                        >
-                            <View style={styles.badge}>
-                                <Text style={styles.badgeText}>
-                                    {item.owner.fcName}
-                                </Text>
-                            </View>
-                            <View style={styles.badge}>
-                                <Text style={styles.badgeText}>
-                                    {item.owner.settings.toConvey
-                                        ? "véhiculé"
-                                        : "Pas de véhicule"}
-                                </Text>
+                <View style={styles.glassCard}>
+                    <View style={styles.ownerHeader}>
+                        <Image
+                            source={{ uri: item.owner.profileAvatar }}
+                            style={styles.avatar}
+                        />
+                        <View style={styles.ownerInfo}>
+                            <Text style={styles.ownerName}>
+                                {item.owner.firstName} {item.owner.lastName}
+                            </Text>
+                            <View style={styles.badgeRow}>
+                                <View style={styles.badge}>
+                                    <Text style={styles.badgeText}>
+                                        {item.owner.fcName}
+                                    </Text>
+                                </View>
+                                {item.owner.settings.toConvey && (
+                                    <View
+                                        style={[styles.badge, styles.badgeBlue]}
+                                    >
+                                        <Text style={styles.badgeTextBlue}>
+                                            Conducteur
+                                        </Text>
+                                    </View>
+                                )}
                             </View>
                         </View>
                     </View>
                 </View>
 
-                <View style={styles.contentCard}>
+                <View style={[styles.glassCard, { marginTop: 20 }]}>
                     <Text style={styles.title}>{item.title}</Text>
+
                     <View style={styles.infoRow}>
                         <Ionicons
                             name="calendar-outline"
-                            size={20}
-                            color="#6C757D"
+                            size={18}
+                            color="rgba(255,255,255,0.5)"
                         />
                         <Text style={styles.infoText}>
                             Du {item.dateStart.toLocaleDateString("fr-FR")}
@@ -97,11 +96,12 @@ export default function AnnouncementDetailScreen({
                                 ` au ${item.dateEnd.toLocaleDateString("fr-FR")}`}
                         </Text>
                     </View>
+
                     <View style={styles.infoRow}>
                         <Ionicons
                             name="people-outline"
-                            size={20}
-                            color="#6C757D"
+                            size={18}
+                            color="rgba(255,255,255,0.5)"
                         />
                         <Text style={styles.infoText}>
                             {item.places} places disponibles
@@ -135,33 +135,30 @@ export default function AnnouncementDetailScreen({
                                     {p.city}
                                 </Text>
                             </View>
-                            <Ionicons
-                                name="checkmark-circle"
-                                size={24}
-                                color="#2DCE89"
-                                style={{ marginLeft: "auto" }}
+                            <RemoveParticipantButton
+                                participant={p}
+                                annonce={item}
                             />
                         </View>
                     ))
                 ) : (
-                    <View style={styles.emptyPassengers}>
-                        <Text style={styles.emptyText}>
-                            Aucun passager pour le moment
-                        </Text>
-                    </View>
+                    <Text style={styles.emptyText}>
+                        Aucun passager pour le moment
+                    </Text>
                 )}
 
                 <View style={styles.footer}>
-                    {true ? (
+                    {isOwner ? (
                         <>
                             <AppButton
                                 title="Modifier l'annonce"
                                 onPress={() => console.log("Modifier")}
+                                variant="primary"
                             />
                             <AppButton
-                                variant="danger"
                                 title="Supprimer l'annonce"
                                 onPress={() => console.log("Supprimer")}
+                                variant="danger"
                             />
                         </>
                     ) : (
@@ -179,115 +176,99 @@ export default function AnnouncementDetailScreen({
                     )}
                 </View>
             </ScrollView>
-        </View>
+        </ScreenWrapper>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: "#F8F9FA" },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    header: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        paddingHorizontal: 20,
-        paddingVertical: 15,
-        backgroundColor: "#FFF",
-    },
-    headerTitle: { fontSize: 18, fontWeight: "700", color: "#1A1A1A" },
-    backButton: { padding: 8, backgroundColor: "#F1F3F5", borderRadius: 12 },
+    container: { flex: 1, backgroundColor: "#141E30" },
+    loadingContainer: { justifyContent: "center", alignItems: "center" },
 
     scrollContent: { padding: 20, paddingBottom: 150 },
 
-    ownerCard: {
-        flexDirection: "row",
-        alignItems: "center",
-        backgroundColor: "#FFF",
-        padding: 15,
-        borderRadius: 20,
-        marginBottom: 20,
-        elevation: 2,
-        shadowColor: "#000",
-        shadowOpacity: 0.05,
-        shadowRadius: 10,
+    glassCard: {
+        backgroundColor: "rgba(255, 255, 255, 0.05)",
+        borderRadius: 25,
+        padding: 20,
+        borderWidth: 1,
+        borderColor: "rgba(255, 255, 255, 0.1)",
     },
+
+    ownerHeader: { flexDirection: "row", alignItems: "center" },
     avatar: {
-        width: 60,
-        height: 60,
-        borderRadius: 30,
-        backgroundColor: "#E9ECEF",
+        width: 64,
+        height: 64,
+        borderRadius: 32,
+        backgroundColor: "rgba(255,255,255,0.1)",
     },
-    ownerInfo: { marginLeft: 15 },
-    ownerName: { fontSize: 18, fontWeight: "700", color: "#141E30" },
+    ownerInfo: { marginLeft: 15, flex: 1 },
+    ownerName: { fontSize: 20, fontWeight: "700", color: "#FFF" },
+
+    badgeRow: { flexDirection: "row", gap: 8, marginTop: 8 },
     badge: {
-        backgroundColor: "#E7F0FF",
+        backgroundColor: "rgba(255, 255, 255, 0.1)",
         paddingHorizontal: 10,
         paddingVertical: 4,
         borderRadius: 8,
-        marginTop: 4,
-        alignSelf: "flex-start",
     },
-    badgeText: { color: "#007BFF", fontSize: 12, fontWeight: "600" },
+    badgeBlue: { backgroundColor: "rgba(79, 172, 254, 0.2)" },
+    badgeText: {
+        color: "rgba(255,255,255,0.7)",
+        fontSize: 11,
+        fontWeight: "600",
+    },
+    badgeTextBlue: { color: "#4FACFE", fontSize: 11, fontWeight: "600" },
 
-    contentCard: {
-        backgroundColor: "#FFF",
-        padding: 20,
-        borderRadius: 20,
-        marginBottom: 25,
+    title: { fontSize: 26, fontWeight: "800", color: "#FFF", marginBottom: 20 },
+    infoRow: { flexDirection: "row", alignItems: "center", marginBottom: 12 },
+    infoText: { marginLeft: 10, color: "rgba(255,255,255,0.7)", fontSize: 15 },
+
+    separator: {
+        height: 1,
+        backgroundColor: "rgba(255,255,255,0.1)",
+        marginVertical: 20,
     },
-    title: {
-        fontSize: 22,
-        fontWeight: "800",
-        color: "#1A1A1A",
-        marginBottom: 15,
-    },
-    infoRow: { flexDirection: "row", alignItems: "center", marginBottom: 10 },
-    infoText: { marginLeft: 10, color: "#495057", fontSize: 15 },
-    separator: { height: 1, backgroundColor: "#F1F3F5", marginVertical: 20 },
+
     descriptionTitle: {
         fontSize: 16,
         fontWeight: "700",
-        color: "#1A1A1A",
+        color: "#FFF",
         marginBottom: 10,
     },
-    descriptionText: { fontSize: 15, color: "#6C757D", lineHeight: 22 },
+    descriptionText: {
+        fontSize: 15,
+        color: "rgba(255,255,255,0.5)",
+        lineHeight: 24,
+    },
 
-    sectionHeader: { marginBottom: 15 },
-    sectionTitle: { fontSize: 18, fontWeight: "700", color: "#1A1A1A" },
+    sectionHeader: { marginTop: 30, marginBottom: 15 },
+    sectionTitle: { fontSize: 18, fontWeight: "700", color: "#FFF" },
+
     passengerRow: {
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "#FFF",
-        padding: 12,
-        borderRadius: 15,
+        backgroundColor: "rgba(255, 255, 255, 0.03)",
+        padding: 14,
+        borderRadius: 20,
         marginBottom: 10,
+        borderWidth: 1,
+        borderColor: "rgba(255, 255, 255, 0.05)",
     },
     passengerAvatar: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+        width: 44,
+        height: 44,
+        borderRadius: 22,
         marginRight: 12,
     },
-    passengerName: { fontSize: 15, fontWeight: "600", color: "#1A1A1A" },
-    passengerSub: { fontSize: 13, color: "#ADB5BD" },
+    passengerName: { fontSize: 16, fontWeight: "600", color: "#FFF" },
+    passengerSub: { fontSize: 13, color: "rgba(255,255,255,0.4)" },
 
-    emptyPassengers: { padding: 20, alignItems: "center" },
-    emptyText: { color: "#ADB5BD", fontStyle: "italic" },
+    emptyText: {
+        color: "rgba(255,255,255,0.3)",
+        fontStyle: "italic",
+        textAlign: "center",
+        marginTop: 10,
+    },
 
-    footer: {
-        flexDirection: "column",
-        gap: 12,
-        padding: 20,
-    },
-    mainButton: {
-        backgroundColor: "#141E30",
-        paddingVertical: 16,
-        borderRadius: 15,
-        alignItems: "center",
-    },
-    mainButtonText: { color: "#FFF", fontSize: 16, fontWeight: "700" },
+    footer: { flexDirection: "column", gap: 15, marginTop: 30 },
 });
