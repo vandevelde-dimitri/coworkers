@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import {
@@ -18,6 +19,7 @@ export default function AnnouncementDetailScreen({
 }: {
     announcementId: string;
 }) {
+    const router = useRouter();
     const { data: item, isLoading } = useAnnouncementDetails(announcementId);
 
     if (isLoading) {
@@ -28,7 +30,15 @@ export default function AnnouncementDetailScreen({
         );
     }
 
-    if (!item) return <Text>Annonce introuvable</Text>;
+    if (!item) {
+        return (
+            <View style={styles.loadingContainer}>
+                <Text style={{ color: "#6C757D", fontSize: 16 }}>
+                    Annonce introuvable
+                </Text>
+            </View>
+        );
+    }
 
     return (
         <View style={styles.container}>

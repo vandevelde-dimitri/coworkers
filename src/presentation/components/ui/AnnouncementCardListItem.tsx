@@ -31,14 +31,14 @@ export default function AnnouncementCardListItem({
                     <View style={styles.driverSection}>
                         <View style={styles.avatarCircle}>
                             <Image
-                                source={{ uri: item.owner.profileAvatar }}
+                                source={{ uri: item.owner?.profileAvatar }}
                                 style={styles.avatar}
                             />
                         </View>
                         <View>
                             <View style={styles.nameRow}>
                                 <Text style={styles.driverName}>
-                                    {item.owner.firstName}
+                                    {item.owner?.firstName}
                                 </Text>
                                 <View style={styles.carBadge}>
                                     <SymbolView
@@ -47,7 +47,7 @@ export default function AnnouncementCardListItem({
                                         tintColor="#fff"
                                     />
                                     <Text style={styles.carBadgeText}>
-                                        {item.owner.settings.toConvey
+                                        {item.owner?.settings.toConvey
                                             ? "Véhiculé"
                                             : "Pas de véhicule"}
                                     </Text>

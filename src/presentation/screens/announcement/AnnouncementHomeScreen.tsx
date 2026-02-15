@@ -20,6 +20,8 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
+import { EmptyState } from "../../components/ui/EmptyState";
+import { useProtectedNavigation } from "../../hooks/useProtectedNavigation";
 
 const PAGE_SIZE = 5;
 const FILTER_OPTIONS = [
@@ -38,6 +40,7 @@ export default function AnnouncementHomeScreen() {
     const { session } = useAuth();
     const { data: currentUser } = useCurrentUser();
 
+    const { navigateSafely } = useProtectedNavigation();
     const [page, setPage] = useState<number>(1);
     const [search, setSearch] = useState("");
     const [selectedCenter, setSelectedCenter] = useState<string>("all");
@@ -179,6 +182,15 @@ export default function AnnouncementHomeScreen() {
                                 }
                             />
                         )}
+                        ListEmptyComponent={
+                            <EmptyState
+                                iconName="search-outline"
+                                title="Aucune annonce trouvée"
+                                description="Il n'y a pas encore de trajets pour ce centre."
+                                buttonText="Créer une annonce"
+                                onPress={() => navigateSafely("../add")}
+                            />
+                        }
                         contentContainerStyle={styles.listContent}
                         showsVerticalScrollIndicator={false}
                         ListFooterComponentStyle={{
@@ -235,7 +247,7 @@ const styles = StyleSheet.create({
     listContent: {
         paddingHorizontal: 20,
         paddingTop: 20,
-        paddingBottom: 130,
+        paddingBottom: 150,
     },
     filterList: {
         marginTop: 20,
