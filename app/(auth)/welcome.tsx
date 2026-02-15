@@ -31,7 +31,7 @@ export default function WelcomeScreen() {
                 </View>
 
                 <View style={styles.textSection}>
-                    <Text style={styles.title}>CoWorkers</Text>
+                    <Text style={styles.title}>Coworkers</Text>
                     <Text style={styles.subtitle}>
                         Simplifiez vos trajets entre collègues.{"\n"}
                         Économisez, partagez, roulez.
@@ -71,9 +71,12 @@ export default function WelcomeScreen() {
                     </TouchableOpacity>
                 </View>
 
-                <Text style={styles.footerText}>
-                    En continuant, vous acceptez nos conditions d'utilisation.
-                </Text>
+                <View style={styles.footerContainer}>
+                    <Text style={styles.versionText}>Version 1.0.0</Text>
+                    <Text style={styles.copyrightText}>
+                        © 2026 CoWorkers Inc.
+                    </Text>
+                </View>
             </View>
         </View>
     );
@@ -169,10 +172,19 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "600",
     },
-    footerText: {
-        color: "rgba(255, 255, 255, 0.4)",
+    footerContainer: {
+        alignItems: "center",
+        gap: 4,
+    },
+    versionText: {
+        color: "rgba(255, 255, 255, 0.3)",
         fontSize: 12,
-        textAlign: "center",
-        paddingHorizontal: 20,
+        fontWeight: "600",
+        letterSpacing: 0.5,
+    },
+    copyrightText: {
+        color: "rgba(255, 255, 255, 0.2)",
+        fontSize: 10,
+        textTransform: "uppercase",
     },
 });
