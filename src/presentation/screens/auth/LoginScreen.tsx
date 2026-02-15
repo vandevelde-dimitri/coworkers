@@ -1,6 +1,9 @@
+import { Login } from "@/src/domain/entities/auth/Login";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import React from "react";
+import { useForm } from "react-hook-form";
 import {
     KeyboardAvoidingView,
     Platform,
@@ -10,16 +13,14 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
-
-import { StatusBar } from "expo-status-bar";
-import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { FormInput } from "../../components/ui/FormInput";
 import { StackHeader } from "../../components/ui/Header";
+import { useLogin } from "../../hooks/mutations/useLogin";
 
 export default function LoginScreen() {
     const router = useRouter();
-
+    const { mutate: login, isPending } = useLogin();
     const schema = yup.object({
         email: yup.string().email("Email invalide").required("Email requis"),
         password: yup.string().required("Mot de passe requis"),
@@ -28,10 +29,8 @@ export default function LoginScreen() {
         resolver: yupResolver(schema),
     });
 
-    const handleLogin = async (data: { email: string; password: string }) => {
-        const { email, password } = data;
-
-        console.log(data);
+    const handleLogin = async (data: Login) => {
+        login(data);
     };
 
     return (
@@ -71,10 +70,16 @@ export default function LoginScreen() {
                     />
 
                     <TouchableOpacity
-                        style={styles.loginButton}
+                        style={[
+                            styles.loginButton,
+                            isPending && { opacity: 0.7 },
+                        ]}
                         onPress={handleSubmit(handleLogin)}
+                        disabled={isPending}
                     >
-                        <Text style={styles.loginButtonText}>Se connecter</Text>
+                        <Text style={styles.loginButtonText}>
+                            {isPending ? "Connexion..." : "Se connecter"}
+                        </Text>
                     </TouchableOpacity>
 
                     <View style={styles.footer}>

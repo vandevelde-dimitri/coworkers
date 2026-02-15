@@ -1,3 +1,4 @@
+import { Register } from "@/src/domain/entities/auth/Register";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -16,9 +17,11 @@ import {
 import * as yup from "yup";
 import { FormInput } from "../../components/ui/FormInput";
 import { StackHeader } from "../../components/ui/Header";
+import { useRegister } from "../../hooks/mutations/useRegister";
 
 export default function RegisterScreen() {
     const router = useRouter();
+    const { mutate: register, isPending } = useRegister();
     const schema = yup.object({
         email: yup.string().email("Email invalide").required("Email requis"),
         password: yup.string().required("Mot de passe requis"),
@@ -34,10 +37,10 @@ export default function RegisterScreen() {
         resolver: yupResolver(schema),
     });
 
-    const onSubmit = async (data: { email: string; password: string }) => {
-        const { email, password } = data;
-
+    const onSubmit = async (data: Register) => {
         console.log(data);
+
+        register(data);
     };
 
     return (
@@ -110,11 +113,15 @@ export default function RegisterScreen() {
                     </View>
 
                     <TouchableOpacity
-                        style={styles.registerButton}
+                        style={[
+                            styles.registerButton,
+                            isPending && { opacity: 0.7 },
+                        ]}
                         onPress={handleSubmit(onSubmit)}
+                        disabled={isPending}
                     >
                         <Text style={styles.registerButtonText}>
-                            Créer mon compte
+                            {isPending ? "Inscription..." : "S'inscrire"}
                         </Text>
                     </TouchableOpacity>
 

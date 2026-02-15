@@ -9,7 +9,7 @@ import {
 } from "@react-navigation/native";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
-import { Stack, useRouter } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
@@ -58,19 +58,42 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
+    const segments = useSegments();
     const colorScheme = useColorScheme();
-    const { session, loading } = useAuth();
+    const { session, loading, profileCompleted } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
-        if (!loading) {
-            if (session) {
-                router.replace("/(tabs)/profile");
-            } else {
-                router.replace("/(auth)/welcome");
+        // 1. Si on charge encore les données de session, on ne fait rien
+        if (loading) return;
+
+        const inOnboarding = segments[0] === "onboarding";
+        const inAuthGroup = segments[0] === "(auth)";
+
+        // CAS : L'utilisateur est connecté via Supabase
+        if (session) {
+            // MAIS il n'a pas encore rempli son profil
+            if (!profileCompleted) {
+                // S'il n'est pas déjà sur la page onboarding, on l'y force
+                router.replace("/onboarding");
+            }
+            // ET son profil est complet
+            else {
+                // S'il essaie de retourner sur Login ou Onboarding par erreur,
+                // on le renvoie vers le contenu principal
+                if (inAuthGroup || inOnboarding) {
+                    router.replace("/(tabs)/home");
+                }
             }
         }
-    }, [session, loading]);
+        // CAS : Pas de session (Invité)
+        // On ne fait RIEN. L'invité peut naviguer librement dans (auth) ou (tabs).
+        // S'il essaie d'aller sur /onboarding manuellement, ça n'a aucun sens,
+        // on peut éventuellement le renvoyer vers welcome.
+        else if (inOnboarding) {
+            router.replace("/(auth)/welcome");
+        }
+    }, [session, profileCompleted, loading, segments]);
     return (
         <ThemeProvider
             value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
