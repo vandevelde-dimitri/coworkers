@@ -1,32 +1,80 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+    Dimensions,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
+
+const { width } = Dimensions.get("window");
 
 export default function WelcomeScreen() {
     const router = useRouter();
+
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Bienvenue</Text>
-            <Text style={styles.subtitle}>Connectez-vous pour continuer</Text>
+            <StatusBar style="light" />
 
-            <TouchableOpacity
-                style={styles.button}
-                onPress={() => router.navigate("/(auth)/login")}
-            >
-                <Text style={styles.buttonText}>Se connecter</Text>
-            </TouchableOpacity>
+            <View style={styles.backgroundOverlay}>
+                <View style={styles.topCircle} />
+            </View>
 
-            <TouchableOpacity style={[styles.button, styles.buttonSecondary]}>
-                <Text style={styles.buttonTextSecondary}>S'inscrire</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-                style={[styles.button, styles.buttonSecondary]}
-                onPress={() => router.navigate("/(tabs)/home")}
-            >
-                <Text style={styles.buttonTextSecondary}>
-                    Continuer en tant qu'invité
+            <View style={styles.content}>
+                <View style={styles.logoContainer}>
+                    <View style={styles.iconCircle}>
+                        <Ionicons name="car-sport" size={60} color="#FFF" />
+                    </View>
+                </View>
+
+                <View style={styles.textSection}>
+                    <Text style={styles.title}>CoWorkers</Text>
+                    <Text style={styles.subtitle}>
+                        Simplifiez vos trajets entre collègues.{"\n"}
+                        Économisez, partagez, roulez.
+                    </Text>
+                </View>
+
+                <View style={styles.buttonSection}>
+                    <TouchableOpacity
+                        style={styles.primaryButton}
+                        onPress={() => router.push("/(auth)/login")}
+                    >
+                        <Text style={styles.primaryButtonText}>
+                            Se connecter
+                        </Text>
+                        <Ionicons
+                            name="arrow-forward"
+                            size={20}
+                            color="#141E30"
+                        />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={styles.secondaryButton}
+                        onPress={() => router.push("/(auth)/register")}
+                    >
+                        <Text style={styles.secondaryButtonText}>
+                            Créer un compte
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.secondaryButton}
+                        onPress={() => router.push("/(tabs)/home")}
+                    >
+                        <Text style={styles.secondaryButtonText}>
+                            Continuez en tant qu'invité
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+
+                <Text style={styles.footerText}>
+                    En continuant, vous acceptez nos conditions d'utilisation.
                 </Text>
-            </TouchableOpacity>
+            </View>
         </View>
     );
 }
@@ -34,41 +82,97 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: "#141E30",
+    },
+    backgroundOverlay: {
+        ...StyleSheet.absoluteFillObject,
+        overflow: "hidden",
+    },
+    topCircle: {
+        width: width * 1.5,
+        height: width * 1.5,
+        borderRadius: width * 0.75,
+        backgroundColor: "#243B55",
+        position: "absolute",
+        top: -width * 0.8,
+        left: -width * 0.25,
+    },
+    content: {
+        flex: 1,
+        justifyContent: "space-between",
+        paddingHorizontal: 30,
+        paddingTop: 100,
+        paddingBottom: 40,
+    },
+    logoContainer: {
+        alignItems: "center",
+        marginTop: 40,
+    },
+    iconCircle: {
+        width: 120,
+        height: 120,
+        backgroundColor: "rgba(255, 255, 255, 0.1)",
+        borderRadius: 40,
         justifyContent: "center",
         alignItems: "center",
-        padding: 20,
-        backgroundColor: "#fff",
+        borderWidth: 1,
+        borderColor: "rgba(255, 255, 255, 0.2)",
+    },
+    textSection: {
+        alignItems: "center",
     },
     title: {
-        fontSize: 32,
-        fontWeight: "bold",
-        marginBottom: 10,
+        fontSize: 40,
+        fontWeight: "900",
+        color: "#FFF",
+        letterSpacing: 1,
     },
     subtitle: {
         fontSize: 16,
-        color: "#666",
-        marginBottom: 40,
+        color: "#B9B9B9",
+        textAlign: "center",
+        marginTop: 15,
+        lineHeight: 24,
     },
-    button: {
-        backgroundColor: "#007AFF",
-        paddingVertical: 12,
-        paddingHorizontal: 40,
-        borderRadius: 8,
-        marginVertical: 10,
-        width: "100%",
+    buttonSection: {
+        gap: 15,
+    },
+    primaryButton: {
+        backgroundColor: "#FFF",
+        height: 60,
+        borderRadius: 20,
+        flexDirection: "row",
+        justifyContent: "center",
         alignItems: "center",
+        gap: 10,
+        elevation: 5,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 5,
     },
-    buttonSecondary: {
-        backgroundColor: "#f0f0f0",
+    primaryButtonText: {
+        color: "#141E30",
+        fontSize: 18,
+        fontWeight: "700",
     },
-    buttonText: {
-        color: "#fff",
+    secondaryButton: {
+        height: 60,
+        borderRadius: 20,
+        justifyContent: "center",
+        alignItems: "center",
+        borderWidth: 1,
+        borderColor: "rgba(255, 255, 255, 0.3)",
+    },
+    secondaryButtonText: {
+        color: "#FFF",
         fontSize: 16,
         fontWeight: "600",
     },
-    buttonTextSecondary: {
-        color: "#007AFF",
-        fontSize: 16,
-        fontWeight: "600",
+    footerText: {
+        color: "rgba(255, 255, 255, 0.4)",
+        fontSize: 12,
+        textAlign: "center",
+        paddingHorizontal: 20,
     },
 });
