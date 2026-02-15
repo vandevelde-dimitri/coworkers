@@ -10,7 +10,6 @@ import { useCurrentUser } from "@/src/presentation/hooks/queries/useUser";
 import { useDebounce } from "@/src/presentation/hooks/useDebounce";
 import { queryClient } from "@/utils/react-query";
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useMemo, useState } from "react";
 import {
     FlatList,
@@ -21,6 +20,7 @@ import {
     View,
 } from "react-native";
 import { EmptyState } from "../../components/ui/EmptyState";
+import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
 import { useProtectedNavigation } from "../../hooks/useProtectedNavigation";
 
 const PAGE_SIZE = 5;
@@ -92,9 +92,7 @@ export default function AnnouncementHomeScreen() {
     const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
     return (
-        <View style={styles.container}>
-            <StatusBar style="light" />
-
+        <ScreenWrapper>
             <View style={styles.header}>
                 <Text style={styles.mainTitle}>
                     {selectedCenterLabel
@@ -204,7 +202,7 @@ export default function AnnouncementHomeScreen() {
                     }
                 />
             )}
-        </View>
+        </ScreenWrapper>
     );
 }
 

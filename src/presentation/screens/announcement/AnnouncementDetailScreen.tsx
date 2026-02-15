@@ -1,5 +1,6 @@
 import { isMyAnnouncement } from "@/utils/announcementUtils";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React from "react";
 import {
     ActivityIndicator,
@@ -13,6 +14,7 @@ import { AppButton } from "../../components/ui/AppButton";
 import { RemoveParticipantButton } from "../../components/ui/RemoveParticipantButton";
 import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
 import { useAuth } from "../../hooks/authContext";
+import { useDeleteAnnouncement } from "../../hooks/mutations/useDeleteAnnouncement";
 import { useAnnouncementDetails } from "../../hooks/queries/useAnnouncementDetails";
 
 export default function AnnouncementDetailScreen({
@@ -20,7 +22,9 @@ export default function AnnouncementDetailScreen({
 }: {
     announcementId: string;
 }) {
+    const router = useRouter();
     const { data: item, isLoading } = useAnnouncementDetails(announcementId);
+    const { mutate: deleteAnnouncement } = useDeleteAnnouncement();
     const { session } = useAuth();
 
     if (isLoading) {
@@ -41,6 +45,11 @@ export default function AnnouncementDetailScreen({
         );
     }
     const isOwner = isMyAnnouncement(item, session?.user.id);
+
+    const handleDelete = (id: string) => () => {
+        deleteAnnouncement(id);
+        router.replace("/(tabs)/home");
+    };
 
     return (
         <ScreenWrapper
@@ -67,15 +76,13 @@ export default function AnnouncementDetailScreen({
                                         {item.owner.fcName}
                                     </Text>
                                 </View>
-                                {item.owner.settings.toConvey && (
-                                    <View
-                                        style={[styles.badge, styles.badgeBlue]}
-                                    >
-                                        <Text style={styles.badgeTextBlue}>
-                                            Conducteur
-                                        </Text>
-                                    </View>
-                                )}
+                                <View style={[styles.badge, styles.badgeBlue]}>
+                                    <Text style={styles.badgeTextBlue}>
+                                        {item.owner?.settings.toConvey
+                                            ? "Véhiculé"
+                                            : "Non-véhiculé"}
+                                    </Text>
+                                </View>
                             </View>
                         </View>
                     </View>
@@ -135,10 +142,12 @@ export default function AnnouncementDetailScreen({
                                     {p.city}
                                 </Text>
                             </View>
-                            <RemoveParticipantButton
-                                participant={p}
-                                annonce={item}
-                            />
+                            {isOwner && (
+                                <RemoveParticipantButton
+                                    participant={p}
+                                    annonce={item}
+                                />
+                            )}
                         </View>
                     ))
                 ) : (
@@ -157,7 +166,7 @@ export default function AnnouncementDetailScreen({
                             />
                             <AppButton
                                 title="Supprimer l'annonce"
-                                onPress={() => console.log("Supprimer")}
+                                onPress={handleDelete(item.id)}
                                 variant="danger"
                             />
                         </>

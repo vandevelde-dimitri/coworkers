@@ -38,8 +38,6 @@ export default function RegisterScreen() {
     });
 
     const onSubmit = async (data: Register) => {
-        console.log(data);
-
         register(data);
     };
 
