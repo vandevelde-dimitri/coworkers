@@ -21,7 +21,6 @@ export default function OnboardingScreen() {
     const { data: floors } = useFloors();
     const [step, setStep] = useState(1);
 
-    /* ===================== OPTIONS & DATA ===================== */
     const centersOptions =
         floors?.map((c) => ({ label: c.name, value: c.id })) || [];
     const contractOptions = Object.values(UserContract).map((c) => ({
@@ -33,7 +32,6 @@ export default function OnboardingScreen() {
         value: t,
     }));
 
-    /* ===================== FORM VALIDATION ===================== */
     const schema = yup.object({
         firstname: yup.string().required("Prénom requis"),
         lastname: yup.string().required("Nom requis"),
@@ -53,7 +51,6 @@ export default function OnboardingScreen() {
         resolver: yupResolver(schema),
     });
 
-    /* ===================== LOGIC ===================== */
     const handleNext = async () => {
         let fields: (keyof any)[] = [];
         if (step === 1) fields = ["firstname", "lastname"];
@@ -85,13 +82,11 @@ export default function OnboardingScreen() {
         }
     };
 
-    /* ===================== UI RENDERING ===================== */
     return (
         <View style={styles.container}>
             <StatusBar style="dark" />
             <StackHeader title="Nouveau Profil" />
 
-            {/* Barre de Progression */}
             <View style={styles.progressBg}>
                 <View
                     style={[

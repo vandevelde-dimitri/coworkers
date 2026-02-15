@@ -14,7 +14,7 @@ export default function AnnouncementCardListItem({
     const dateStr = new Date(item.dateStart).toLocaleDateString("fr-FR");
 
     return (
-        <TouchableOpacity activeOpacity={0.9} onPress={onPress}>
+        <View>
             <LinearGradient
                 colors={[
                     "rgba(255, 255, 255, 0.08)",
@@ -69,8 +69,8 @@ export default function AnnouncementCardListItem({
                                         ]}
                                     >
                                         {item.owner?.settings.toConvey
-                                            ? "Conducteur"
-                                            : "Passager"}
+                                            ? "Véhiculé"
+                                            : "Non-véhiculé"}
                                     </Text>
                                 </View>
                             </View>
@@ -94,20 +94,23 @@ export default function AnnouncementCardListItem({
 
                 <View style={styles.cardFooter}>
                     <View style={styles.tagsRow}>
-                        {/* On peut imaginer des petits tags ici */}
-                        <Text style={styles.tagText}>#LIL1</Text>
+                        <Text style={styles.tagText}>#{item.owner.fcName}</Text>
+                        <Text style={styles.tagText}>#{item.owner.team}</Text>
                     </View>
-                    <View style={styles.actionButton}>
+                    <TouchableOpacity
+                        style={styles.actionButton}
+                        onPress={onPress}
+                    >
                         <Text style={styles.actionButtonText}>Voir</Text>
                         <SymbolView
                             name="chevron.right"
                             size={12}
                             tintColor="#fff"
                         />
-                    </View>
+                    </TouchableOpacity>
                 </View>
             </LinearGradient>
-        </TouchableOpacity>
+        </View>
     );
 }
 
