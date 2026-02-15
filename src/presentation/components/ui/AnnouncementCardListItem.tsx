@@ -2,11 +2,13 @@ import { Announcement } from "@/src/domain/entities/announcement/Announcement";
 import { LinearGradient } from "expo-linear-gradient";
 import { SymbolView } from "expo-symbols";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 export default function AnnouncementCardListItem({
     item,
+    onPress,
 }: {
     item: Announcement;
+    onPress: () => void;
 }) {
     const dateStr = new Date(item.dateStart).toLocaleDateString("fr-FR");
     return (
@@ -28,10 +30,9 @@ export default function AnnouncementCardListItem({
                 <View style={styles.cardHeader}>
                     <View style={styles.driverSection}>
                         <View style={styles.avatarCircle}>
-                            <SymbolView
-                                name="person.fill"
-                                size={16}
-                                tintColor="#fff"
+                            <Image
+                                source={{ uri: item.owner.profileAvatar }}
+                                style={styles.avatar}
                             />
                         </View>
                         <View>
@@ -47,7 +48,7 @@ export default function AnnouncementCardListItem({
                                     />
                                     <Text style={styles.carBadgeText}>
                                         {item.owner.settings.toConvey
-                                            ? "Véhiculer"
+                                            ? "Véhiculé"
                                             : "Pas de véhicule"}
                                     </Text>
                                 </View>
@@ -71,7 +72,10 @@ export default function AnnouncementCardListItem({
 
                 <View style={styles.cardFooter}>
                     <View />
-                    <TouchableOpacity style={styles.actionButton}>
+                    <TouchableOpacity
+                        onPress={onPress}
+                        style={styles.actionButton}
+                    >
                         <Text style={styles.actionButtonText}>
                             Voir détails
                         </Text>
@@ -111,6 +115,12 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(255,255,255,0.2)",
         justifyContent: "center",
         alignItems: "center",
+    },
+    avatar: {
+        width: 40,
+        height: 40,
+        borderRadius: 30,
+        backgroundColor: "#E9ECEF",
     },
     driverName: { color: "#fff", fontWeight: "700", fontSize: 15 },
     dateText: { color: "rgba(255,255,255,0.7)", fontSize: 11 },

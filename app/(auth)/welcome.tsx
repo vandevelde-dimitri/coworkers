@@ -21,7 +21,7 @@ export default function WelcomeScreen() {
             </TouchableOpacity>
             <TouchableOpacity
                 style={[styles.button, styles.buttonSecondary]}
-                onPress={() => router.navigate("/(tabs)")}
+                onPress={() => router.navigate("/(tabs)/home")}
             >
                 <Text style={styles.buttonTextSecondary}>
                     Continuer en tant qu'invité

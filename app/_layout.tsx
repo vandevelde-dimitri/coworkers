@@ -65,7 +65,7 @@ function RootLayoutNav() {
     useEffect(() => {
         if (!loading) {
             if (session) {
-                router.replace("/(tabs)");
+                router.replace("/(tabs)/profile");
             } else {
                 router.replace("/(auth)/welcome");
             }

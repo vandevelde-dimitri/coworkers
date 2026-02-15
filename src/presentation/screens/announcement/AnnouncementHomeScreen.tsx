@@ -33,7 +33,7 @@ const FILTER_OPTIONS = [
     },
 ];
 
-export default function HomeScreen() {
+export default function AnnouncementHomeScreen() {
     const router = useRouter();
     const { session } = useAuth();
     const { data: currentUser } = useCurrentUser();
@@ -169,7 +169,15 @@ export default function HomeScreen() {
                         data={announcements}
                         keyExtractor={(item) => item.id}
                         renderItem={({ item }) => (
-                            <AnnouncementCardListItem item={item} />
+                            <AnnouncementCardListItem
+                                item={item}
+                                onPress={() =>
+                                    router.push({
+                                        pathname: "/(tabs)/home/[id]",
+                                        params: { id: item.id },
+                                    })
+                                }
+                            />
                         )}
                         contentContainerStyle={styles.listContent}
                         showsVerticalScrollIndicator={false}
@@ -234,17 +242,16 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     filterListContent: {
-        paddingRight: 40, // Pour éviter que le dernier bouton colle au bord
+        paddingRight: 40,
     },
     filterBtn: {
-        backgroundColor: "#FFFFFF", // Fond blanc par défaut
+        backgroundColor: "#FFFFFF",
         paddingHorizontal: 20,
         paddingVertical: 10,
-        borderRadius: 25, // Forme pilule
+        borderRadius: 25,
         marginRight: 10,
         borderWidth: 1,
         borderColor: "#E9ECEF",
-        // Petite ombre pour la profondeur
         elevation: 2,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 1 },
@@ -252,7 +259,7 @@ const styles = StyleSheet.create({
         shadowRadius: 2,
     },
     filterBtnActive: {
-        backgroundColor: "#141E30", // Slate (Ardoise)
+        backgroundColor: "#141E30",
         borderColor: "#141E30",
     },
     filterBtnDisabled: {
@@ -260,11 +267,11 @@ const styles = StyleSheet.create({
     },
     filterText: {
         fontWeight: "600",
-        color: "#6C757D", // Gris moyen
+        color: "#6C757D",
         fontSize: 14,
     },
     filterTextActive: {
-        color: "#FFFFFF", // Blanc sur fond sombre
+        color: "#FFFFFF",
     },
     filterTextDisabled: {
         color: "#ADB5BD",

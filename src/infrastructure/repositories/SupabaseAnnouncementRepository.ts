@@ -14,13 +14,14 @@ export class SupabaseAnnouncementRepository implements IAnnouncementRepository {
         return `
             *,
             owner:users (
-                id, firstname, image_profile, city, avatar_updated_at, contract,
+                id, firstname, image_profile, city, avatar_updated_at, contract,fc:fc_id (id, name),
                 settings:settings!user_id (to_convey)
             ),
             participant_requests (
                 id, status, user_id,
                 users (
                     id, firstname, image_profile, city, avatar_updated_at, contract,
+                    fc:fc_id (id, name),
                     settings:settings!user_id (to_convey)
                 )
             )
@@ -35,6 +36,7 @@ export class SupabaseAnnouncementRepository implements IAnnouncementRepository {
             .maybeSingle();
 
         if (error) throw error;
+
         if (!annonce) return null;
 
         return AnnouncementMapper.toDomain(annonce);
