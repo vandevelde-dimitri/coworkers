@@ -6,7 +6,7 @@ export interface Announcement {
     content: string;
     createdAt: Date;
     dateStart: Date;
-    dateEnd?: Date;
+    dateEnd?: Date | null;
     places: number;
     owner: User;
     passenger: User[];
@@ -15,4 +15,7 @@ export interface Announcement {
 export type UpdateAnnouncementPayload = Partial<
     Omit<Announcement, "id" | "createdAt" | "owner" | "passenger">
 >;
-export type CreateAnnouncementPayload = Omit<Announcement, "id" | "createdAt">;
+export type CreateAnnouncementPayload = Omit<
+    Announcement,
+    "id" | "createdAt" | "owner" | "passenger"
+>;

@@ -18,7 +18,7 @@ interface FormInputProps {
     placeholder?: string;
     type?: InputType;
     rules?: object;
-    iconName: React.ComponentProps<typeof Ionicons>["name"];
+    iconName?: React.ComponentProps<typeof Ionicons>["name"];
 }
 
 export const FormInput = ({

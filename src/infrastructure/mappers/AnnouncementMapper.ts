@@ -26,18 +26,18 @@ export class AnnouncementMapper {
     }
 
     static toPersistence(announcement: Partial<Announcement>) {
-        const data: any = {
+        const formatDate = (date: any) => {
+            if (!date) return null;
+            if (typeof date === "string") return date.split("T")[0];
+            return date.toISOString().split("T")[0];
+        };
+
+        return {
             title: announcement.title,
             content: announcement.content,
             number_of_places: announcement.places,
-            date_start: announcement.dateStart
-                ? announcement.dateStart.toISOString()
-                : null,
-            date_end: announcement.dateEnd
-                ? announcement.dateEnd.toISOString()
-                : null,
+            date_start: formatDate(announcement.dateStart),
+            date_end: formatDate(announcement.dateEnd),
         };
-
-        return data;
     }
 }

@@ -50,7 +50,6 @@ export class CreateAnnouncementUseCase {
                 "ERR_ANN_CREATE_FLOW",
                 "Flux complet de création d'annonce",
                 error,
-                payload.owner.id,
             );
             throw error;
         }
