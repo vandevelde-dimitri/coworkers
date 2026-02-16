@@ -11,7 +11,7 @@ export class UserMapper {
             team: raw.team,
             contract: raw.contract,
             fcId: raw.fc_id,
-            fcName: raw.fc.name,
+            fcName: raw.fc?.name,
             memberSince: new Date(raw.created_at),
             settings: {
                 toConvey: raw.settings ? raw.settings.to_convey : false,

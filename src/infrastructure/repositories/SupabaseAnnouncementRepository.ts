@@ -98,7 +98,13 @@ export class SupabaseAnnouncementRepository implements IAnnouncementRepository {
         const { data, error } = await supabase
             .from("annonces")
             .insert([{ ...persistenceData, user_id: authUser.id }])
-            .select()
+            .select(
+                `
+        *,
+        owner:users!user_id (*),
+        participant_requests (*)
+    `,
+            )
             .single();
 
         if (error) {

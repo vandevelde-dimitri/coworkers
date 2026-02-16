@@ -30,9 +30,7 @@ export class AnnouncementMapper {
             title: announcement.title,
             content: announcement.content,
             number_of_places: announcement.places,
-            date_start: announcement.dateStart
-                ? announcement.dateStart.toISOString()
-                : null,
+            date_start: announcement.dateStart ? announcement.dateStart : null,
             date_end: announcement.dateEnd
                 ? announcement.dateEnd.toISOString()
                 : null,

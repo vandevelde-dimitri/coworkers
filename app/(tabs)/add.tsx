@@ -1,28 +1,5 @@
-import { StyleSheet, Text, View } from "react-native";
+import CreateAnnouncementScreen from "@/src/presentation/screens/announcement/CreateAnnouncementScreen";
 
-export default function AddScreen() {
-    return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Creation annonce</Text>
-            <Text style={styles.subtitle}>Écran de création</Text>
-        </View>
-    );
+export default function CreateAnnouncementPage() {
+    return <CreateAnnouncementScreen />;
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#f5f5f5",
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: "bold",
-        marginBottom: 10,
-    },
-    subtitle: {
-        fontSize: 16,
-        color: "#666",
-    },
-});

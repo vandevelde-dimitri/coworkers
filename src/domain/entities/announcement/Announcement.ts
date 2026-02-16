@@ -15,4 +15,7 @@ export interface Announcement {
 export type UpdateAnnouncementPayload = Partial<
     Omit<Announcement, "id" | "createdAt" | "owner" | "passenger">
 >;
-export type CreateAnnouncementPayload = Omit<Announcement, "id" | "createdAt">;
+export type CreateAnnouncementPayload = Omit<
+    Announcement,
+    "id" | "createdAt" | "owner" | "passenger"
+>;
