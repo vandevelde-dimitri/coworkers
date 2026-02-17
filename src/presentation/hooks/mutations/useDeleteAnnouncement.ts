@@ -13,8 +13,12 @@ export function useDeleteAnnouncement() {
     return useMutation({
         mutationFn: (id: string) => useCase.execute(id),
 
-        onSuccess: () => {
+        onSuccess: (_, id) => {
             queryClient.invalidateQueries({ queryKey: ["announcements"] });
+            queryClient.invalidateQueries({ queryKey: ["announcements", id] });
+            queryClient.invalidateQueries({
+                queryKey: ["announcements", "owner"],
+            });
         },
         onError: () => {},
     });

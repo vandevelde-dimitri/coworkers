@@ -22,6 +22,9 @@ export const useCreateAnnouncement = () => {
         onSuccess: () => {
             Alert.alert("Creation réussie");
             queryClient.invalidateQueries({ queryKey: ["announcements"] });
+            queryClient.invalidateQueries({
+                queryKey: ["announcements", "owner"],
+            });
             router.push("/(tabs)/home");
         },
     });

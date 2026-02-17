@@ -25,6 +25,9 @@ export const useUpdateAnnouncement = () => {
         onSuccess: (_, { id }) => {
             Alert.alert("Modification réussie");
             queryClient.invalidateQueries({ queryKey: ["announcements"] });
+            queryClient.invalidateQueries({
+                queryKey: ["announcements", "owner"],
+            });
             queryClient.invalidateQueries({ queryKey: ["announcements", id] });
             router.push("/(tabs)/home");
         },

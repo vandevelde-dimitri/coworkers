@@ -68,6 +68,7 @@ export class SupabaseAnnouncementRepository implements IAnnouncementRepository {
 
         return { announcements, totalCount };
     }
+    
     async findOwnerAnnouncement(): Promise<Announcement | null> {
         const {
             data: { user: authUser },
