@@ -19,10 +19,12 @@ export default function TabLayout() {
     const router = useRouter();
     const isLoggedIn = !!session;
     const colorScheme = useColorScheme();
+
     const protectedAction = (e: any) => {
         if (!isLoggedIn) {
             e.preventDefault();
             router.push("/(auth)/welcome");
+            return;
         }
     };
 
@@ -64,7 +66,7 @@ export default function TabLayout() {
                 />
 
                 <Tabs.Screen
-                    name="add"
+                    name="formAnnouncement"
                     options={{
                         title: "Ajouter",
                         tabBarIcon: ({ focused, color, size }) => (
@@ -79,7 +81,15 @@ export default function TabLayout() {
                             />
                         ),
                     }}
-                    listeners={{ tabPress: (e) => protectedAction(e) }}
+                    listeners={{
+                        tabPress: (e) => {
+                            protectedAction(e);
+                            router.push({
+                                pathname: "/(tabs)/formAnnouncement",
+                                params: { id: undefined },
+                            });
+                        },
+                    }}
                 />
                 <Tabs.Screen
                     name="messaging"

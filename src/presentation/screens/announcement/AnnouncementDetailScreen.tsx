@@ -51,6 +51,13 @@ export default function AnnouncementDetailScreen({
         router.replace("/(tabs)/home");
     };
 
+    const handleChange = (id: string) => () => {
+        router.push({
+            pathname: "/(tabs)/formAnnouncement",
+            params: { id: item.id },
+        });
+    };
+
     return (
         <ScreenWrapper
             title={item ? `Annonce de ${item.owner.firstName}` : "Détails"}
@@ -161,7 +168,7 @@ export default function AnnouncementDetailScreen({
                         <>
                             <AppButton
                                 title="Modifier l'annonce"
-                                onPress={() => console.log("Modifier")}
+                                onPress={handleChange(item.id)}
                                 variant="primary"
                             />
                             <AppButton
