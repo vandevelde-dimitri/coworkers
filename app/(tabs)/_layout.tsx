@@ -1,9 +1,13 @@
 import { CurvedBottomTabs } from "@/src/presentation/components/ui/base/curved-bottom-tabs";
 import { useAuth } from "@/src/presentation/hooks/authContext";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
-import { Tabs, useRouter } from "expo-router";
+import {
+    ExternalPathString,
+    RelativePathString,
+    Tabs,
+    useRouter,
+} from "expo-router";
 import React from "react";
-import { useColorScheme } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -18,30 +22,36 @@ export default function TabLayout() {
     const { session } = useAuth();
     const router = useRouter();
     const isLoggedIn = !!session;
-    const colorScheme = useColorScheme();
 
-    const protectedAction = (e: any) => {
-        if (!isLoggedIn) {
+    const handleTabPress = (e: any, target: string) => {
+        if (!isLoggedIn && target !== "home") {
             e.preventDefault();
             router.push("/(auth)/welcome");
             return;
         }
+
+        e.preventDefault();
+
+        if (router.canDismiss()) {
+            router.dismissAll();
+        }
+
+        router.push(
+            `/(tabs)/${target}` as RelativePathString | ExternalPathString,
+        );
     };
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <Tabs
                 tabBar={(props) => <CurvedBottomTabs {...props} />}
-                screenOptions={{
-                    headerShown: false,
-                }}
+                screenOptions={{ headerShown: false }}
             >
                 <Tabs.Screen
                     name="home"
                     options={{
-                        title: "Acceuil",
-
-                        tabBarIcon: ({ focused, color, size }) => (
+                        title: "Accueil",
+                        tabBarIcon: ({ focused }) => (
                             <Ionicons
                                 name={focused ? "home" : "home-outline"}
                                 size={20}
@@ -49,12 +59,16 @@ export default function TabLayout() {
                             />
                         ),
                     }}
+                    listeners={{
+                        tabPress: (e) => handleTabPress(e, "home"),
+                    }}
                 />
+
                 <Tabs.Screen
                     name="travel"
                     options={{
                         title: "Mes trajets",
-                        tabBarIcon: ({ focused, color, size }) => (
+                        tabBarIcon: ({ focused }) => (
                             <Ionicons
                                 name={focused ? "car" : "car-outline"}
                                 size={20}
@@ -62,14 +76,16 @@ export default function TabLayout() {
                             />
                         ),
                     }}
-                    listeners={{ tabPress: (e) => protectedAction(e) }}
+                    listeners={{
+                        tabPress: (e) => handleTabPress(e, "travel"),
+                    }}
                 />
 
                 <Tabs.Screen
                     name="formAnnouncement"
                     options={{
                         title: "Ajouter",
-                        tabBarIcon: ({ focused, color, size }) => (
+                        tabBarIcon: ({ focused }) => (
                             <Ionicons
                                 name={
                                     focused
@@ -83,19 +99,16 @@ export default function TabLayout() {
                     }}
                     listeners={{
                         tabPress: (e) => {
-                            protectedAction(e);
-                            router.push({
-                                pathname: "/(tabs)/formAnnouncement",
-                                params: { id: undefined },
-                            });
+                            handleTabPress(e, "formAnnouncement");
                         },
                     }}
                 />
+
                 <Tabs.Screen
                     name="messaging"
                     options={{
                         title: "Messages",
-                        tabBarIcon: ({ focused, color, size }) => (
+                        tabBarIcon: ({ focused }) => (
                             <Ionicons
                                 name={focused ? "chatbox" : "chatbox-outline"}
                                 size={20}
@@ -103,13 +116,16 @@ export default function TabLayout() {
                             />
                         ),
                     }}
-                    listeners={{ tabPress: (e) => protectedAction(e) }}
+                    listeners={{
+                        tabPress: (e) => handleTabPress(e, "messaging"),
+                    }}
                 />
+
                 <Tabs.Screen
                     name="profile"
                     options={{
                         title: "Profil",
-                        tabBarIcon: ({ focused, color, size }) => (
+                        tabBarIcon: ({ focused }) => (
                             <Ionicons
                                 name={
                                     focused
@@ -121,7 +137,9 @@ export default function TabLayout() {
                             />
                         ),
                     }}
-                    listeners={{ tabPress: (e) => protectedAction(e) }}
+                    listeners={{
+                        tabPress: (e) => handleTabPress(e, "profile"),
+                    }}
                 />
             </Tabs>
         </GestureHandlerRootView>
