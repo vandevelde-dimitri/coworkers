@@ -1,5 +1,6 @@
 import { useColorScheme } from "@/src/presentation/components/useColorScheme.web";
 import { AuthProvider, useAuth } from "@/src/presentation/hooks/authContext";
+import { MessageProvider } from "@/src/presentation/hooks/context/messageContext";
 import { queryClient } from "@/utils/react-query";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {
@@ -51,7 +52,9 @@ export default function RootLayout() {
     return (
         <QueryClientProvider client={queryClient}>
             <AuthProvider>
-                <RootLayoutNav />
+                <MessageProvider>
+                    <RootLayoutNav />
+                </MessageProvider>
             </AuthProvider>
         </QueryClientProvider>
     );

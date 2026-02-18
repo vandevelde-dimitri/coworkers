@@ -4,5 +4,5 @@ import { useLocalSearchParams } from "expo-router";
 export default function ChatPage() {
     const { id } = useLocalSearchParams<{ id: string }>();
 
-    return <ChatScreen />;
+    return <ChatScreen conversationId={id} />;
 }

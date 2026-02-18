@@ -1,3 +1,4 @@
+import { Conversation } from "@/src/domain/entities/chat/Conversation";
 import { LinearGradient } from "expo-linear-gradient";
 import { SymbolView } from "expo-symbols";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -7,7 +8,7 @@ export function ConversationItem({
     unread,
     onPress,
 }: {
-    item: ConversationPreview;
+    item: Conversation;
     unread: boolean;
     onPress: () => void;
 }) {
@@ -25,14 +26,17 @@ export function ConversationItem({
                 <View style={styles.cardContent}>
                     <View style={styles.avatarWrapper}>
                         <Image
-                            source={{ uri: item.avatar }}
+                            source={{ uri: item.interlocutor.avatarUrl }}
                             style={styles.avatar}
                         />
-                        {item.unread > 0 && <View style={styles.unreadDot} />}
+                        {unread && <View style={styles.unreadDot} />}
                     </View>
                     <View style={styles.textSection}>
                         <View style={styles.nameRow}>
-                            <Text style={styles.userNameText}>{item.name}</Text>
+                            <Text style={styles.userNameText}>
+                                {item.interlocutor.firstName}{" "}
+                                {item.interlocutor.lastName}
+                            </Text>
                             <Text style={styles.dateText}>12:45</Text>
                         </View>
                         <Text style={styles.previewText} numberOfLines={1}>

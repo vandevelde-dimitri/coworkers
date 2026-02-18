@@ -13,7 +13,11 @@ import {
     View,
 } from "react-native";
 
-export default function ChatScreen() {
+export default function ChatScreen({
+    conversationId,
+}: {
+    conversationId: string;
+}) {
     const [message, setMessage] = useState("");
     const MESSAGES_DATA = [
         { id: "1", text: "Salut, ça va ?", isMine: false },

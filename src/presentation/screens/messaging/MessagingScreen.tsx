@@ -3,42 +3,28 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { FlatList, StyleSheet } from "react-native";
 import { ConversationItem } from "../../components/ui/ConversationItem";
+import { useMessageStatus } from "../../hooks/context/messageContext";
+import { useGetConversations } from "../../hooks/queries/useGetConversation";
 
 export default function MessagingScreen() {
+    const { data: conversation, isLoading } = useGetConversations();
+    const { unreadConversations } = useMessageStatus();
     const router = useRouter();
-    const DUMMY_DATA = [
-        {
-            id: "1",
-            name: "Jean-Michel",
-            lastMessage: "Salut, ça va ?",
-            avatar: "https://randomuser.me/api/portraits/men/1.jpg",
-            unread: 2,
-        },
-        {
-            id: "2",
-            name: "Sophie",
-            lastMessage: "On se voit demain ?",
-            avatar: "https://randomuser.me/api/portraits/women/2.jpg",
-            unread: 0,
-        },
-        {
-            id: "3",
-            name: "Alex",
-            lastMessage: "J'ai une question sur l'annonce.",
-            avatar: "https://randomuser.me/api/portraits/men/3.jpg",
-            unread: 1,
-        },
-    ];
 
     return (
-        <ScreenWrapper title="Messages" showBackButton={false}>
+        <ScreenWrapper title="Conversation" showBackButton={false}>
             <FlatList
-                data={DUMMY_DATA}
+                data={conversation}
                 renderItem={({ item }) => (
                     <ConversationItem
                         item={item}
-                        unread={!!unreadConversations[item.conversation_id]}
-                        onPress={() => console.log("toto")}
+                        unread={!!unreadConversations[item.id]}
+                        onPress={() =>
+                            router.push({
+                                pathname: "/(tabs)/messaging/[id]",
+                                params: { id: item.id },
+                            })
+                        }
                     />
                 )}
                 keyExtractor={(item) => item.id}
