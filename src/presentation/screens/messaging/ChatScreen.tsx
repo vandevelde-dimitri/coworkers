@@ -11,30 +11,62 @@ import {
     TextInput,
     TouchableOpacity,
     View,
+    ActivityIndicator,
 } from "react-native";
+
+// --- Imports Architecture & Hooks ---
+import { useAuth } from "@/src/presentation/context/authContext";
+import { useChatMessages } from "@/src/presentation/hooks/useChatMessages";
+import { useSendMessage } from "@/src/presentation/hooks/useSendMessage";
+import { Message } from "@/src/domain/entities/chat/Message";
+
+interface ChatScreenProps {
+    conversationId: string;
+    interlocutorName?: string;
+}
 
 export default function ChatScreen({
     conversationId,
-}: {
-    conversationId: string;
-}) {
-    const [message, setMessage] = useState("");
-    const MESSAGES_DATA = [
-        { id: "1", text: "Salut, ça va ?", isMine: false },
-        { id: "2", text: "Oui, et toi ?", isMine: true },
-        { id: "3", text: "Ça roule ! Tu pars d'où demain ?", isMine: false },
-        { id: "4", text: "Je pars de la gare à 8h30.", isMine: true },
-        { id: "5", text: "Parfait, à demain alors !", isMine: false },
-        {
-            id: "6",
-            text: "N'oublie pas de prendre les billets.",
-            isMine: false,
-        },
-        { id: "7", text: "Bien sûr, je les ai déjà.", isMine: true },
-    ];
+    interlocutorName,
+}: ChatScreenProps) {
+    const { session } = useAuth();
+    const userId = session?.user.id ?? "";
+    const [messageText, setMessageText] = useState("");
 
-    const renderMessage = ({ item }) => {
+    // 1. Récupération des messages avec pagination infinie et Realtime
+    const { 
+        data, 
+        fetchNextPage, 
+        hasNextPage, 
+        isFetchingNextPage, 
+        isLoading 
+    } = useChatMessages(conversationId, userId);
+
+    // 2. Hook pour l'envoi de messages
+    const { mutate: sendMessage, isPending: isSending } = useSendMessage(conversationId);
+
+    // Transformation des pages TanStack Query en une liste plate de messages
+    const messages = data?.pages.flat() ?? [];
+
+    const handleSend = () => {
+        if (!messageText.trim() || isSending) return;
+        
+        sendMessage(
+            { userId, content: messageText },
+            {
+                onSuccess: () => setMessageText(""), // Vide l'input après succès
+            }
+        );
+    };
+
+    const renderMessage = ({ item }: { item: Message }) => {
         const isMine = item.isMine;
+        
+        // Formatage simple de l'heure
+        const time = item.createdAt 
+            ? new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+            : "";
+
         return (
             <View
                 style={[
@@ -58,27 +90,42 @@ export default function ChatScreen({
                         isMine ? styles.myBubble : styles.theirBubble,
                     ]}
                 >
-                    <Text style={styles.messageText}>{item.text}</Text>
-                    <Text style={styles.messageTime}>12:48</Text>
+                    <Text style={styles.messageText}>{item.content}</Text>
+                    <Text style={styles.messageTime}>{time}</Text>
                 </LinearGradient>
             </View>
         );
     };
 
     return (
-        <ScreenWrapper title="Jean-Michel" showBackButton={true}>
+        <ScreenWrapper title={interlocutorName ?? "Messages"} showBackButton={true}>
             <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                behavior={Platform.OS === "ios" ? "padding" : undefined}
                 style={styles.container}
                 keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
             >
-                <FlatList
-                    data={MESSAGES_DATA}
-                    renderItem={renderMessage}
-                    keyExtractor={(item) => item.id}
-                    contentContainerStyle={styles.chatList}
-                    inverted
-                />
+                {isLoading ? (
+                    <View style={styles.center}>
+                        <ActivityIndicator color="#3B82F6" />
+                    </View>
+                ) : (
+                    <FlatList
+                        data={messages}
+                        renderItem={renderMessage}
+                        keyExtractor={(item) => item.id}
+                        contentContainerStyle={styles.chatList}
+                        inverted // Affiche les messages du bas vers le haut
+                        onEndReached={() => {
+                            if (hasNextPage) fetchNextPage();
+                        }}
+                        onEndReachedThreshold={0.3}
+                        ListFooterComponent={
+                            isFetchingNextPage ? (
+                                <ActivityIndicator size="small" style={{ marginVertical: 10 }} color="#3B82F6" />
+                            ) : null
+                        }
+                    />
+                )}
 
                 <View style={styles.inputWrapper}>
                     <LinearGradient
@@ -92,20 +139,31 @@ export default function ChatScreen({
                             style={styles.input}
                             placeholder="Votre message..."
                             placeholderTextColor="rgba(255, 255, 255, 0.4)"
-                            value={message}
-                            onChangeText={setMessage}
+                            value={messageText}
+                            onChangeText={setMessageText}
                             multiline
                         />
-                        <TouchableOpacity style={styles.sendButton}>
+                        <TouchableOpacity 
+                            style={styles.sendButton} 
+                            onPress={handleSend}
+                            disabled={!messageText.trim() || isSending}
+                        >
                             <LinearGradient
                                 colors={["#1E3A8A", "#3B82F6"]}
-                                style={styles.sendGradient}
+                                style={[
+                                    styles.sendGradient,
+                                    (!messageText.trim() || isSending) && { opacity: 0.5 }
+                                ]}
                             >
-                                <SymbolView
-                                    name="paperplane.fill"
-                                    size={16}
-                                    tintColor="#fff"
-                                />
+                                {isSending ? (
+                                    <ActivityIndicator size="small" color="#fff" />
+                                ) : (
+                                    <SymbolView
+                                        name="paperplane.fill"
+                                        size={16}
+                                        tintColor="#fff"
+                                    />
+                                )}
                             </LinearGradient>
                         </TouchableOpacity>
                     </LinearGradient>
@@ -117,6 +175,7 @@ export default function ChatScreen({
 
 const styles = StyleSheet.create({
     container: { flex: 1 },
+    center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
     chatList: { padding: 20, gap: 12 },
 
     messageRow: { flexDirection: "row", marginBottom: 4 },
@@ -144,7 +203,7 @@ const styles = StyleSheet.create({
 
     inputWrapper: {
         padding: 15,
-        paddingBottom: Platform.OS === "ios" ? 30 : 100,
+        paddingBottom: Platform.OS === "ios" ? 30 : 20,
     },
     inputGradient: {
         flexDirection: "row",
