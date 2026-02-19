@@ -1,8 +1,10 @@
+import { MessageInterface } from "@/src/domain/entities/chat/Message";
 import { ScreenWrapper } from "@/src/presentation/components/ui/ScreenWrapper";
 import { LinearGradient } from "expo-linear-gradient";
 import { SymbolView } from "expo-symbols";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
+    ActivityIndicator,
     FlatList,
     KeyboardAvoidingView,
     Platform,
@@ -11,14 +13,11 @@ import {
     TextInput,
     TouchableOpacity,
     View,
-    ActivityIndicator,
 } from "react-native";
-
-// --- Imports Architecture & Hooks ---
-import { useAuth } from "@/src/presentation/context/authContext";
-import { useChatMessages } from "@/src/presentation/hooks/useChatMessages";
-import { useSendMessage } from "@/src/presentation/hooks/useSendMessage";
-import { Message } from "@/src/domain/entities/chat/Message";
+import { useAuth } from "../../hooks/authContext";
+import { useMessageStatus } from "../../hooks/context/messageContext";
+import { useSendMessage } from "../../hooks/mutations/useSendMessage";
+import { useChatMessages } from "../../hooks/queries/useChatMessages";
 
 interface ChatScreenProps {
     conversationId: string;
@@ -32,39 +31,39 @@ export default function ChatScreen({
     const { session } = useAuth();
     const userId = session?.user.id ?? "";
     const [messageText, setMessageText] = useState("");
+    const { markConversationRead } = useMessageStatus();
 
-    // 1. Récupération des messages avec pagination infinie et Realtime
-    const { 
-        data, 
-        fetchNextPage, 
-        hasNextPage, 
-        isFetchingNextPage, 
-        isLoading 
-    } = useChatMessages(conversationId, userId);
+    useEffect(() => {
+        markConversationRead(conversationId);
+    }, [conversationId, markConversationRead]);
 
-    // 2. Hook pour l'envoi de messages
-    const { mutate: sendMessage, isPending: isSending } = useSendMessage(conversationId);
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+        useChatMessages(conversationId, userId);
 
-    // Transformation des pages TanStack Query en une liste plate de messages
+    const { mutate: sendMessage, isPending: isSending } =
+        useSendMessage(conversationId);
+
     const messages = data?.pages.flat() ?? [];
 
     const handleSend = () => {
         if (!messageText.trim() || isSending) return;
-        
+
         sendMessage(
             { userId, content: messageText },
             {
-                onSuccess: () => setMessageText(""), // Vide l'input après succès
-            }
+                onSuccess: () => setMessageText(""),
+            },
         );
     };
 
-    const renderMessage = ({ item }: { item: Message }) => {
+    const renderMessage = ({ item }: { item: MessageInterface }) => {
         const isMine = item.isMine;
-        
-        // Formatage simple de l'heure
-        const time = item.createdAt 
-            ? new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+
+        const time = item.createdAt
+            ? new Date(item.createdAt).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+              })
             : "";
 
         return (
@@ -98,7 +97,10 @@ export default function ChatScreen({
     };
 
     return (
-        <ScreenWrapper title={interlocutorName ?? "Messages"} showBackButton={true}>
+        <ScreenWrapper
+            title={interlocutorName ?? "Messages"}
+            showBackButton={true}
+        >
             <KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : undefined}
                 style={styles.container}
@@ -114,14 +116,18 @@ export default function ChatScreen({
                         renderItem={renderMessage}
                         keyExtractor={(item) => item.id}
                         contentContainerStyle={styles.chatList}
-                        inverted // Affiche les messages du bas vers le haut
+                        inverted
                         onEndReached={() => {
                             if (hasNextPage) fetchNextPage();
                         }}
                         onEndReachedThreshold={0.3}
                         ListFooterComponent={
                             isFetchingNextPage ? (
-                                <ActivityIndicator size="small" style={{ marginVertical: 10 }} color="#3B82F6" />
+                                <ActivityIndicator
+                                    size="small"
+                                    style={{ marginVertical: 10 }}
+                                    color="#3B82F6"
+                                />
                             ) : null
                         }
                     />
@@ -143,8 +149,8 @@ export default function ChatScreen({
                             onChangeText={setMessageText}
                             multiline
                         />
-                        <TouchableOpacity 
-                            style={styles.sendButton} 
+                        <TouchableOpacity
+                            style={styles.sendButton}
                             onPress={handleSend}
                             disabled={!messageText.trim() || isSending}
                         >
@@ -152,11 +158,16 @@ export default function ChatScreen({
                                 colors={["#1E3A8A", "#3B82F6"]}
                                 style={[
                                     styles.sendGradient,
-                                    (!messageText.trim() || isSending) && { opacity: 0.5 }
+                                    (!messageText.trim() || isSending) && {
+                                        opacity: 0.5,
+                                    },
                                 ]}
                             >
                                 {isSending ? (
-                                    <ActivityIndicator size="small" color="#fff" />
+                                    <ActivityIndicator
+                                        size="small"
+                                        color="#fff"
+                                    />
                                 ) : (
                                     <SymbolView
                                         name="paperplane.fill"
@@ -175,7 +186,7 @@ export default function ChatScreen({
 
 const styles = StyleSheet.create({
     container: { flex: 1 },
-    center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+    center: { flex: 1, justifyContent: "center", alignItems: "center" },
     chatList: { padding: 20, gap: 12 },
 
     messageRow: { flexDirection: "row", marginBottom: 4 },
@@ -203,7 +214,7 @@ const styles = StyleSheet.create({
 
     inputWrapper: {
         padding: 15,
-        paddingBottom: Platform.OS === "ios" ? 30 : 20,
+        paddingBottom: Platform.OS === "ios" ? 30 : 100,
     },
     inputGradient: {
         flexDirection: "row",

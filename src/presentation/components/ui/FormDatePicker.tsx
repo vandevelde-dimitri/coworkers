@@ -38,11 +38,9 @@ export const FormDatePicker: React.FC<FormDatePickerProps> = ({
                     event: DateTimePickerEvent,
                     selectedDate?: Date,
                 ) => {
-                    // Sur Android, on ferme après sélection
                     if (Platform.OS === "android") setShow(false);
 
                     if (selectedDate) {
-                        // On garde l'objet Date pour le display, mais on envoie le string au form
                         const formatted = selectedDate
                             .toISOString()
                             .split("T")[0];
@@ -85,7 +83,6 @@ export const FormDatePicker: React.FC<FormDatePickerProps> = ({
                             </Text>
                         </TouchableOpacity>
 
-                        {/* Rendu spécifique par Plateforme pour le design Dark */}
                         {Platform.OS === "ios" ? (
                             <Modal
                                 visible={show}
@@ -178,7 +175,6 @@ const styles = StyleSheet.create({
         marginTop: 6,
         marginLeft: 4,
     },
-    // Styles Modal iOS
     modalOverlay: {
         flex: 1,
         backgroundColor: "rgba(0,0,0,0.7)",

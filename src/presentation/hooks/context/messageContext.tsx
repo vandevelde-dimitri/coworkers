@@ -38,7 +38,6 @@ export const MessageProvider = ({
         Record<string, boolean>
     >({});
 
-    // Track la conversation actuellement ouverte
     const activeConversationRef = useRef<string | null>(null);
 
     const setActiveConversation = useCallback(
@@ -48,9 +47,6 @@ export const MessageProvider = ({
         [],
     );
 
-    // ----------------------------------
-    // 🔹 LOAD INITIAL UNREAD (BDD)
-    // ----------------------------------
     const loadUnreadConversations = async () => {
         if (!userId) return;
 
@@ -76,9 +72,6 @@ export const MessageProvider = ({
         setUnreadConversations(map);
     };
 
-    // ----------------------------------
-    // 🔹 REALTIME LISTENER
-    // ----------------------------------
     useEffect(() => {
         if (!userId) return;
 
@@ -99,10 +92,8 @@ export const MessageProvider = ({
                         conversation_id: string;
                     };
 
-                    // Ignorer mes propres messages
                     if (msg.sender_id === userId) return;
 
-                    // Ignorer si c'est la conversation actuellement ouverte
                     if (msg.conversation_id === activeConversationRef.current)
                         return;
 
@@ -123,9 +114,6 @@ export const MessageProvider = ({
         };
     }, [userId]);
 
-    // ----------------------------------
-    // 🔹 MARK CONVERSATION AS READ
-    // ----------------------------------
     const markConversationRead = async (conversationId: string) => {
         if (!userId) return;
 

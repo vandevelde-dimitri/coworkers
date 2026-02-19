@@ -1,9 +1,41 @@
 import { Conversation } from "@/src/domain/entities/chat/Conversation";
+import { MessageInterface } from "@/src/domain/entities/chat/Message";
+import { UnauthorizedError } from "@/src/domain/errors/AppError";
 import { ChatRepository } from "@/src/domain/repositories/ChatRepository";
 import { ChatMapper } from "../mappers/ChatMapper";
+import { MessageMapper } from "../mappers/MessageMapper";
 import { supabase } from "../supabase";
 
 export class SupabaseChatRepository implements ChatRepository {
+    async getMessages(
+        conversationId: string,
+        page: number,
+        pageSize: number,
+        userId: string,
+    ): Promise<MessageInterface[]> {
+        const from = page * pageSize;
+        const to = from + pageSize - 1;
+
+        const { data, error } = await supabase
+            .from("messages")
+            .select(
+                `
+            id,
+            conversation_id,
+            sender_id,
+            content,
+            created_at,
+            users (id, firstname, lastname, image_profile, avatar_updated_at, contract)
+        `,
+            )
+            .eq("conversation_id", conversationId)
+            .order("created_at", { ascending: false })
+            .range(from, to);
+
+        if (error) throw error;
+        return MessageMapper.toDomainList(data || [], userId);
+    }
+
     async getUserConversations(userId: string): Promise<Conversation[]> {
         const { data, error } = await supabase
             .from("conversation_participants")
@@ -37,10 +69,23 @@ export class SupabaseChatRepository implements ChatRepository {
             })
             .limit(1, { foreignTable: "conversations.messages" });
 
-        console.log("Data brute reçue:", JSON.stringify(data, null, 2));
-
         if (error) throw error;
 
         return ChatMapper.toDomainList(data || [], userId);
+    }
+
+    async sendMessage(conversationId: string, content: string): Promise<void> {
+        const {
+            data: { user: authUser },
+        } = await supabase.auth.getUser();
+
+        if (!authUser) throw new UnauthorizedError();
+
+        const { error } = await supabase.from("messages").insert({
+            conversation_id: conversationId,
+            sender_id: authUser.id,
+            content: content,
+        });
+        if (error) throw error;
     }
 }
