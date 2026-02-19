@@ -1,7 +1,7 @@
 import { MessageInterface } from "@/src/domain/entities/chat/Message";
 import { ScreenWrapper } from "@/src/presentation/components/ui/ScreenWrapper";
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { SymbolView } from "expo-symbols";
 import React, { useEffect, useState } from "react";
 import {
     ActivityIndicator,
@@ -102,9 +102,8 @@ export default function ChatScreen({
             showBackButton={true}
         >
             <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : undefined}
-                style={styles.container}
-                keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={{ flex: 1 }}
             >
                 {isLoading ? (
                     <View style={styles.center}>
@@ -169,10 +168,10 @@ export default function ChatScreen({
                                         color="#fff"
                                     />
                                 ) : (
-                                    <SymbolView
-                                        name="paperplane.fill"
-                                        size={16}
-                                        tintColor="#fff"
+                                    <Ionicons
+                                        name="send"
+                                        size={20}
+                                        color="#fff"
                                     />
                                 )}
                             </LinearGradient>

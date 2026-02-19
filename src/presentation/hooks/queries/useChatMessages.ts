@@ -37,6 +37,24 @@ export const useChatMessages = (conversationId: string, userId: string) => {
                     filter: `conversation_id=eq.${conversationId}`,
                 },
                 async (payload) => {
+                    const newMessageId = payload.new.id;
+
+                    // 1. VÉRIFICATION DANS LE CACHE EXISTANT
+                    const currentData = queryClient.getQueryData([
+                        "messages",
+                        conversationId,
+                    ]) as any;
+
+                    // On parcourt toutes les pages pour voir si le message est déjà là
+                    const alreadyExists = currentData?.pages?.some(
+                        (page: any) =>
+                            page.some((m: any) => m.id === newMessageId),
+                    );
+
+                    // Si le message est déjà dans le cache (venant de la mutation), on s'arrête là
+                    if (alreadyExists) return;
+
+                    // 2. RÉCUPÉRATION DES INFOS USER (Seulement si c'est un nouveau message)
                     const { data: userData } = await supabase
                         .from("users")
                         .select(
@@ -50,10 +68,18 @@ export const useChatMessages = (conversationId: string, userId: string) => {
                         userId,
                     );
 
+                    // 3. UPDATE DU CACHE
                     queryClient.setQueryData(
                         ["messages", conversationId],
                         (oldData: any) => {
                             if (!oldData) return oldData;
+
+                            // Double check par sécurité à l'intérieur du setter
+                            const doubleCheck = oldData.pages[0].some(
+                                (m: any) => m.id === newMessage.id,
+                            );
+                            if (doubleCheck) return oldData;
+
                             return {
                                 ...oldData,
                                 pages: [
