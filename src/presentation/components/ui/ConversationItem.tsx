@@ -1,6 +1,5 @@
 import { Conversation } from "@/src/domain/entities/chat/Conversation";
 import { LinearGradient } from "expo-linear-gradient";
-import { SymbolView } from "expo-symbols";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export function ConversationItem({
@@ -43,11 +42,6 @@ export function ConversationItem({
                             {item.lastMessage}
                         </Text>
                     </View>
-                    <SymbolView
-                        name="chevron.right"
-                        size={14}
-                        tintColor="rgba(255, 255, 255, 0.3)"
-                    />
                 </View>
             </LinearGradient>
         </TouchableOpacity>

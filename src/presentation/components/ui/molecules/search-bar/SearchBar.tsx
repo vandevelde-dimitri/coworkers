@@ -1,6 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView, BlurViewProps } from "expo-blur";
-import { SymbolView } from "expo-symbols";
 import React, { useEffect, useRef, useState } from "react";
 import {
     Dimensions,
@@ -258,17 +257,10 @@ export const SearchBar = ({
                                     {renderLeadingIcons ? (
                                         renderLeadingIcons()
                                     ) : (
-                                        <SymbolView
-                                            name="magnifyingglass"
+                                        <Ionicons
+                                            name="search"
                                             size={18}
-                                            tintColor="#8E8E93"
-                                            fallback={
-                                                <Ionicons
-                                                    name="search"
-                                                    size={18}
-                                                    color="#8E8E93"
-                                                />
-                                            }
+                                            color="#8E8E93"
                                         />
                                     )}
                                 </AnimatedView>
@@ -331,10 +323,10 @@ export const SearchBar = ({
                                         {renderTrailingIcons ? (
                                             renderTrailingIcons()
                                         ) : (
-                                            <SymbolView
-                                                name="xmark.circle.fill"
+                                            <Ionicons
+                                                name="close"
                                                 size={18}
-                                                tintColor="#8E8E93"
+                                                color="#8E8E93"
                                             />
                                         )}
                                     </AnimatedTouchable>

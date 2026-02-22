@@ -1,6 +1,6 @@
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { SymbolView, SymbolViewProps } from "expo-symbols";
-import React from "react";
+import React, { ComponentProps } from "react";
 import {
     ActivityIndicator,
     StyleSheet,
@@ -11,12 +11,13 @@ import {
 } from "react-native";
 
 type ButtonVariant = "primary" | "secondary" | "danger" | "outline";
+type IoniconName = ComponentProps<typeof Ionicons>["name"];
 
 interface AppButtonProps {
     title: string;
     onPress: () => void;
     variant?: ButtonVariant;
-    icon?: SymbolViewProps["name"];
+    icon?: IoniconName;
     isLoading?: boolean;
     disabled?: boolean;
     style?: ViewStyle;
@@ -80,10 +81,10 @@ export const AppButton = ({
                             {title}
                         </Text>
                         {icon && (
-                            <SymbolView
+                            <Ionicons
                                 name={icon}
                                 size={16}
-                                tintColor={
+                                color={
                                     variant === "outline" ? "#243B55" : "#FFF"
                                 }
                             />

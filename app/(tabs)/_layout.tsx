@@ -122,9 +122,9 @@ export default function TabLayout() {
                 />
 
                 <Tabs.Screen
-                    name="profile"
+                    name="account"
                     options={{
-                        title: "Profil",
+                        title: "Profile",
                         tabBarIcon: ({ focused }) => (
                             <Ionicons
                                 name={
@@ -138,7 +138,7 @@ export default function TabLayout() {
                         ),
                     }}
                     listeners={{
-                        tabPress: (e) => handleTabPress(e, "profile"),
+                        tabPress: (e) => handleTabPress(e, "account"),
                     }}
                 />
             </Tabs>

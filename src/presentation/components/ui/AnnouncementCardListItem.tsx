@@ -1,6 +1,6 @@
 import { Announcement } from "@/src/domain/entities/announcement/Announcement";
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { SymbolView } from "expo-symbols";
 import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -48,10 +48,10 @@ export default function AnnouncementCardListItem({
                                         },
                                     ]}
                                 >
-                                    <SymbolView
-                                        name="car.fill"
+                                    <Ionicons
+                                        name="car"
                                         size={10}
-                                        tintColor={
+                                        color={
                                             item.owner?.settings.toConvey
                                                 ? "#4FACFE"
                                                 : "#FFF"
@@ -102,10 +102,10 @@ export default function AnnouncementCardListItem({
                         onPress={onPress}
                     >
                         <Text style={styles.actionButtonText}>Voir</Text>
-                        <SymbolView
-                            name="chevron.right"
+                        <Ionicons
+                            name="chevron-forward"
                             size={12}
-                            tintColor="#fff"
+                            color="#fff"
                         />
                     </TouchableOpacity>
                 </View>
