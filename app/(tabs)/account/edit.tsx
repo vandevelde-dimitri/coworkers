@@ -1,5 +1,5 @@
-import ProfileScreen from "@/src/presentation/screens/account/ProfileScreen";
+import EditProfileScreen from "@/src/presentation/screens/account/EditProfileScreen";
 
 export default function EditProfilePage() {
-    return <ProfileScreen />;
+    return <EditProfileScreen />;
 }

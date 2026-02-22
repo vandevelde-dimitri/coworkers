@@ -1,4 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useRouter } from "expo-router";
 import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet } from "react-native";
 import * as yup from "yup";
@@ -13,6 +14,7 @@ import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
 import { useAuth } from "../../hooks/authContext";
 
 export default function SettingsScreen() {
+    const router = useRouter();
     const { session } = useAuth();
     const user = session?.user;
 
@@ -64,7 +66,7 @@ export default function SettingsScreen() {
             >
                 <MenuSection title="Mes informations">
                     <MenuItem
-                        onPress={() => console.log("modifier profile")}
+                        onPress={() => router.push("/(tabs)/account/edit")}
                         icon="person"
                         label="Modifier mon profil"
                     />
@@ -125,6 +127,13 @@ export default function SettingsScreen() {
                         title="Changer le mot de passe"
                         variant="secondary"
                         onPress={() => console.log("modifier pwd")}
+                    />
+                </MenuDisclosureSection>
+                <MenuDisclosureSection title="Zone de danger">
+                    <AppButton
+                        title="Supprimer mon compte"
+                        variant="danger"
+                        onPress={() => console.log("supprimer compte")}
                     />
                 </MenuDisclosureSection>
             </ScrollView>
