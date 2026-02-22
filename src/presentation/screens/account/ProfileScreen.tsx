@@ -1,5 +1,6 @@
 import { ScreenWrapper } from "@/src/presentation/components/ui/ScreenWrapper";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React from "react";
 import {
     Linking,
@@ -17,7 +18,8 @@ import { UserHeader } from "../../components/ui/UserHeader";
 import { useAuth } from "../../hooks/authContext";
 import { useCurrentUser } from "../../hooks/queries/useUser";
 
-export default function ProfileScreen({ navigation }: any) {
+export default function ProfileScreen() {
+    const router = useRouter();
     const { session } = useAuth();
     const { data: user } = useCurrentUser();
     const formatedDate = session?.user.created_at
@@ -31,7 +33,7 @@ export default function ProfileScreen({ navigation }: any) {
     const headerRight = (
         <View style={{ flexDirection: "row", gap: 10 }}>
             <TouchableOpacity
-                // onPress={() => router.back()}
+                // onPress={() => router.push("/(tabs)/account/settings")}
                 style={[
                     styles.backButton,
                     { backgroundColor: "rgba(255, 255, 255, 0.1)" },
@@ -40,7 +42,7 @@ export default function ProfileScreen({ navigation }: any) {
                 <Ionicons name="notifications" size={22} color="#FFFFFF" />
             </TouchableOpacity>
             <TouchableOpacity
-                // onPress={() => router.back()}
+                onPress={() => router.push("/(tabs)/account/settings")}
                 style={[
                     styles.backButton,
                     { backgroundColor: "rgba(255, 255, 255, 0.1)" },
@@ -86,12 +88,12 @@ export default function ProfileScreen({ navigation }: any) {
                     <MenuItem
                         icon="heart"
                         label="Mes favoris"
-                        onPress={() => navigation.navigate("FavoriteScreen")}
+                        onPress={() => console.log("mes favoris")}
                     />
                     <MenuItem
                         icon="document-text"
                         label="Candidatures"
-                        onPress={() => navigation.navigate("CandidateProfile")}
+                        onPress={() => console.log("mes candiratures")}
                     />
                 </MenuSection>
                 <View style={styles.footerSection}>
