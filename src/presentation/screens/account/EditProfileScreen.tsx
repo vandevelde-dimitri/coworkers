@@ -1,152 +1,204 @@
 import { UserContract, UserTeam } from "@/src/domain/entities/user/User.enum";
 import { capitalize } from "@/utils/capitalize";
 import { yupResolver } from "@hookform/resolvers/yup";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { ScrollView, StyleSheet } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import * as yup from "yup";
+
 import { AppButton } from "../../components/ui/AppButton";
 import { FormInput } from "../../components/ui/FormInput";
 import { FormSelect } from "../../components/ui/FormSelect";
 import { MenuItem } from "../../components/ui/MenuItem";
 import { MenuSection } from "../../components/ui/MenuSection";
 import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
+
+import { useUpdateUser } from "../../hooks/mutations/useUpadateUser";
 import { useFloors } from "../../hooks/queries/useFloor";
 import { useCurrentUser } from "../../hooks/queries/useUser";
 
 export default function EditProfileScreen() {
-    const { data: user } = useCurrentUser();
-    const { data: floors } = useFloors();
-    const centersOptions = floors?.map((c) => ({
-        label: c.name,
-        value: c.id,
-    }));
+  const { data: user } = useCurrentUser();
+  const { data: floors } = useFloors();
+  const { mutate: updateUser, isPending } = useUpdateUser();
 
-    const contractOptions = Object.values(UserContract).map((c: string) => ({
-        label: capitalize(c),
-        value: c,
-    }));
-    const teamOptions = Object.values(UserTeam).map((t: string) => ({
-        label: capitalize(t),
-        value: t,
-    }));
+  // --- Options des Selects ---
+  const centersOptions = floors?.map((c) => ({
+    label: c.name,
+    value: c.id,
+  }));
 
-    const schema = yup.object({
-        firstName: yup.string().required("Prénom requis"),
-        lastName: yup.string().required("Nom requis"),
-        city: yup.string().required("Ville requise"),
-        fcId: yup.string().required("Centre Amazon requis"),
-        team: yup
-            .mixed<UserTeam>()
-            .oneOf(
-                Object.values(UserTeam),
-                "Veuillez sélectionner une équipe valide",
-            )
-            .required("Une équipe est requis")
-            .nullable(),
-        contract: yup
-            .mixed<UserContract>()
-            .oneOf(
-                Object.values(UserContract),
-                "Veuillez sélectionner un type de contrat valide",
-            )
-            .required("Le type de contrat est requis")
-            .nullable(),
-    });
-    const {
-        control,
-        handleSubmit,
-        reset,
-        formState: { isDirty },
-    } = useForm({
-        resolver: yupResolver(schema),
+  const contractOptions = Object.values(UserContract).map((c) => ({
+    label: capitalize(c),
+    value: c,
+  }));
 
-        defaultValues: {
-            firstName: user?.firstName || "",
-            lastName: user?.lastName || "",
-            city: user?.city || "",
-            fcId: user?.fcId || "",
-            contract: user?.contract || undefined,
-            team: user?.team || undefined,
-        },
-    });
+  const teamOptions = Object.values(UserTeam).map((t) => ({
+    label: capitalize(t),
+    value: t,
+  }));
 
-    const onSubmit = (data: any) => {
-        console.log("Données du formulaire :", data);
-        // updateUser(data);
-    };
+  // --- Validation Schema (Corrigé pour éviter les erreurs de blocage) ---
+  const schema = yup.object({
+    firstName: yup.string().required("Prénom requis"),
+    lastName: yup.string().required("Nom requis"),
+    city: yup.string().required("Ville requise"),
+    fcId: yup.string().required("Centre requis"),
+    // On utilise .nullable() pour éviter que le schéma bloque si la donnée est absente au départ
+    team: yup
+      .string()
+      .oneOf(Object.values(UserTeam))
+      .required("Équipe requise")
+      .nullable(),
+    contract: yup
+      .string()
+      .oneOf(Object.values(UserContract))
+      .required("Contrat requis")
+      .nullable(),
+  });
 
-    return (
-        <ScreenWrapper title="Modifier mon profil" showBackButton={true}>
-            <ScrollView
-                contentContainerStyle={styles.container}
-                showsVerticalScrollIndicator={false}
-            >
-                <MenuSection title="Photo de profil">
-                    <MenuItem
-                        label="Modifier ma photo"
-                        icon="image"
-                        onPress={() => console.log("modifier photo")}
-                    />
-                </MenuSection>
-                <MenuSection title="Informations personnelles">
-                    <FormInput
-                        name="firstName"
-                        control={control}
-                        label="Prénom"
-                        placeholder="Prénom"
-                        type="text"
-                    />
-                    <FormInput
-                        name="lastName"
-                        control={control}
-                        label="Nom"
-                        placeholder="Nom"
-                        type="text"
-                    />
-                    <FormInput
-                        name="city"
-                        control={control}
-                        label="Ville"
-                        placeholder="Paris, Lyon..."
-                        type="text"
-                    />
-                    <FormSelect
-                        name="fcId"
-                        control={control}
-                        label="Centre Amazon"
-                        placeholder="Sélectionner un centre ..."
-                        options={centersOptions || []}
-                    />
-                    <FormSelect
-                        name="contract"
-                        control={control}
-                        label="Contrat"
-                        placeholder="Sélectionner un contrat ..."
-                        options={contractOptions || []}
-                    />
-                    <FormSelect
-                        name="team"
-                        control={control}
-                        label="Equipe"
-                        placeholder="Sélectionner une équipe ..."
-                        options={teamOptions || []}
-                    />
-                    <AppButton
-                        disabled={!isDirty}
-                        isLoading={false}
-                        title={
-                            isDirty
-                                ? "Enregistrer les modifications"
-                                : "Aucune modification à enregistrer"
-                        }
-                        onPress={handleSubmit(onSubmit)}
-                    />
-                </MenuSection>
-            </ScrollView>
-        </ScreenWrapper>
-    );
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { isDirty, errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
+      city: user?.city || "",
+      fcId: user?.fcId || "",
+      contract: user?.contract || null,
+      team: user?.team || null,
+    },
+  });
+
+  // Reset le formulaire quand les données utilisateur arrivent
+  useEffect(() => {
+    if (user) {
+      reset({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        city: user.city,
+        fcId: user.fcId,
+        contract: user.contract,
+        team: user.team,
+      });
+    }
+  }, [user, reset]);
+
+  const onSubmit = (data: any) => {
+    updateUser(data);
+  };
+
+  return (
+    <ScreenWrapper title="Modifier mon profil" showBackButton={true}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* 1. Photo Section */}
+        <MenuSection title="Photo de profil">
+          <MenuItem
+            label="Changer ma photo"
+            icon="image"
+            onPress={() => console.log("Upload photo")}
+          />
+        </MenuSection>
+
+        {/* 2. Infos Personnelles (Carte Bento) */}
+        <MenuSection title="Identité">
+          <View style={styles.formCard}>
+            <FormInput
+              name="firstName"
+              control={control}
+              label="Prénom"
+              placeholder="Ton prénom"
+            />
+            <FormInput
+              name="lastName"
+              control={control}
+              label="Nom"
+              placeholder="Ton nom"
+            />
+            <FormInput
+              name="city"
+              control={control}
+              label="Ville"
+              placeholder="Ta ville actuelle"
+            />
+          </View>
+        </MenuSection>
+
+        {/* 3. Travail (Carte Bento) */}
+        <MenuSection title="Informations Amazon">
+          <View style={styles.formCard}>
+            <FormSelect
+              name="fcId"
+              control={control}
+              label="Site de travail"
+              options={centersOptions || []}
+              placeholder="Sélectionner un site"
+            />
+            <FormSelect
+              name="contract"
+              control={control}
+              label="Type de contrat"
+              options={contractOptions}
+              placeholder="Ton contrat"
+            />
+            <FormSelect
+              name="team"
+              control={control}
+              label="Équipe de travail"
+              options={teamOptions}
+              placeholder="Ton équipe"
+            />
+          </View>
+        </MenuSection>
+
+        {/* Bouton de validation */}
+        <View style={styles.footer}>
+          <AppButton
+            disabled={!isDirty || isPending}
+            isLoading={isPending}
+            title={
+              isDirty ? "Enregistrer les modifications" : "Aucun changement"
+            }
+            onPress={handleSubmit(onSubmit)}
+          />
+
+          {/* Debug des erreurs si besoin (à enlever en prod) */}
+          {Object.keys(errors).length > 0 && (
+            <Text style={styles.errorHint}>Certains champs sont invalides</Text>
+          )}
+        </View>
+      </ScrollView>
+    </ScreenWrapper>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: { padding: 20, paddingBottom: 150 },
+  container: {
+    padding: 20,
+    paddingBottom: 100,
+  },
+  formCard: {
+    backgroundColor: "rgba(255, 255, 255, 0.03)",
+    borderRadius: 24,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.08)",
+    gap: 15,
+  },
+  footer: {
+    marginTop: 10,
+  },
+  errorHint: {
+    color: "#FF453A",
+    textAlign: "center",
+    marginTop: 10,
+    fontSize: 12,
+  },
 });
