@@ -14,11 +14,13 @@ import { MenuSection } from "../../components/ui/MenuSection";
 import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
 
 import { UpdateUserPayload } from "@/src/domain/entities/user/User";
+import { useRouter } from "expo-router";
 import { useUpdateUser } from "../../hooks/mutations/useUpadateUser";
 import { useFloors } from "../../hooks/queries/useFloor";
 import { useCurrentUser } from "../../hooks/queries/useUser";
 
 export default function EditProfileScreen() {
+  const router = useRouter();
   const { data: user } = useCurrentUser();
   const { data: floors } = useFloors();
   const { mutate: updateUser, isPending } = useUpdateUser();
@@ -98,7 +100,7 @@ export default function EditProfileScreen() {
           <MenuItem
             label="Changer ma photo"
             icon="image"
-            onPress={() => console.log("Upload photo")}
+            onPress={() => router.push("/(tabs)/account/updateAvatar")}
           />
         </MenuSection>
 
