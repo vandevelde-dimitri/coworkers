@@ -13,7 +13,6 @@ import { MenuItem } from "../../components/ui/MenuItem";
 import { MenuSection } from "../../components/ui/MenuSection";
 import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
 
-// Import de ton type de payload
 import { UpdateUserPayload } from "@/src/domain/entities/user/User";
 import { useUpdateUser } from "../../hooks/mutations/useUpadateUser";
 import { useFloors } from "../../hooks/queries/useFloor";
