@@ -1,24 +1,48 @@
+import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
-import React from "react";
+import React, { useState } from "react";
 import { Image, ScrollView, StyleSheet, View } from "react-native";
 
+import { requestPermission } from "@/utils/permission";
 import { AppButton } from "../../components/ui/AppButton";
+import { CustomCropModal } from "../../components/ui/CustomCropModal";
 import { MenuItem } from "../../components/ui/MenuItem";
 import { MenuSection } from "../../components/ui/MenuSection";
 import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
 import { useDeleteAvatar } from "../../hooks/mutations/useDeleteAvatar";
+import { useUpdateAvatar } from "../../hooks/mutations/useUpdateAvatar";
 import { useCurrentUser } from "../../hooks/queries/useUser";
 
 export default function EditAvatarScreen() {
   const { data: user } = useCurrentUser();
   const { mutate: deleteAvatar } = useDeleteAvatar();
+  const { mutate: updateAvatar } = useUpdateAvatar();
+  const [showModal, setShowModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string>("");
+  const image_url = user?.profileAvatar;
 
-  const handleTakePhoto = () => {
-    console.log("Ouvrir caméra");
-  };
+  const pickImage = async (fromCamera: boolean) => {
+    const canUseCamera = await requestPermission("camera");
+    if (!canUseCamera) return;
 
-  const handleSelectGallery = () => {
-    console.log("Ouvrir galerie");
+    const canUseGallery = await requestPermission("mediaLibrary");
+    if (!canUseGallery) return;
+
+    const result = fromCamera
+      ? await ImagePicker.launchCameraAsync({
+          allowsEditing: false,
+          quality: 0.8,
+        })
+      : await ImagePicker.launchImageLibraryAsync({
+          allowsEditing: false,
+          quality: 0.8,
+        });
+
+    if (result.canceled) return;
+    if (!result.canceled) {
+      setSelectedImage(result.assets[0].uri);
+      setShowModal(true);
+    }
   };
 
   const handleDeletePhoto = () => {
@@ -33,10 +57,7 @@ export default function EditAvatarScreen() {
             colors={["rgba(255, 255, 255, 0.05)", "transparent"]}
             style={styles.avatarGradient}
           >
-            <Image
-              source={{ uri: user?.profileAvatar }}
-              style={styles.avatar}
-            />
+            <Image source={{ uri: image_url }} style={styles.avatar} />
           </LinearGradient>
         </View>
 
@@ -44,26 +65,33 @@ export default function EditAvatarScreen() {
           <MenuItem
             label="Prendre une photo"
             icon="camera-outline"
-            onPress={handleTakePhoto}
+            onPress={() => pickImage(true)}
           />
           <MenuItem
             label="Choisir dans la galerie"
             icon="image-outline"
-            onPress={handleSelectGallery}
+            onPress={() => pickImage(false)}
           />
         </MenuSection>
 
-        <AppButton
-          title="Supprimer la photo"
-          variant="danger"
-          onPress={handleDeletePhoto}
+        {image_url && (
+          <View style={styles.footer}>
+            <AppButton
+              title="Supprimer la photo"
+              variant="danger"
+              onPress={handleDeletePhoto}
+            />
+          </View>
+        )}
+        <CustomCropModal
+          visible={showModal}
+          imageUri={selectedImage}
+          onClose={() => setShowModal(false)}
+          onConfirm={() => {
+            updateAvatar(selectedImage);
+            setShowModal(false);
+          }}
         />
-        <View style={styles.footer}>
-          <AppButton
-            title="Enregistrer la photo"
-            onPress={() => console.log("Sauvegarde")}
-          />
-        </View>
       </ScrollView>
     </ScreenWrapper>
   );
