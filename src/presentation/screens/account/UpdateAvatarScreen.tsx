@@ -6,10 +6,12 @@ import { AppButton } from "../../components/ui/AppButton";
 import { MenuItem } from "../../components/ui/MenuItem";
 import { MenuSection } from "../../components/ui/MenuSection";
 import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
+import { useDeleteAvatar } from "../../hooks/mutations/useDeleteAvatar";
 import { useCurrentUser } from "../../hooks/queries/useUser";
 
 export default function EditAvatarScreen() {
   const { data: user } = useCurrentUser();
+  const { mutate: deleteAvatar } = useDeleteAvatar();
 
   const handleTakePhoto = () => {
     console.log("Ouvrir caméra");
@@ -20,7 +22,7 @@ export default function EditAvatarScreen() {
   };
 
   const handleDeletePhoto = () => {
-    console.log("Supprimer la photo");
+    deleteAvatar();
   };
 
   return (
