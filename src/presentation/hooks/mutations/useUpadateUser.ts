@@ -18,6 +18,9 @@ export const useUpdateUser = () => {
         onSuccess: () => {
             Alert.alert("Modification réussie");
             queryClient.invalidateQueries({ queryKey: ["current-user"] });
+            queryClient.invalidateQueries({ queryKey: ["announcements"] });
+            queryClient.invalidateQueries({ queryKey: ["conversations"] });
+            queryClient.invalidateQueries({ queryKey: ["messages"] });
         },
     });
 };
