@@ -7,7 +7,7 @@ export interface User {
   profileAvatar: string;
   city: string;
   team: UserTeam;
-  avatarUpdatedAt?: string;
+  avatarUpdatedAt: string | null;
   contract: UserContract;
   fcName: string;
   fcId: string;
@@ -24,7 +24,7 @@ export interface UserPublic {
   profileAvatar: string;
   city: string;
   team: UserTeam;
-  avatarUpdatedAt?: string;
+  avatarUpdatedAt: string | null;
   contract: UserContract;
   fcName: string;
   fcId: string;

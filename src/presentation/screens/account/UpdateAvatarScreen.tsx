@@ -1,10 +1,10 @@
 import * as ImagePicker from "expo-image-picker";
-import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
-import { Image, ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { requestPermission } from "@/utils/permission";
 import { AppButton } from "../../components/ui/AppButton";
+import Avatar from "../../components/ui/Avatar";
 import { CustomCropModal } from "../../components/ui/CustomCropModal";
 import { MenuItem } from "../../components/ui/MenuItem";
 import { MenuSection } from "../../components/ui/MenuSection";
@@ -14,7 +14,7 @@ import { useUpdateAvatar } from "../../hooks/mutations/useUpdateAvatar";
 import { useCurrentUser } from "../../hooks/queries/useUser";
 
 export default function EditAvatarScreen() {
-  const { data: user } = useCurrentUser();
+  const { data: user, isLoading } = useCurrentUser();
   const { mutate: deleteAvatar } = useDeleteAvatar();
   const { mutate: updateAvatar } = useUpdateAvatar();
   const [showModal, setShowModal] = useState(false);
@@ -49,16 +49,27 @@ export default function EditAvatarScreen() {
     deleteAvatar();
   };
 
+  {
+    /*Implement loading state*/
+  }
+
+  if (isLoading || !user) {
+    return (
+      <ScreenWrapper title="Modifier la photo" showBackButton={true}>
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <Text>Chargement...</Text>
+        </View>
+      </ScreenWrapper>
+    );
+  }
+
   return (
     <ScreenWrapper title="Modifier la photo" showBackButton={true}>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.avatarPreviewContainer}>
-          <LinearGradient
-            colors={["rgba(255, 255, 255, 0.05)", "transparent"]}
-            style={styles.avatarGradient}
-          >
-            <Image source={{ uri: image_url }} style={styles.avatar} />
-          </LinearGradient>
+          <Avatar user={user} size={140} disablePress={true} />
         </View>
 
         <MenuSection title="">
@@ -106,17 +117,6 @@ const styles = StyleSheet.create({
     position: "relative",
     marginVertical: 30,
     alignItems: "center",
-  },
-  avatarGradient: {
-    padding: 5,
-    borderRadius: 80,
-  },
-  avatar: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    borderWidth: 4,
-    borderColor: "rgba(255, 255, 255, 0.1)",
   },
   editIconWrapper: {
     position: "absolute",
