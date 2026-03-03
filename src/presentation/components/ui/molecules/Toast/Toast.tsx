@@ -1,8 +1,3 @@
-import { useToast } from "./context/ToastContext";
-import type {
-  Toast as ToastType,
-  ToastType as ToastVariant,
-} from "./Toast.types";
 import React, { useEffect, useRef } from "react";
 import {
   LayoutAnimation,
@@ -22,6 +17,11 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
+import { useToast } from "./context/ToastContext";
+import type {
+  Toast as ToastType,
+  ToastType as ToastVariant,
+} from "./Toast.types";
 
 if (Platform.OS === "android") {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -273,8 +273,11 @@ export const Toast: React.FC<ToastProps> = ({ toast, index }) => {
     }
   };
 
+  const customBackgroundColor = toast.options.backgroundColor?.trim();
   const backgroundColor =
-    toast.options.backgroundColor ?? getBackgroundColor(toast.options.type);
+    customBackgroundColor && customBackgroundColor.length > 0
+      ? customBackgroundColor
+      : getBackgroundColor(toast.options.type);
 
   const _styles = toast.options?.style || {};
 

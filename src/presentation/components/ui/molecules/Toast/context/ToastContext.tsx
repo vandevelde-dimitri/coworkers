@@ -8,10 +8,10 @@ import React, {
 import type { Toast, ToastContextValue, ToastOptions } from "../Toast.types";
 
 const DEFAULT_TOAST_OPTIONS: Required<ToastOptions> = {
-  duration: 3000,
+  duration: 5000,
   type: "default",
-  position: "bottom",
-  backgroundColor: "#262626",
+  position: "top",
+  backgroundColor: "",
   onClose: () => {},
   action: null,
   expandedContent: null,

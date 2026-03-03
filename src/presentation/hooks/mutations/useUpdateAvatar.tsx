@@ -1,20 +1,18 @@
-import { UpdateUserProfileUseCase } from "@/src/application/use-case/user/UpdateUserProfile";
-import { UpdateUserPayload } from "@/src/domain/entities/user/User";
+import { UpdateAvatarUserUseCase } from "@/src/application/use-case/user/UploadAvatarUser";
 import { SupabaseUserRepository } from "@/src/infrastructure/repositories/SupabaseUserRepository";
-import { CustomToast } from "@/src/presentation/components/ui/CustomToast";
-import { useToast } from "@/src/presentation/components/ui/molecules/Toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import React from "react";
+import { Alert } from "react-native";
+import { useToast } from "../../components/ui/molecules/Toast";
+import { CustomToast } from "../../components/ui/CustomToast";
 
 const userRepo = new SupabaseUserRepository();
-const useCase = new UpdateUserProfileUseCase(userRepo);
+const useCase = new UpdateAvatarUserUseCase(userRepo);
 
-export const useUpdateUser = () => {
+export const useUpdateAvatar = () => {
   const queryClient = useQueryClient();
   const toast = useToast();
   return useMutation({
-    mutationFn: ({ payload }: { payload: UpdateUserPayload }) =>
-      useCase.execute(payload),
+    mutationFn: (payload: string) => useCase.execute(payload),
     onError: (error) => {
       toast.show(
         <CustomToast title="Erreur" message="Modification échouée" />,
