@@ -35,18 +35,18 @@ interface ToastProps {
   onHeightChange?: (id: string, height: number) => void;
 }
 
-const getBackgroundColor = (type: ToastVariant) => {
+const getAccentColor = (type: ToastVariant) => {
   switch (type) {
     case "success":
-      return "#10B981";
+      return "#22C55E";
     case "error":
-      return "#EF4444";
-    case "warning":
-      return "#F59E0B";
+      return "#FF453A";
     case "info":
       return "#3B82F6";
+    case "warning":
+      return "#F59E0B";
     default:
-      return "#262626";
+      return "#rgba(255,255,255,0.5)";
   }
 };
 
@@ -227,7 +227,6 @@ export const Toast: React.FC<ToastProps> = ({ toast, index }) => {
     }
   }, [toast, opacity, translateY, scale, rotateZ, index]);
 
-  // Animate expansion
   useEffect(() => {
     if (isExpanded && hasExpandedContent) {
       expandHeight.value = withSpring(1, {
@@ -277,7 +276,9 @@ export const Toast: React.FC<ToastProps> = ({ toast, index }) => {
   const backgroundColor =
     customBackgroundColor && customBackgroundColor.length > 0
       ? customBackgroundColor
-      : getBackgroundColor(toast.options.type);
+      : getAccentColor(toast.options.type);
+
+  const accentColor = getAccentColor(toast.options.type);
 
   const _styles = toast.options?.style || {};
 
@@ -310,27 +311,31 @@ export const Toast: React.FC<ToastProps> = ({ toast, index }) => {
         _styles,
       ]}
     >
-      <Pressable
-        style={[styles.toast, { backgroundColor }]}
-        onPress={handlePress}
-        android_ripple={{ color: "rgba(255, 255, 255, 0.1)" }}
-      >
+      <Pressable onPress={handlePress} style={styles.toast}>
+        {/* Barre d'accentuation à gauche */}
+        <View style={[styles.accentBar, { backgroundColor: accentColor }]} />
+
         <View style={styles.mainContent}>
-          {icon ? <Text style={styles.icon}>{icon}</Text> : null}
-          <View style={styles.contentContainer}>
-            {typeof toast.content === "string" ? (
-              <Text style={styles.text}>{toast.content}</Text>
-            ) : (
-              toast.content
-            )}
+          {/* Icône stylisée */}
+          <View
+            style={[
+              styles.iconWrapper,
+              { backgroundColor: `${accentColor}20` },
+            ]}
+          >
+            <Text style={[styles.icon, { color: accentColor }]}>{icon}</Text>
           </View>
+
+          <View style={styles.contentContainer}>
+            <Text style={styles.text}>{toast.content}</Text>
+            {/* Si tu as un message/titre séparé, tu peux l'ajouter ici */}
+          </View>
+
+          {/* Ton bouton d'action existant */}
           {toast.options.action && (
             <TouchableOpacity
               style={styles.actionButton}
-              onPress={() => {
-                toast?.options?.action?.onPress!();
-                animatedDismiss();
-              }}
+              onPress={animatedDismiss}
             >
               <Text style={styles.actionText}>
                 {toast.options.action.label}
@@ -338,8 +343,6 @@ export const Toast: React.FC<ToastProps> = ({ toast, index }) => {
             </TouchableOpacity>
           )}
         </View>
-
-        {/* Expanded Content */}
         {hasExpandedContent && (
           <Animated.View style={[styles.expandedContent, expandedContentStyle]}>
             {renderExpandedContent()}
@@ -352,58 +355,69 @@ export const Toast: React.FC<ToastProps> = ({ toast, index }) => {
 
 const styles = StyleSheet.create({
   toastContainer: {
-    width: "90%",
-    maxWidth: 400,
+    width: "92%",
     alignSelf: "center",
-    marginVertical: 4,
-    borderRadius: 100,
-    overflow: "hidden",
+    borderRadius: 20,
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 10,
+    backgroundColor: "rgba(25, 25, 25, 0.92)",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.1)",
+    overflow: "hidden",
   },
   toast: {
-    flexDirection: "column",
-    borderRadius: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    minHeight: 70,
+  },
+  accentBar: {
+    width: 4,
+    height: "60%",
+    borderRadius: 2,
+    marginLeft: 2,
   },
   mainContent: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    flex: 1,
+  },
+  iconWrapper: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
   },
   icon: {
-    color: "#fff",
-    fontSize: 20,
-    marginRight: 12,
+    fontSize: 18,
     fontWeight: "bold",
-    textAlign: "center",
-    width: 24,
   },
   contentContainer: {
     flex: 1,
   },
   text: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "500",
-    lineHeight: 20,
+    color: "#ffffff",
+    fontSize: 15,
+    fontWeight: "600",
+    letterSpacing: -0.3,
   },
   actionButton: {
     paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 6,
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    marginLeft: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    marginLeft: 8,
   },
   actionText: {
     color: "#fff",
-    fontSize: 14,
-    fontWeight: "600",
+    fontSize: 13,
+    fontWeight: "bold",
   },
   expandedContent: {
     overflow: "hidden",

@@ -24,9 +24,15 @@ export const useCreateAnnouncement = () => {
       });
     },
     onSuccess: () => {
-      toast.show(<CustomToast title="Succès" message="Création réussie" />, {
-        type: "success",
-      });
+      toast.show(
+        <CustomToast
+          title="Création réussie"
+          message="Une conversation a été créée"
+        />,
+        {
+          type: "success",
+        },
+      );
       queryClient.invalidateQueries({ queryKey: ["announcements"] });
       queryClient.invalidateQueries({
         queryKey: ["announcements", "owner"],

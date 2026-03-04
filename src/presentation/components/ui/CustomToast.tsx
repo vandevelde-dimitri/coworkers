@@ -1,4 +1,3 @@
-import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, Text, View } from "react-native";
 
 export function CustomToast({
@@ -10,9 +9,6 @@ export function CustomToast({
 }) {
   return (
     <View style={toastStyles.container}>
-      <View style={toastStyles.iconBox}>
-        <Ionicons name="notifications" size={16} tintColor="#ffffff" />
-      </View>
       <View style={toastStyles.content}>
         <Text style={toastStyles.title}>{title}</Text>
         <Text style={toastStyles.message}>{message}</Text>
