@@ -5,6 +5,7 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { requestPermission } from "@/utils/permission";
 import { AppButton } from "../../components/ui/AppButton";
 import Avatar from "../../components/ui/Avatar";
+import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import { CustomCropModal } from "../../components/ui/CustomCropModal";
 import { MenuItem } from "../../components/ui/MenuItem";
 import { MenuSection } from "../../components/ui/MenuSection";
@@ -14,6 +15,7 @@ import { useUpdateAvatar } from "../../hooks/mutations/useUpdateAvatar";
 import { useCurrentUser } from "../../hooks/queries/useUser";
 
 export default function EditAvatarScreen() {
+  const [open, setOpen] = useState(false);
   const { data: user, isLoading } = useCurrentUser();
   const { mutate: deleteAvatar } = useDeleteAvatar();
   const { mutate: updateAvatar } = useUpdateAvatar();
@@ -90,7 +92,20 @@ export default function EditAvatarScreen() {
             <AppButton
               title="Supprimer la photo"
               variant="danger"
-              onPress={handleDeletePhoto}
+              onPress={() => setOpen(true)}
+            />
+
+            <ConfirmDialog
+              visible={open}
+              title="Supprimer votre photo ?"
+              description="Cette action est définitive et ne pourra pas être annulée."
+              confirmLabel="Supprimer"
+              onCancel={() => setOpen(false)}
+              onConfirm={() => {
+                setOpen(false);
+                handleDeletePhoto();
+              }}
+              danger
             />
           </View>
         )}

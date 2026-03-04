@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   ScrollView,
@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { AppButton } from "../../components/ui/AppButton";
 import Avatar from "../../components/ui/Avatar";
+import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import { RemoveParticipantButton } from "../../components/ui/RemoveParticipantButton";
 import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
 import { useDeleteAnnouncement } from "../../hooks/mutations/useDeleteAnnouncement";
@@ -17,6 +18,7 @@ import { useOwnerAnnouncement } from "../../hooks/queries/useOwnerAnnouncement";
 
 export default function AnnouncementOwnerScreen() {
   const router = useRouter();
+  const [open, setOpen] = useState(false);
   const { data: item, isLoading } = useOwnerAnnouncement();
   const { mutate: deleteAnnouncement } = useDeleteAnnouncement();
 
@@ -144,8 +146,20 @@ export default function AnnouncementOwnerScreen() {
           />
           <AppButton
             title="Supprimer l'annonce"
-            onPress={handleDelete(item.id)}
+            onPress={() => setOpen(true)}
             variant="danger"
+          />
+          <ConfirmDialog
+            visible={open}
+            title="Supprimer cette annonce ?"
+            description="Cette action est définitive et ne pourra pas être annulée."
+            confirmLabel="Supprimer"
+            onCancel={() => setOpen(false)}
+            onConfirm={() => {
+              setOpen(false);
+              deleteAnnouncement(item.id);
+            }}
+            danger
           />
         </View>
       </ScrollView>
