@@ -12,6 +12,7 @@ import {
 import { AppButton } from "../../components/ui/AppButton";
 import Avatar from "../../components/ui/Avatar";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
+import FavoriteButton from "../../components/ui/FavoriteButton";
 import { RemoveParticipantButton } from "../../components/ui/RemoveParticipantButton";
 import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
 import { useAuth } from "../../hooks/authContext";
@@ -48,12 +49,13 @@ export default function AnnouncementDetailScreen({
   }
   const isOwner = isMyAnnouncement(item, session?.user.id);
 
-  const handleDelete = (id: string) => () => {
+  const handleDelete = (id: string) => {
+    setOpen(false);
     deleteAnnouncement(id);
     router.replace("/(tabs)/home");
   };
 
-  const handleChange = (id: string) => () => {
+  const handleChange = (id: string) => {
     router.push({
       pathname: "/(tabs)/formAnnouncement",
       params: { id: id },
@@ -153,7 +155,7 @@ export default function AnnouncementDetailScreen({
             <>
               <AppButton
                 title="Modifier l'annonce"
-                onPress={handleChange(item.id)}
+                onPress={() => handleChange(item.id)}
                 variant="primary"
               />
               <AppButton
@@ -167,10 +169,7 @@ export default function AnnouncementDetailScreen({
                 description="Cette action est définitive et ne pourra pas être annulée."
                 confirmLabel="Supprimer"
                 onCancel={() => setOpen(false)}
-                onConfirm={() => {
-                  setOpen(false);
-                  deleteAnnouncement(item.id);
-                }}
+                onConfirm={() => handleDelete(item.id)}
                 danger
               />
             </>
@@ -180,11 +179,8 @@ export default function AnnouncementDetailScreen({
                 title="Réserver une place"
                 onPress={() => console.log("Réserver")}
               />
-              <AppButton
-                variant="secondary"
-                title="Mettre en favoris"
-                onPress={() => console.log("Favoris")}
-              />
+
+              <FavoriteButton annonceId={item.id} />
             </>
           )}
         </View>

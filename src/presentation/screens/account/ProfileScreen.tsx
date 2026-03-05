@@ -1,3 +1,4 @@
+import { supabase } from "@/src/infrastructure/supabase";
 import { ScreenWrapper } from "@/src/presentation/components/ui/ScreenWrapper";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -40,6 +41,10 @@ export default function ProfileScreen() {
         year: "numeric",
       })
     : "N/A";
+
+  const logout = async () => {
+    await supabase.auth.signOut();
+  };
 
   const headerRight = (
     <View style={{ flexDirection: "row", gap: 10 }}>
@@ -85,12 +90,12 @@ export default function ProfileScreen() {
           <MenuItem
             icon="heart"
             label="Mes favoris"
-            onPress={() => console.log("mes favoris")}
+            onPress={() => router.push("/(tabs)/account/favorite")}
           />
           <MenuItem
             icon="document-text"
             label="Candidatures"
-            onPress={() => console.log("mes candiratures")}
+            onPress={() => router.push("/(tabs)/account/favorite")}
           />
         </MenuSection>
         <View style={styles.footerSection}>
@@ -106,7 +111,7 @@ export default function ProfileScreen() {
           <AppButton
             title="Déconnexion"
             variant="danger"
-            onPress={() => console.log("deco")}
+            onPress={logout}
             style={{ width: "100%" }}
           />
         </View>
