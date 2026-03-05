@@ -49,7 +49,7 @@ export default function ProfileScreen() {
   const headerRight = (
     <View style={{ flexDirection: "row", gap: 10 }}>
       <TouchableOpacity
-        // onPress={() => router.push("/(tabs)/account/settings")}
+        onPress={() => router.push("/(tabs)/account/settings")}
         style={[
           styles.backButton,
           { backgroundColor: "rgba(255, 255, 255, 0.1)" },
@@ -95,7 +95,7 @@ export default function ProfileScreen() {
           <MenuItem
             icon="document-text"
             label="Candidatures"
-            onPress={() => router.push("/(tabs)/account/favorite")}
+            onPress={() => router.push("/(tabs)/account/candidate")}
           />
         </MenuSection>
         <View style={styles.footerSection}>

@@ -176,12 +176,7 @@ export default function AnnouncementDetailScreen({
             </>
           ) : (
             <>
-              <AppButton
-                title="Réserver une place ancien"
-                onPress={() => console.log("Réserver")}
-              />
               <ApplyButton annonce={item} />
-
               <FavoriteButton annonceId={item.id} />
             </>
           )}
