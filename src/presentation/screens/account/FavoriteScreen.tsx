@@ -5,7 +5,6 @@ import AnnouncementCardListItem from "../../components/ui/AnnouncementCardListIt
 import { EmptyState } from "../../components/ui/EmptyState";
 import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
 import AnnouncementCardSkeleton from "../../components/ui/skeleton/AnnouncementSkeleton";
-import { useAuth } from "../../hooks/authContext";
 import { useUserFavoriteAnnouncements } from "../../hooks/queries/useUserFavoriteAnnouncements";
 
 const FavoriteScreen = () => {
@@ -13,8 +12,6 @@ const FavoriteScreen = () => {
   const { data, isLoading } = useUserFavoriteAnnouncements();
 
   const announcements = data?.announcements || [];
-
-  console.log(announcements);
 
   return (
     <ScreenWrapper showBackButton title="Mes favoris">

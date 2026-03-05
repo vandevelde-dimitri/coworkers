@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { AppButton } from "../../components/ui/AppButton";
+import ApplyButton from "../../components/ui/ApplyButton";
 import Avatar from "../../components/ui/Avatar";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import FavoriteButton from "../../components/ui/FavoriteButton";
@@ -176,9 +177,10 @@ export default function AnnouncementDetailScreen({
           ) : (
             <>
               <AppButton
-                title="Réserver une place"
+                title="Réserver une place ancien"
                 onPress={() => console.log("Réserver")}
               />
+              <ApplyButton annonce={item} />
 
               <FavoriteButton annonceId={item.id} />
             </>
