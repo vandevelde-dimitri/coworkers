@@ -6,15 +6,13 @@ export class SupabaseNotificationRepository implements INotificationRepository {
   async getAllNotifications(): Promise<Notification[]> {
     const { data, error } = await supabase.rpc("get_combined_notifications");
 
-    console.log("request notification => ", data);
-
     if (error) throw error;
 
     return (data || []).map((item: any) => ({
       id: item.id,
       annonceId: item.annonce_id,
       annonceTitle: item.annonce_title,
-      userId: item.other_user_id,
+      otherUserId: item.other_user_id,
       status: item.status,
       scope: item.scope,
       createdAt: item.created_at,
