@@ -2,6 +2,7 @@ import { ToastProviderWithViewport } from "@/src/presentation/components/ui/mole
 import { useColorScheme } from "@/src/presentation/components/useColorScheme.web";
 import { AuthProvider, useAuth } from "@/src/presentation/hooks/authContext";
 import { MessageProvider } from "@/src/presentation/hooks/context/messageContext";
+import { NotificationProvider } from "@/src/presentation/hooks/context/notificationContext";
 import { queryClient } from "@/utils/react-query";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {
@@ -54,9 +55,11 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <ToastProviderWithViewport>
         <AuthProvider>
-          <MessageProvider>
-            <RootLayoutNav />
-          </MessageProvider>
+          <NotificationProvider>
+            <MessageProvider>
+              <RootLayoutNav />
+            </MessageProvider>
+          </NotificationProvider>
         </AuthProvider>
       </ToastProviderWithViewport>
     </QueryClientProvider>

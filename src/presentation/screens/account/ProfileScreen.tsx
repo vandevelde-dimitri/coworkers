@@ -17,11 +17,14 @@ import { MenuItem } from "../../components/ui/MenuItem";
 import { MenuSection } from "../../components/ui/MenuSection";
 import { UserHeader } from "../../components/ui/UserHeader";
 import { useAuth } from "../../hooks/authContext";
+import { useNotificationStatus } from "../../hooks/context/notificationContext";
 import { useCurrentUser } from "../../hooks/queries/useUser";
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { session } = useAuth();
+  const { hasNewNotification } = useNotificationStatus();
+
   const { data: user } = useCurrentUser();
 
   if (!user) {
@@ -49,13 +52,26 @@ export default function ProfileScreen() {
   const headerRight = (
     <View style={{ flexDirection: "row", gap: 10 }}>
       <TouchableOpacity
-        onPress={() => router.push("/(tabs)/account/settings")}
+        onPress={() => router.push("/(tabs)/account/notification")}
         style={[
           styles.backButton,
           { backgroundColor: "rgba(255, 255, 255, 0.1)" },
         ]}
       >
         <Ionicons name="notifications" size={22} color="#FFFFFF" />
+        {hasNewNotification && (
+          <View
+            style={{
+              position: "absolute",
+              top: -2,
+              right: -2,
+              width: 10,
+              height: 10,
+              borderRadius: 5,
+              backgroundColor: "#991B1B",
+            }}
+          />
+        )}
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => router.push("/(tabs)/account/settings")}
