@@ -22,6 +22,8 @@ export function useDeleteAnnouncement() {
       });
       queryClient.invalidateQueries({ queryKey: ["announcements"] });
       queryClient.invalidateQueries({ queryKey: ["announcements", id] });
+      queryClient.invalidateQueries({ queryKey: ["conversations", userId] });
+
       queryClient.invalidateQueries({
         queryKey: ["announcements", "owner"],
       });

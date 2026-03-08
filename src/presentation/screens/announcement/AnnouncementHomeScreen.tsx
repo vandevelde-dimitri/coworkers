@@ -65,6 +65,7 @@ export default function AnnouncementHomeScreen() {
       totalCount: 0,
     },
     isLoading,
+    refetch,
   } = useAnnouncements(
     page,
     PAGE_SIZE,
@@ -164,6 +165,8 @@ export default function AnnouncementHomeScreen() {
         <FlatList
           data={announcements}
           keyExtractor={(item) => item.id}
+          onRefresh={refetch}
+          refreshing={isLoading}
           renderItem={({ item }) => (
             <AnnouncementCardListItem
               item={item}

@@ -6,6 +6,7 @@ import { CustomToast } from "@/src/presentation/components/ui/CustomToast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useToast } from "../../components/ui/molecules/Toast";
+import { useAuth } from "../authContext";
 
 const repoAnnouncement = new SupabaseAnnouncementRepository();
 const repoMessaging = new SupabaseMessagingRepository();
@@ -15,6 +16,8 @@ export const useCreateAnnouncement = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
   const toast = useToast();
+  const { session } = useAuth();
+  const userId = session?.user?.id;
   return useMutation({
     mutationFn: (payload: CreateAnnouncementPayload) =>
       useCase.execute(payload),
@@ -37,6 +40,7 @@ export const useCreateAnnouncement = () => {
       queryClient.invalidateQueries({
         queryKey: ["announcements", "owner"],
       });
+      queryClient.invalidateQueries({ queryKey: ["conversations", userId] });
       router.push("/(tabs)/home");
     },
   });
