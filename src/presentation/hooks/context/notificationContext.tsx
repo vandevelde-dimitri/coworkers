@@ -1,4 +1,5 @@
 import { supabase } from "@/src/infrastructure/supabase";
+import { useQueryClient } from "@tanstack/react-query";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useAuth } from "../authContext";
 
@@ -21,6 +22,7 @@ export const NotificationProvider = ({
 }) => {
   const { session } = useAuth();
   const userId = session?.user.id;
+  const queryClient = useQueryClient();
   const [notificationCount, setNotificationCount] = useState(0);
 
   const hasNewNotification = notificationCount > 0;
@@ -39,7 +41,7 @@ export const NotificationProvider = ({
       .on(
         "postgres_changes",
         {
-          event: "INSERT",
+          event: "*",
           schema: "public",
           table: "participant_requests",
         },
@@ -55,6 +57,9 @@ export const NotificationProvider = ({
           if (annonce?.user_id === userId) {
             setNotificationCount((prev) => prev + 1);
           }
+          queryClient.invalidateQueries({
+            queryKey: ["notifications", "combined"],
+          });
         },
       )
       .subscribe();
