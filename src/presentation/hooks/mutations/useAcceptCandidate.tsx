@@ -16,9 +16,23 @@ export const useAcceptCandidate = () => {
       candidateId: string;
       annonceId: string;
     }) => useCase.execute(candidateId, annonceId),
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
+      console.log("variable accept candidat ", variables);
+
       queryClient.invalidateQueries({
         queryKey: ["notifications", "combined"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["announcements", variables.annonceId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["announcements", "owner"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["conversations"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["apply", variables.annonceId, variables.candidateId],
       });
     },
   });

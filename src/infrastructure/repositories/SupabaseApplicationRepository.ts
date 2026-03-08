@@ -22,25 +22,18 @@ export class SupabaseApplicationRepository implements IApplicationRepository {
     if (error) throw error;
   }
 
-  async cancel(annonceId: string, userId: string, status?: string) {
-    await supabase
-      .from("participant_requests")
-      .delete()
-      .match({ annonce_id: annonceId, user_id: userId });
+  async cancel(annonceId: string, userId: string) {
+    const { error } = await supabase.rpc(
+      "cancel_application_after_acceptance",
+      {
+        p_annonce_id: annonceId,
+        p_user_id: userId,
+      },
+    );
 
-    if (status === "accepted") {
-      const { data: conversation } = await supabase
-        .from("conversations")
-        .select("id")
-        .eq("annonce_id", annonceId)
-        .maybeSingle();
-
-      if (conversation) {
-        await supabase
-          .from("conversation_participants")
-          .delete()
-          .match({ conversation_id: conversation.id, user_id: userId });
-      }
+    if (error) {
+      console.error("Erreur lors de l'annulation de la candidature :", error);
+      throw error;
     }
   }
 

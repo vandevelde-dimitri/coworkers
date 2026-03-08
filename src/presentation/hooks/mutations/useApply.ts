@@ -16,7 +16,7 @@ export function useApply(annonceId?: string, userId?: string) {
   const toggleMutation = useMutation({
     mutationFn: async () => {
       if (requestQuery.data) {
-        await repo.cancel(annonceId!, userId!, requestQuery.data.status);
+        await repo.cancel(annonceId!, userId!);
       } else {
         await repo.apply(annonceId!, userId!);
       }

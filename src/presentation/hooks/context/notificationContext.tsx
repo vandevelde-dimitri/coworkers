@@ -41,7 +41,31 @@ export const NotificationProvider = ({
       .on(
         "postgres_changes",
         {
-          event: "*",
+          event: "INSERT",
+          schema: "public",
+          table: "participant_requests",
+        },
+        async (payload) => {
+          const { annonce_id } = payload.new;
+
+          const { data: annonce } = await supabase
+            .from("annonces")
+            .select("user_id")
+            .eq("id", annonce_id)
+            .single();
+
+          if (annonce?.user_id === userId) {
+            setNotificationCount((prev) => prev + 1);
+          }
+          queryClient.invalidateQueries({
+            queryKey: ["notifications", "combined"],
+          });
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
           schema: "public",
           table: "participant_requests",
         },
