@@ -28,7 +28,6 @@ export class SupabaseNotificationRepository implements INotificationRepository {
       return `${item.firstname} souhaite rejoindre votre annonce "${item.annonce_title}"`;
     }
 
-    // Pour le candidat
     switch (item.status) {
       case "accepted":
         return `Félicitations ! Votre demande pour "${item.annonce_title}" est acceptée.`;

@@ -31,6 +31,8 @@ export default function AnnouncementDetailScreen({
   const { mutate: deleteAnnouncement } = useDeleteAnnouncement();
   const { session } = useAuth();
 
+  console.log("annonce", item);
+
   if (isLoading) {
     return (
       <View style={[styles.container, styles.loadingContainer]}>

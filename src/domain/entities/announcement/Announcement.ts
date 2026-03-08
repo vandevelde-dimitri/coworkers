@@ -7,6 +7,7 @@ export interface Announcement {
   createdAt: Date;
   dateStart: Date;
   dateEnd?: Date | null;
+  conversationId: string;
   places: number;
   owner: User;
   passenger: User[];

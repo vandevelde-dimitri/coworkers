@@ -25,4 +25,13 @@ export class SupabaseParticipantRepository implements IParticipantRepository {
       throw new Error(`Erreur lors du refus du candidat: ${error.message}`);
     }
   }
+  async removeParticipant(annonceId: string, participantId: string, conversationId: string ): Promise<void> {
+    const { error } = await supabase.rpc("remove_participant", {
+      p_annonce_id: annonceId,
+      p_participant_id: participantId,
+      p_conversation_id: conversationId,
+    });
+
+    if (error) throw new Error(`Échec de la suppression: ${error.message}`);
+  }
 }
