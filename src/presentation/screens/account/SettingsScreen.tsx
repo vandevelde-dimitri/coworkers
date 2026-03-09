@@ -72,7 +72,7 @@ export default function SettingsScreen() {
       vibrations: settings.vibrations,
       notificationPush: settings.notificationPush,
       toConvey: settings.toConvey,
-      available: settings.available,
+      available: !settings.available,
     });
   }, [settings, settingsForm]);
 
@@ -125,7 +125,7 @@ export default function SettingsScreen() {
             label="Mode vacances"
             icon="airplane"
             onAfterChange={(value) =>
-              updateSettings.mutate({ available: value })
+              updateSettings.mutate({ available: !value })
             }
           />
         </MenuSection>

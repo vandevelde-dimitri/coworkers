@@ -91,14 +91,15 @@ export default function AnnouncementHomeScreen() {
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
   return (
-    <ScreenWrapper>
+    <ScreenWrapper
+      title={
+        selectedCenterLabel
+          ? `Annonces pour ${selectedCenterLabel}`
+          : "Annonces disponibles"
+      }
+      showBackButton={false}
+    >
       <View style={styles.header}>
-        <Text style={styles.mainTitle}>
-          {selectedCenterLabel
-            ? `Annonces pour ${selectedCenterLabel}`
-            : "Annonces disponibles"}
-        </Text>
-
         <SearchBar
           placeholder="Rechercher un trajet..."
           tint="rgba(255,255,255,0.1)"
@@ -211,7 +212,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#141E30",
   },
   header: {
-    paddingTop: 60,
+    paddingTop: 10,
     paddingHorizontal: 20,
     paddingBottom: 10,
   },

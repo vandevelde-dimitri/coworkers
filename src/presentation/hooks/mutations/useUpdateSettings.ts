@@ -19,6 +19,9 @@ export const useUpdateSettings = (userId: string) => {
 
       return useCase.execute(userId, updates);
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["settings"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["settings"] });
+      queryClient.invalidateQueries({ queryKey: ["announcements"] });
+    },
   });
 };
