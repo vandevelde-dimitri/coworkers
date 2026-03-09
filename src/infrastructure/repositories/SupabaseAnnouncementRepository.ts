@@ -37,8 +37,6 @@ export class SupabaseAnnouncementRepository implements IAnnouncementRepository {
 
     if (error) throw error;
 
-    console.log("announcement id request", annonce);
-
     if (!annonce) return null;
 
     return AnnouncementMapper.toDomain(annonce);
