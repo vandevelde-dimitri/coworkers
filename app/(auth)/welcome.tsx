@@ -53,15 +53,6 @@ export default function WelcomeScreen() {
           >
             <Text style={styles.secondaryButtonText}>Créer un compte</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            disabled
-            style={styles.secondaryButton}
-            onPress={() => router.push("/(tabs)/home")}
-          >
-            <Text style={styles.secondaryButtonText}>
-              Continuez en tant qu'invité
-            </Text>
-          </TouchableOpacity>
         </View>
 
         <View style={styles.footerContainer}>
