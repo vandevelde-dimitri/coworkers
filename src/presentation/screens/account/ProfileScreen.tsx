@@ -1,7 +1,7 @@
 import { ScreenWrapper } from "@/src/presentation/components/ui/ScreenWrapper";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import {
   Linking,
   ScrollView,
@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { AppButton } from "../../components/ui/AppButton";
 import { Bento } from "../../components/ui/Bento";
+import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import { MenuItem } from "../../components/ui/MenuItem";
 import { MenuSection } from "../../components/ui/MenuSection";
 import { UserHeader } from "../../components/ui/UserHeader";
@@ -24,6 +25,7 @@ export default function ProfileScreen() {
   const { session, logout, refreshSession } = useAuth();
   const { hasNewNotification } = useNotificationStatus();
   const { data: user, isLoading } = useCurrentUser();
+  const [open, setOpen] = useState(false);
 
   if (isLoading) {
     return (
@@ -60,9 +62,18 @@ export default function ProfileScreen() {
           variant="primary"
         />
 
-        <TouchableOpacity onPress={logout} style={{ marginTop: 20 }}>
+        <TouchableOpacity onPress={() => setOpen(true)} style={{ marginTop: 20 }}>
           <Text style={{ color: "rgba(255,255,255,0.4)" }}>Se déconnecter</Text>
         </TouchableOpacity>
+
+        <ConfirmDialog
+          title="Voirs-vous vraiment vous déconnecter ?"
+          confirmLabel="oui"
+          cancelLabel="non"
+          onConfirm={logout}
+          onCancel={() => setOpen(false)}
+          visible={open}
+        />
       </View>
     );
   }
@@ -153,8 +164,16 @@ export default function ProfileScreen() {
           <AppButton
             title="Déconnexion"
             variant="danger"
-            onPress={logout}
+            onPress={() => setOpen(true)}
             style={{ width: "100%" }}
+          />
+          <ConfirmDialog
+            title="Voirs-vous vraiment vous déconnecter ?"
+            confirmLabel="oui"
+            cancelLabel="non"
+            onConfirm={logout}
+            onCancel={() => setOpen(false)}
+            visible={open}
           />
         </View>
       </ScrollView>
