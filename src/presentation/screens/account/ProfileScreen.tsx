@@ -112,7 +112,7 @@ export default function ProfileScreen() {
         <View style={styles.footerSection}>
           <TouchableOpacity
             style={styles.supportLink}
-            onPress={() => Linking.openURL("mailto:support@example.com")}
+            onPress={() => Linking.openURL("mailto:vandevdimitri@gmail.com")}
           >
             <Text style={styles.supportText}>
               Besoin d'aide ? Contacter le support
