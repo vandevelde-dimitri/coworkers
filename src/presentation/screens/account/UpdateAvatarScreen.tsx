@@ -24,11 +24,13 @@ export default function EditAvatarScreen() {
   const image_url = user?.profileAvatar;
 
   const pickImage = async (fromCamera: boolean) => {
-    const canUseCamera = await requestPermission("camera");
-    if (!canUseCamera) return;
-
-    const canUseGallery = await requestPermission("mediaLibrary");
-    if (!canUseGallery) return;
+    if (fromCamera) {
+      const canUseCamera = await requestPermission("camera");
+      if (!canUseCamera) return;
+    } else {
+      const canUseGallery = await requestPermission("mediaLibrary");
+      if (!canUseGallery) return;
+    }
 
     const result = fromCamera
       ? await ImagePicker.launchCameraAsync({
