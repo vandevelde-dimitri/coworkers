@@ -19,8 +19,8 @@ import { useNotifications } from "../../hooks/queries/useNotifications";
 
 export default function NotificationsScreen() {
   const { setNotificationCount } = useNotificationStatus();
-  const { mutate: acceptCandidate, isPending } = useAcceptCandidate();
-  const { mutate: rejectCandidate, isPending: isRejecting } =
+  const { mutateAsync: acceptCandidate, isPending } = useAcceptCandidate();
+  const { mutateAsync: rejectCandidate, isPending: isRejecting } =
     useRejectCandidate();
   const { data: notifications, isLoading, refetch } = useNotifications();
   const [selectedRequest, setSelectedRequest] = useState<Notification | null>(

@@ -28,7 +28,8 @@ export default function AnnouncementDetailScreen({
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const { data: item, isLoading } = useAnnouncementDetails(announcementId);
-  const { mutate: deleteAnnouncement } = useDeleteAnnouncement();
+  const { mutateAsync: deleteAnnouncement, isPending } =
+    useDeleteAnnouncement();
   const { session } = useAuth();
 
   if (isLoading) {
@@ -50,10 +51,16 @@ export default function AnnouncementDetailScreen({
   }
   const isOwner = isMyAnnouncement(item, session?.user.id);
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
+    if (isPending) return;
+
     setOpen(false);
-    deleteAnnouncement(id);
-    router.replace("/(tabs)/home");
+
+    try {
+      await deleteAnnouncement(id);
+
+      router.replace("/(tabs)/home");
+    } catch (error) {}
   };
 
   const handleChange = (id: string) => {

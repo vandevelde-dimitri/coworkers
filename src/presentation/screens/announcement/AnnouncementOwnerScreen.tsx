@@ -20,7 +20,8 @@ export default function AnnouncementOwnerScreen() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const { data: item, isLoading } = useOwnerAnnouncement();
-  const { mutate: deleteAnnouncement } = useDeleteAnnouncement();
+  const { mutateAsync: deleteAnnouncement, isPending } =
+    useDeleteAnnouncement();
 
   if (isLoading) {
     return (
@@ -41,9 +42,16 @@ export default function AnnouncementOwnerScreen() {
     );
   }
 
-  const handleDelete = (id: string) => () => {
-    deleteAnnouncement(id);
-    router.replace("/(tabs)/home");
+  const handleDelete = async (id: string) => {
+    if (isPending) return;
+
+    setOpen(false);
+
+    try {
+      await deleteAnnouncement(id);
+
+      router.replace("/(tabs)/home");
+    } catch (error) {}
   };
 
   const handleChange = (id: string) => () => {
@@ -155,10 +163,7 @@ export default function AnnouncementOwnerScreen() {
             description="Cette action est définitive et ne pourra pas être annulée."
             confirmLabel="Supprimer"
             onCancel={() => setOpen(false)}
-            onConfirm={() => {
-              setOpen(false);
-              deleteAnnouncement(item.id);
-            }}
+            onConfirm={() => handleDelete(item.id)}
             danger
           />
         </View>
