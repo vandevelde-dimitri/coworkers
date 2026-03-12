@@ -13,6 +13,8 @@ import { MenuItem } from "../../components/ui/MenuItem";
 import { MenuSection } from "../../components/ui/MenuSection";
 import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
 import { useAuth } from "../../hooks/authContext";
+import { useUpdateEmail } from "../../hooks/mutations/useUpdateEmail";
+import { useUpdatePassword } from "../../hooks/mutations/useUpdatePassword";
 import { useUpdateSettings } from "../../hooks/mutations/useUpdateSettings";
 import { useGetSettings } from "../../hooks/queries/useSettings";
 
@@ -23,6 +25,8 @@ export default function SettingsScreen() {
 
   const user = session?.user;
   const updateSettings = useUpdateSettings(user?.id ?? "");
+  const { mutate: updateEmail } = useUpdateEmail();
+  const { mutate: updatePassword } = useUpdatePassword();
 
   const settingsSchema = yup.object({
     vibrations: yup.boolean(),
@@ -141,7 +145,7 @@ export default function SettingsScreen() {
           <AppButton
             title="Modifier mon email"
             variant="secondary"
-            onPress={() => console.log("modifier email")}
+            onPress={emailForm.handleSubmit((data) => updateEmail(data.email))}
           />
           <View style={{ height: 20, backgroundColor: "transparent" }} />
           <FormInput
@@ -154,7 +158,9 @@ export default function SettingsScreen() {
           <AppButton
             title="Changer le mot de passe"
             variant="secondary"
-            onPress={() => console.log("modifier pwd")}
+            onPress={passwordForm.handleSubmit((data) =>
+              updatePassword(data.password),
+            )}
           />
         </MenuDisclosureSection>
         <MenuDisclosureSection title="Zone de danger">
