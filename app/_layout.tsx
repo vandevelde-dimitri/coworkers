@@ -75,19 +75,19 @@ function RootLayoutNav() {
   useEffect(() => {
     if (loading) return;
 
-    const inOnboarding = segments[0] === "onboarding";
     const inAuthGroup = segments[0] === "(auth)";
+    const inOnboarding = segments[0] === "onboarding";
 
-    if (session) {
-      if (!profileCompleted) {
-        router.replace("/onboarding");
-      } else {
-        if (inAuthGroup || inOnboarding) {
-          router.replace("/(tabs)/home");
-        }
+    if (!session) {
+      if (!inAuthGroup) {
+        router.replace("/(auth)/welcome");
       }
-    } else if (inOnboarding) {
-      router.replace("/(auth)/welcome");
+    } else {
+      if (!profileCompleted && !inOnboarding) {
+        router.replace("/onboarding");
+      } else if (profileCompleted && (inAuthGroup || inOnboarding)) {
+        router.replace("/(tabs)/home");
+      }
     }
   }, [session, profileCompleted, loading, segments]);
   return (

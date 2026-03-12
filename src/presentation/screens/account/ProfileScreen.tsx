@@ -1,4 +1,3 @@
-import { supabase } from "@/src/infrastructure/supabase";
 import { ScreenWrapper } from "@/src/presentation/components/ui/ScreenWrapper";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -22,7 +21,7 @@ import { useCurrentUser } from "../../hooks/queries/useUser";
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const { session } = useAuth();
+  const { session, logout } = useAuth();
   const { hasNewNotification } = useNotificationStatus();
 
   const { data: user } = useCurrentUser();
@@ -44,10 +43,6 @@ export default function ProfileScreen() {
         year: "numeric",
       })
     : "N/A";
-
-  const logout = async () => {
-    await supabase.auth.signOut();
-  };
 
   const headerRight = (
     <View style={{ flexDirection: "row", gap: 10 }}>
