@@ -2,5 +2,6 @@ import { useGetSettings } from "./queries/useSettings";
 
 export const useVacationMode = () => {
   const { data: settings } = useGetSettings();
-  return !settings?.available;
+  if (!settings) return false;
+  return !settings.available;
 };
