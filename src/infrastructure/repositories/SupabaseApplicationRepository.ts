@@ -32,7 +32,8 @@ export class SupabaseApplicationRepository implements IApplicationRepository {
     );
 
     if (error) {
-      console.error("Erreur lors de l'annulation de la candidature :", error);
+      if (__DEV__)
+        console.error("Erreur lors de l'annulation de la candidature :", error);
       throw error;
     }
   }

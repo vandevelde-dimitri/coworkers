@@ -101,7 +101,8 @@ export default function OnboardingScreen() {
 
       await refreshSession();
     } catch (error) {
-      console.error("Erreur lors de la mise à jour du profil :", error);
+      if (__DEV__)
+        console.error("Erreur lors de la mise à jour du profil :", error);
     }
   };
 

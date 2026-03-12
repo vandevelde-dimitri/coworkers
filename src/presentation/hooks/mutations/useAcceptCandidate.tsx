@@ -17,8 +17,6 @@ export const useAcceptCandidate = () => {
       annonceId: string;
     }) => useCase.execute(candidateId, annonceId),
     onSuccess: (_, variables) => {
-      console.log("variable accept candidat ", variables);
-
       queryClient.invalidateQueries({
         queryKey: ["notifications", "combined"],
       });

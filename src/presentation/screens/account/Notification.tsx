@@ -31,39 +31,30 @@ export default function NotificationsScreen() {
     setNotificationCount(0);
   }, []);
 
-  console.log("notification", notifications);
-
   const handleAccept = async (annonceId: string, userId: string) => {
-    console.log("annonce id", annonceId);
-    console.log("user id", userId);
-
     try {
       await acceptCandidate({
         candidateId: userId,
         annonceId: annonceId,
       });
     } catch (e) {
-      console.error("Erreur lors de l'acceptation du candidat", e);
+      if (__DEV__) console.error("Erreur lors de l'acceptation du candidat", e);
     }
   };
 
   const handleReject = async (annonceId: string, userId: string) => {
-    console.log("annonce id", annonceId);
-    console.log("user id", userId);
-
     try {
       await rejectCandidate({
         candidateId: userId,
         annonceId: annonceId,
       });
     } catch (e) {
-      console.error("Erreur lors du refus du candidat", e);
+      if (__DEV__) console.error("Erreur lors du refus du candidat", e);
     }
   };
 
   const renderItem = ({ item }: { item: Notification }) => {
     const isOwnerAction = item.scope === "owner" && item.status === "pending";
-    console.log("item", item);
 
     return (
       <View style={styles.glassCard}>
