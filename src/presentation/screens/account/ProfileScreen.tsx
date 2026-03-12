@@ -21,17 +21,48 @@ import { useCurrentUser } from "../../hooks/queries/useUser";
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const { session, logout } = useAuth();
+  const { session, logout, refreshSession } = useAuth();
   const { hasNewNotification } = useNotificationStatus();
+  const { data: user, isLoading } = useCurrentUser();
 
-  const { data: user } = useCurrentUser();
-
-  if (!user) {
+  if (isLoading) {
     return (
       <View style={[styles.container, { justifyContent: "center" }]}>
         <Text style={{ color: "rgba(255,255,255,0.5)", fontSize: 16 }}>
-          Impossible de charger les informations du profil.
+          Chargement en cours...
         </Text>
+      </View>
+    );
+  }
+
+  if (!user) {
+    return (
+      <View
+        style={[
+          styles.container,
+          { justifyContent: "center", alignItems: "center", padding: 20 },
+        ]}
+      >
+        <Text
+          style={{
+            color: "rgba(255,255,255,0.7)",
+            fontSize: 16,
+            marginBottom: 20,
+            textAlign: "center",
+          }}
+        >
+          Impossible de charger votre profil pour le moment.
+        </Text>
+
+        <AppButton
+          title="Réessayer"
+          onPress={() => refreshSession()}
+          variant="primary"
+        />
+
+        <TouchableOpacity onPress={logout} style={{ marginTop: 20 }}>
+          <Text style={{ color: "rgba(255,255,255,0.4)" }}>Se déconnecter</Text>
+        </TouchableOpacity>
       </View>
     );
   }
