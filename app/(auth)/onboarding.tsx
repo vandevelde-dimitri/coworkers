@@ -1,9 +1,11 @@
 import { UserContract, UserTeam } from "@/src/domain/entities/user/User.enum";
 import { supabase } from "@/src/infrastructure/supabase";
 import { AppButton } from "@/src/presentation/components/ui/AppButton";
+import { CustomToast } from "@/src/presentation/components/ui/CustomToast";
 import { FormInput } from "@/src/presentation/components/ui/FormInput";
 import { FormSelect } from "@/src/presentation/components/ui/FormSelect";
 import { StackHeader } from "@/src/presentation/components/ui/Header";
+import { useToast } from "@/src/presentation/components/ui/molecules/Toast";
 import { useAuth } from "@/src/presentation/hooks/authContext";
 import { useUpdateUser } from "@/src/presentation/hooks/mutations/useUpadateUser";
 import { useFloors } from "@/src/presentation/hooks/queries/useFloor";
@@ -32,7 +34,7 @@ export default function OnboardingScreen() {
     useUpdateUser();
   const { data: floors } = useFloors();
   const [step, setStep] = useState(1);
-
+  const toast = useToast();
   const centersOptions =
     floors?.map((c) => ({ label: c.name, value: c.id })) || [];
   const contractOptions = Object.values(UserContract).map((c) => ({
@@ -101,137 +103,142 @@ export default function OnboardingScreen() {
 
       await refreshSession();
     } catch (error) {
-      if (__DEV__)
-        console.error("Erreur lors de la mise à jour du profil :", error);
+      if (__DEV__) console.error("Erreur onboarding :", error);
+      toast.show(
+        <CustomToast title="Erreur" message="Erreur lors de la sauvegarde" />,
+        {
+          type: "error",
+        },
+      );
     }
-  };
 
-  return (
-    <View style={styles.container}>
-      <StatusBar style="dark" />
-      <StackHeader title="Nouveau Profil" />
+    return (
+      <View style={styles.container}>
+        <StatusBar style="dark" />
+        <StackHeader title="Nouveau Profil" />
 
-      <View style={styles.progressBg}>
-        <View
-          style={[styles.progressFill, { width: `${(step / 3) * 100}%` }]}
-        />
-      </View>
-
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.header}>
-          <Text style={styles.stepText}>ÉTAPE {step} SUR 3</Text>
-          <Text style={styles.title}>
-            {step === 1 && "Parlons de vous"}
-            {step === 2 && "Votre quotidien"}
-            {step === 3 && "Derniers détails"}
-          </Text>
-        </View>
-
-        <View style={styles.card}>
-          {step === 1 && (
-            <>
-              <FormInput
-                name="firstname"
-                control={control}
-                label="Prénom"
-                placeholder="Jean"
-                iconName="person-outline"
-              />
-              <FormInput
-                name="lastname"
-                control={control}
-                label="Nom"
-                placeholder="Dupont"
-                iconName="person-outline"
-              />
-            </>
-          )}
-
-          {step === 2 && (
-            <>
-              <FormInput
-                name="city"
-                control={control}
-                label="Ville"
-                placeholder="Paris, Lyon..."
-                iconName="location-outline"
-              />
-              <FormSelect
-                name="team"
-                control={control}
-                label="Équipe"
-                options={teamOptions}
-              />
-            </>
-          )}
-
-          {step === 3 && (
-            <>
-              <FormSelect
-                name="fc_id"
-                control={control}
-                label="Centre Amazon"
-                options={centersOptions}
-              />
-              <FormSelect
-                name="contract"
-                control={control}
-                label="Type de contrat"
-                options={contractOptions}
-              />
-            </>
-          )}
-        </View>
-
-        <View style={styles.footer}>
-          {step > 1 && (
-            <AppButton
-              title="Précédent"
-              onPress={() => setStep(step - 1)}
-              variant="secondary"
-            />
-          )}
-          <AppButton
-            title={step === 3 ? "Finaliser" : "Continuer"}
-            onPress={handleNext}
-            isLoading={step === 3 && isUpdatingUser}
-            disabled={step === 3 && isUpdatingUser}
+        <View style={styles.progressBg}>
+          <View
+            style={[styles.progressFill, { width: `${(step / 3) * 100}%` }]}
           />
         </View>
-      </ScrollView>
-    </View>
-  );
-}
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#141E30" },
-  progressBg: { height: 4, backgroundColor: "rgba(255,255,255,0.05)" },
-  progressFill: { height: "100%", backgroundColor: "#FFF" },
-  scrollContent: { padding: 24, paddingTop: 30 },
-  header: { marginBottom: 30 },
-  stepText: {
-    color: "rgba(255,255,255,0.4)",
-    fontSize: 12,
-    fontWeight: "700",
-    letterSpacing: 1.5,
-  },
-  title: { color: "#FFF", fontSize: 28, fontWeight: "800", marginTop: 4 },
-  card: {
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
-    borderRadius: 30,
-    padding: 24,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
-    minHeight: 280,
-  },
-  footer: {
-    flexDirection: "column",
-    gap: 12,
-    marginTop: 30,
-    marginBottom: 40,
-    justifyContent: "center",
-  },
-});
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.header}>
+            <Text style={styles.stepText}>ÉTAPE {step} SUR 3</Text>
+            <Text style={styles.title}>
+              {step === 1 && "Parlons de vous"}
+              {step === 2 && "Votre quotidien"}
+              {step === 3 && "Derniers détails"}
+            </Text>
+          </View>
+
+          <View style={styles.card}>
+            {step === 1 && (
+              <>
+                <FormInput
+                  name="firstname"
+                  control={control}
+                  label="Prénom"
+                  placeholder="Jean"
+                  iconName="person-outline"
+                />
+                <FormInput
+                  name="lastname"
+                  control={control}
+                  label="Nom"
+                  placeholder="Dupont"
+                  iconName="person-outline"
+                />
+              </>
+            )}
+
+            {step === 2 && (
+              <>
+                <FormInput
+                  name="city"
+                  control={control}
+                  label="Ville"
+                  placeholder="Paris, Lyon..."
+                  iconName="location-outline"
+                />
+                <FormSelect
+                  name="team"
+                  control={control}
+                  label="Équipe"
+                  options={teamOptions}
+                />
+              </>
+            )}
+
+            {step === 3 && (
+              <>
+                <FormSelect
+                  name="fc_id"
+                  control={control}
+                  label="Centre Amazon"
+                  options={centersOptions}
+                />
+                <FormSelect
+                  name="contract"
+                  control={control}
+                  label="Type de contrat"
+                  options={contractOptions}
+                />
+              </>
+            )}
+          </View>
+
+          <View style={styles.footer}>
+            {step > 1 && (
+              <AppButton
+                title="Précédent"
+                onPress={() => setStep(step - 1)}
+                variant="secondary"
+              />
+            )}
+            <AppButton
+              title={step === 3 ? "Finaliser" : "Continuer"}
+              onPress={handleNext}
+              isLoading={step === 3 && isUpdatingUser}
+              disabled={step === 3 && isUpdatingUser}
+            />
+          </View>
+        </ScrollView>
+      </View>
+    );
+  };
+
+  const styles = StyleSheet.create({
+    container: { flex: 1, backgroundColor: "#141E30" },
+    progressBg: { height: 4, backgroundColor: "rgba(255,255,255,0.05)" },
+    progressFill: { height: "100%", backgroundColor: "#FFF" },
+    scrollContent: { padding: 24, paddingTop: 30 },
+    header: { marginBottom: 30 },
+    stepText: {
+      color: "rgba(255,255,255,0.4)",
+      fontSize: 12,
+      fontWeight: "700",
+      letterSpacing: 1.5,
+    },
+    title: { color: "#FFF", fontSize: 28, fontWeight: "800", marginTop: 4 },
+    card: {
+      backgroundColor: "rgba(255, 255, 255, 0.05)",
+      borderRadius: 30,
+      padding: 24,
+      borderWidth: 1,
+      borderColor: "rgba(255, 255, 255, 0.1)",
+      minHeight: 280,
+    },
+    footer: {
+      flexDirection: "column",
+      gap: 12,
+      marginTop: 30,
+      marginBottom: 40,
+      justifyContent: "center",
+    },
+  });
+}
