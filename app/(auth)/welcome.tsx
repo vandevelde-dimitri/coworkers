@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
@@ -56,7 +57,9 @@ export default function WelcomeScreen() {
         </View>
 
         <View style={styles.footerContainer}>
-          <Text style={styles.versionText}>Version 1.0.0</Text>
+          <Text style={styles.versionText}>
+            {`Version ${Constants.expoConfig?.version}`}
+          </Text>
           <Text style={styles.copyrightText}>© 2026 CoWorkers Inc.</Text>
         </View>
       </View>

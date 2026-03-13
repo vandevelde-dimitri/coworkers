@@ -89,7 +89,7 @@ function RootLayoutNav() {
         router.replace("/(tabs)/home");
       }
     }
-  }, [session, profileCompleted, loading, segments]);
+  }, [session, profileCompleted, loading, segments[0]]);
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack screenOptions={{ headerShown: false }}>
