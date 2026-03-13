@@ -9,6 +9,5 @@ export const useNotifications = () => {
   return useQuery({
     queryKey: ["notifications", "combined"],
     queryFn: () => useCase.execute(),
-    refetchInterval: 30000,
   });
 };
