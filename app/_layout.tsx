@@ -1,4 +1,5 @@
 import { ToastProviderWithViewport } from "@/src/presentation/components/ui/molecules/Toast";
+import { NetworkBanner } from "@/src/presentation/components/ui/NetworkBanner";
 import { useColorScheme } from "@/src/presentation/components/useColorScheme.web";
 import { AuthProvider, useAuth } from "@/src/presentation/hooks/authContext";
 import { MessageProvider } from "@/src/presentation/hooks/context/messageContext";
@@ -57,6 +58,7 @@ export default function RootLayout() {
         <AuthProvider>
           <NotificationProvider>
             <MessageProvider>
+              <NetworkBanner />
               <RootLayoutNav />
             </MessageProvider>
           </NotificationProvider>
