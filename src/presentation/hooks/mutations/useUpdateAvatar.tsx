@@ -1,32 +1,31 @@
 import { UpdateAvatarUserUseCase } from "@/src/application/use-case/user/UploadAvatarUser";
 import { SupabaseUserRepository } from "@/src/infrastructure/repositories/SupabaseUserRepository";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Alert } from "react-native";
-import { useToast } from "../../components/ui/molecules/Toast";
+import { useMemo } from "react";
 import { CustomToast } from "../../components/ui/CustomToast";
-
-const userRepo =  SupabaseUserRepository.getInstance();
-const useCase = new UpdateAvatarUserUseCase(userRepo);
+import { useToast } from "../../components/ui/molecules/Toast";
 
 export const useUpdateAvatar = () => {
   const queryClient = useQueryClient();
   const toast = useToast();
+
+  const useCase = useMemo(() => {
+    const userRepo = SupabaseUserRepository.getInstance();
+    return new UpdateAvatarUserUseCase(userRepo);
+  }, []);
+
   return useMutation({
     mutationFn: (payload: string) => useCase.execute(payload),
-    onError: (error) => {
+    onError: () => {
       toast.show(
         <CustomToast title="Erreur" message="Modification échouée" />,
-        {
-          type: "error",
-        },
+        { type: "error" },
       );
     },
     onSuccess: () => {
       toast.show(
         <CustomToast title="Succès" message="Modification réussie" />,
-        {
-          type: "success",
-        },
+        { type: "success" },
       );
       queryClient.invalidateQueries({ queryKey: ["current-user"] });
       queryClient.invalidateQueries({ queryKey: ["announcements"] });

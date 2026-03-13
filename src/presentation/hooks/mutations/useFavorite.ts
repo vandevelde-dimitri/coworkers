@@ -2,15 +2,19 @@ import { GetFavoriteStatusUseCase } from "@/src/application/use-case/favorite/Ge
 import { ToggleFavoriteUseCase } from "@/src/application/use-case/favorite/ToggleFavorite";
 import { SupabaseFavoriteRepository } from "@/src/infrastructure/repositories/SupabaseFavoriteRepository";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
-const repo = SupabaseFavoriteRepository.getInstance();
-const getFavoriteStatusUseCase = new GetFavoriteStatusUseCase(repo);
-const toggleFavoriteUseCase = new ToggleFavoriteUseCase(repo);
+import { useMemo } from "react";
 
 export function useFavorite(userId?: string, annonceId?: string) {
   const queryClient = useQueryClient();
-
   const queryKey = ["favorite", userId, annonceId];
+
+  const { getFavoriteStatusUseCase, toggleFavoriteUseCase } = useMemo(() => {
+    const repo = SupabaseFavoriteRepository.getInstance();
+    return {
+      getFavoriteStatusUseCase: new GetFavoriteStatusUseCase(repo),
+      toggleFavoriteUseCase: new ToggleFavoriteUseCase(repo),
+    };
+  }, []);
 
   const favoriteQuery = useQuery({
     queryKey,

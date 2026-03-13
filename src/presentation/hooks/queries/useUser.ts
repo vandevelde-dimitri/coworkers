@@ -1,11 +1,14 @@
+import { useMemo } from "react";
 import { GetCurrentUser } from "@/src/application/use-case/user/GetCurrentUser";
 import { SupabaseUserRepository } from "@/src/infrastructure/repositories/SupabaseUserRepository";
 import { useQuery } from "@tanstack/react-query";
 
-const repo = SupabaseUserRepository.getInstance();
-const useCase = new GetCurrentUser(repo);
-
 export const useCurrentUser = () => {
+  const useCase = useMemo(() => {
+    const repo = SupabaseUserRepository.getInstance();
+    return new GetCurrentUser(repo);
+  }, []);
+
   return useQuery({
     queryKey: ["current-user"],
     queryFn: () => useCase.execute(),

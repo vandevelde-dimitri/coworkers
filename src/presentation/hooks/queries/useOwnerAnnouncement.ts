@@ -1,11 +1,14 @@
 import { GetOwnerAnnouncement } from "@/src/application/use-case/announcement/GetOwnerAnnouncement";
 import { SupabaseAnnouncementRepository } from "@/src/infrastructure/repositories/SupabaseAnnouncementRepository";
 import { useQuery } from "@tanstack/react-query";
-
-const repo = SupabaseAnnouncementRepository.getInstance();
-const useCase = new GetOwnerAnnouncement(repo);
+import { useMemo } from "react";
 
 export const useOwnerAnnouncement = () => {
+  const useCase = useMemo(() => {
+    const repo = SupabaseAnnouncementRepository.getInstance();
+    return new GetOwnerAnnouncement(repo);
+  }, []);
+
   return useQuery({
     queryKey: ["announcements", "owner"],
     queryFn: () => useCase.execute(),

@@ -1,12 +1,15 @@
 import { RejectCandidateUseCase } from "@/src/application/use-case/notification/RejectCandidate";
 import { SupabaseParticipantRepository } from "@/src/infrastructure/repositories/SupabaseParticipantRepository";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-const repo = SupabaseParticipantRepository.getInstance();
-const useCase = new RejectCandidateUseCase(repo);
+import { useMemo } from "react";
 
 export const useRejectCandidate = () => {
   const queryClient = useQueryClient();
+
+  const useCase = useMemo(() => {
+    const repo = SupabaseParticipantRepository.getInstance();
+    return new RejectCandidateUseCase(repo);
+  }, []);
 
   return useMutation({
     mutationFn: ({

@@ -1,14 +1,18 @@
 import { UpdateEmailUseCase } from "@/src/application/use-case/auth/UpdateEmail";
 import { SupabaseAuthRepository } from "@/src/infrastructure/repositories/auth/SupabaseAuthRepository";
 import { useMutation } from "@tanstack/react-query";
+import { useMemo } from "react";
 import { CustomToast } from "../../components/ui/CustomToast";
 import { useToast } from "../../components/ui/molecules/Toast";
 
-const authRepo = SupabaseAuthRepository.getInstance();
-const useCase = new UpdateEmailUseCase(authRepo);
-
 export const useUpdateEmail = () => {
   const toast = useToast();
+
+  const useCase = useMemo(() => {
+    const authRepo = SupabaseAuthRepository.getInstance();
+    return new UpdateEmailUseCase(authRepo);
+  }, []);
+
   return useMutation({
     mutationFn: (email: string) => useCase.execute(email),
     onError: () => {

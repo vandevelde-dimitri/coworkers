@@ -5,12 +5,9 @@ import { SupabaseMessagingRepository } from "@/src/infrastructure/repositories/S
 import { CustomToast } from "@/src/presentation/components/ui/CustomToast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
+import { useMemo } from "react";
 import { useToast } from "../../components/ui/molecules/Toast";
 import { useAuth } from "../authContext";
-
-const repoAnnouncement = SupabaseAnnouncementRepository.getInstance();
-const repoMessaging = SupabaseMessagingRepository.getInstance();
-const useCase = new CreateAnnouncementUseCase(repoAnnouncement, repoMessaging);
 
 export const useCreateAnnouncement = () => {
   const queryClient = useQueryClient();
@@ -18,6 +15,13 @@ export const useCreateAnnouncement = () => {
   const toast = useToast();
   const { session } = useAuth();
   const userId = session?.user?.id;
+
+  const useCase = useMemo(() => {
+    const repoAnnouncement = SupabaseAnnouncementRepository.getInstance();
+    const repoMessaging = SupabaseMessagingRepository.getInstance();
+    return new CreateAnnouncementUseCase(repoAnnouncement, repoMessaging);
+  }, []);
+
   return useMutation({
     mutationFn: (payload: CreateAnnouncementPayload) =>
       useCase.execute(payload),

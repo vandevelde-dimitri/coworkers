@@ -1,9 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 import { GetAnnouncementsList } from "../../../application/use-case/announcement/GetAnnouncementsList";
 import { SupabaseAnnouncementRepository } from "../../../infrastructure/repositories/SupabaseAnnouncementRepository";
-
-const repo = SupabaseAnnouncementRepository.getInstance();
-const useCase = new GetAnnouncementsList(repo);
 
 export const useAnnouncements = (
   page: number,
@@ -12,6 +10,11 @@ export const useAnnouncements = (
   sortBy: string,
   fcId: string | null,
 ) => {
+  const useCase = useMemo(() => {
+    const repo = SupabaseAnnouncementRepository.getInstance();
+    return new GetAnnouncementsList(repo);
+  }, []);
+
   return useQuery({
     queryKey: ["announcements", { fcId, page_size, page, search, sortBy }],
     queryFn: () => useCase.execute(page, page_size, search, sortBy, fcId),

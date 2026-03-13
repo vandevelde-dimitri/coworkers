@@ -1,18 +1,22 @@
 import { SupabaseUserRepository } from "@/src/infrastructure/repositories/SupabaseUserRepository";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMemo } from "react";
 import { DeleteAvatarUseCase } from "../../../application/use-case/user/deleteAvatar";
 import { CustomToast } from "../../components/ui/CustomToast";
 import { useToast } from "../../components/ui/molecules/Toast";
 
-const userRepo = SupabaseUserRepository.getInstance();
-const useCase = new DeleteAvatarUseCase(userRepo);
-
 export const useDeleteAvatar = () => {
   const queryClient = useQueryClient();
   const toast = useToast();
+
+  const useCase = useMemo(() => {
+    const userRepo = SupabaseUserRepository.getInstance();
+    return new DeleteAvatarUseCase(userRepo);
+  }, []);
+
   return useMutation({
     mutationFn: () => useCase.execute(),
-    onError: (error) => {
+    onError: () => {
       toast.show(<CustomToast title="Erreur" message="Suppression échouée" />, {
         type: "error",
       });

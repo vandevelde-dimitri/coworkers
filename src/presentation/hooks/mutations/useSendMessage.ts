@@ -1,12 +1,15 @@
 import { SendMessage } from "@/src/application/use-case/chat/SendMessage";
 import { SupabaseChatRepository } from "@/src/infrastructure/repositories/SupabaseChatRepository";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-const chatRepo =  SupabaseChatRepository.getInstance();
-const sendMessageUseCase = new SendMessage(chatRepo);
+import { useMemo } from "react";
 
 export const useSendMessage = (conversationId: string) => {
   const queryClient = useQueryClient();
+
+  const sendMessageUseCase = useMemo(() => {
+    const chatRepo = SupabaseChatRepository.getInstance();
+    return new SendMessage(chatRepo);
+  }, []);
 
   return useMutation({
     mutationFn: ({ content }: { userId: string; content: string }) =>

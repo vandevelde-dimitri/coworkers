@@ -3,17 +3,20 @@ import { UpdateAnnouncementPayload } from "@/src/domain/entities/announcement/An
 import { SupabaseAnnouncementRepository } from "@/src/infrastructure/repositories/SupabaseAnnouncementRepository";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { Alert } from "react-native";
-import { useToast } from "../../components/ui/molecules/Toast";
+import { useMemo } from "react";
 import { CustomToast } from "../../components/ui/CustomToast";
-
-const repoAnnouncement = SupabaseAnnouncementRepository.getInstance();
-const useCase = new UpdateAnnouncementUseCase(repoAnnouncement);
+import { useToast } from "../../components/ui/molecules/Toast";
 
 export const useUpdateAnnouncement = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
   const toast = useToast();
+
+  const useCase = useMemo(() => {
+    const repoAnnouncement = SupabaseAnnouncementRepository.getInstance();
+    return new UpdateAnnouncementUseCase(repoAnnouncement);
+  }, []);
+
   return useMutation({
     mutationFn: ({
       id,
@@ -22,25 +25,19 @@ export const useUpdateAnnouncement = () => {
       id: string;
       payload: UpdateAnnouncementPayload;
     }) => useCase.execute(id, payload),
-    onError: (error) => {
+    onError: () => {
       toast.show(
         <CustomToast title="Erreur" message="Modification échouée" />,
-        {
-          type: "error",
-        },
+        { type: "error" },
       );
     },
     onSuccess: (_, { id }) => {
       toast.show(
         <CustomToast title="Succès" message="Modification réussie" />,
-        {
-          type: "success",
-        },
+        { type: "success" },
       );
       queryClient.invalidateQueries({ queryKey: ["announcements"] });
-      queryClient.invalidateQueries({
-        queryKey: ["announcements", "owner"],
-      });
+      queryClient.invalidateQueries({ queryKey: ["announcements", "owner"] });
       queryClient.invalidateQueries({ queryKey: ["announcements", id] });
       router.push("/(tabs)/home");
     },
