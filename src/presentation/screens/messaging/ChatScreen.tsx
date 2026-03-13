@@ -2,7 +2,7 @@ import { MessageInterface } from "@/src/domain/entities/chat/Message";
 import { ScreenWrapper } from "@/src/presentation/components/ui/ScreenWrapper";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -60,9 +60,8 @@ export default function ChatScreen({
     );
   };
 
-  const renderMessage = ({ item }: { item: MessageInterface }) => {
+  const renderMessage = useCallback(({ item }: { item: MessageInterface }) => {
     const isMine = item.isMine;
-
     const time = item.createdAt
       ? new Date(item.createdAt).toLocaleTimeString([], {
           hour: "2-digit",
@@ -89,7 +88,7 @@ export default function ChatScreen({
         </LinearGradient>
       </View>
     );
-  };
+  }, []);
 
   return (
     <ScreenWrapper title={interlocutorName ?? "Messages"} showBackButton={true}>

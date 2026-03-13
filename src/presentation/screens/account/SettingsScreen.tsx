@@ -2,7 +2,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { ScrollView, StyleSheet } from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet, Text } from "react-native";
 import * as yup from "yup";
 import { View } from "../../components/Themed";
 import { AppButton } from "../../components/ui/AppButton";
@@ -21,7 +21,7 @@ import { useGetSettings } from "../../hooks/queries/useSettings";
 export default function SettingsScreen() {
   const router = useRouter();
   const { session } = useAuth();
-  const { data: settings } = useGetSettings();
+  const { data: settings, isLoading, isError } = useGetSettings();
 
   const user = session?.user;
   const updateSettings = useUpdateSettings(user?.id ?? "");
@@ -79,6 +79,34 @@ export default function SettingsScreen() {
       available: !settings.available,
     });
   }, [settings, settingsForm]);
+
+  if (isError) {
+    return (
+      <ScreenWrapper showBackButton={true} title="Paramètres">
+        <View style={styles.container}>
+          <Text style={{ color: "red" }}>
+            Impossible de charger vos paramètres.
+          </Text>
+          <AppButton
+            title="Réessayer"
+            onPress={() => {
+              /* Re-fetch logic */
+            }}
+          />
+        </View>
+      </ScreenWrapper>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <ScreenWrapper showBackButton={true} title="Paramètres">
+        <View style={styles.container}>
+          <ActivityIndicator />
+        </View>
+      </ScreenWrapper>
+    );
+  }
 
   return (
     <ScreenWrapper showBackButton={true} title="Paramètres">
