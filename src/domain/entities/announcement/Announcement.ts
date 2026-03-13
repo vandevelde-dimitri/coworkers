@@ -13,13 +13,12 @@ export interface Announcement {
   passenger: User[];
 }
 
-export type UpdateAnnouncementPayload = Partial<
-  Omit<Announcement, "id" | "createdAt" | "owner" | "passenger">
->;
 export type CreateAnnouncementPayload = Omit<
   Announcement,
   "id" | "createdAt" | "owner" | "passenger"
 >;
+
+export type UpdateAnnouncementPayload = Partial<CreateAnnouncementPayload>;
 
 export interface CandidateAnnouncement {
   id: string;

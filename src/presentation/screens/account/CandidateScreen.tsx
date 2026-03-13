@@ -1,6 +1,7 @@
+import { CandidateAnnouncement } from "@/src/domain/entities/announcement/Announcement";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { ComponentProps } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -12,6 +13,8 @@ import ApplyButton from "../../components/ui/ApplyButton";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
 import { useUserApplications } from "../../hooks/queries/useUserApplication";
+
+type IoniconName = ComponentProps<typeof Ionicons>["name"];
 
 export default function CandidateScreen() {
   const router = useRouter();
@@ -36,7 +39,7 @@ export default function CandidateScreen() {
     }
   };
 
-  const renderItem = ({ item }: { item: any }) => {
+  const renderItem = ({ item }: { item: CandidateAnnouncement }) => {
     const statusConfig = getStatusStyle(item.status);
 
     return (
@@ -54,7 +57,7 @@ export default function CandidateScreen() {
             style={[styles.statusBadge, { backgroundColor: statusConfig.bg }]}
           >
             <Ionicons
-              name={statusConfig.icon as any}
+              name={statusConfig.icon as IoniconName}
               size={14}
               color={statusConfig.color}
             />

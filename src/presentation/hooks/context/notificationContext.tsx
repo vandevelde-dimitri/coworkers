@@ -91,7 +91,7 @@ export const NotificationProvider = ({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [userId]);
+  }, [userId, queryClient]);
 
   return (
     <NotificationContext.Provider

@@ -62,7 +62,7 @@ export const MessageProvider = ({
     }
 
     const map: Record<string, boolean> = {};
-    data?.forEach((row: any) => {
+    data?.forEach((row: { conversation_id: string }) => {
       map[row.conversation_id] = true;
     });
 
@@ -108,7 +108,7 @@ export const MessageProvider = ({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [userId]);
+  }, [userId, queryClient]);
 
   const markConversationRead = async (conversationId: string) => {
     if (!userId) return;
