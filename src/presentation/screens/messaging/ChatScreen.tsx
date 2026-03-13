@@ -39,7 +39,7 @@ export default function ChatScreen({
     return () => {
       setActiveConversation(null);
     };
-  }, [conversationId]);
+  }, [conversationId, markConversationRead, setActiveConversation]);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useChatMessages(conversationId, userId);
