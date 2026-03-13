@@ -1,5 +1,4 @@
 import { supabase } from "@/src/infrastructure/supabase";
-import { logger } from "@/utils/logger";
 import { Session } from "@supabase/supabase-js";
 import React, {
   createContext,
@@ -31,31 +30,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const initSession = async () => {
-      try {
-        const { data, error } = await supabase.auth.getSession();
-        if (error) throw error;
-        setSession(data.session);
-      } catch (err) {
-        await logger.critical("SESSION_INIT_FALLED", "authContext", err);
-        setSession(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    initSession();
-
     const {
       data: { subscription: authSubscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_OUT" || event === "USER_DELETED") {
-        setSession(null);
-      } else if (session) {
+      if (event === "INITIAL_SESSION") {
         setSession(session);
+        setLoading(false);
+      } else if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+        setSession(session);
+      } else if (event === "SIGNED_OUT") {
+        setSession(null);
+        setLoading(false);
       }
-
-      setLoading(false);
     });
 
     const subscriptionAppState = AppState.addEventListener(
