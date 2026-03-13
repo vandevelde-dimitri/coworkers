@@ -8,7 +8,7 @@ import { useAnnouncements } from "@/src/presentation/hooks/queries/useAnnounceme
 import { useFloors } from "@/src/presentation/hooks/queries/useFloor";
 import { useCurrentUser } from "@/src/presentation/hooks/queries/useUser";
 import { useDebounce } from "@/src/presentation/hooks/useDebounce";
-import { queryClient } from "@/utils/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import {
@@ -39,11 +39,13 @@ export default function AnnouncementHomeScreen() {
   const router = useRouter();
   const { session } = useAuth();
   const { data: currentUser } = useCurrentUser();
-
+  const queryClient = useQueryClient();
   const { navigateSafely } = useProtectedNavigation();
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState("");
-  const [selectedCenter, setSelectedCenter] = useState<string>("all");
+  const [selectedCenter, setSelectedCenter] = useState<string>(
+    currentUser?.fcId ?? "all",
+  );
   const [activeFilter, setActiveFilter] = useState("recent");
   const debouncedSearch = useDebounce(search, 300);
   const sortBy = activeFilter === "near" ? "recent" : activeFilter;
@@ -51,13 +53,7 @@ export default function AnnouncementHomeScreen() {
 
   useEffect(() => {
     queryClient.invalidateQueries({ queryKey: ["announcements"] });
-
-    if (session && currentUser?.fcId) {
-      setSelectedCenter(currentUser.fcId);
-    } else if (!session) {
-      setSelectedCenter("all");
-    }
-  }, [session, currentUser?.fcId, queryClient]);
+  }, [queryClient]);
 
   const {
     data: { announcements, totalCount } = {

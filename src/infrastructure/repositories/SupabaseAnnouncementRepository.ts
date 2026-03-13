@@ -10,11 +10,23 @@ import { AnnouncementListMapper } from "../mappers/AnnouncementListMapper";
 import { AnnouncementMapper } from "../mappers/AnnouncementMapper";
 
 export class SupabaseAnnouncementRepository implements IAnnouncementRepository {
+  private static instance: SupabaseAnnouncementRepository;
+
+  private constructor() {}
+
+  static getInstance(): SupabaseAnnouncementRepository {
+    if (!SupabaseAnnouncementRepository.instance) {
+      SupabaseAnnouncementRepository.instance =
+        new SupabaseAnnouncementRepository();
+    }
+    return SupabaseAnnouncementRepository.instance;
+  }
+
   private get baseSelect() {
     return `
             *,
             owner:users (
-                id, firstname, image_profile, city, avatar_updated_at, contract,fc:fc_id (id, name),
+                id, firstname, image_profile, city, avatar_updated_at, contract, fc:fc_id (id, name),
                 settings:settings!user_id (to_convey)
             ),
             participant_requests (
@@ -36,7 +48,6 @@ export class SupabaseAnnouncementRepository implements IAnnouncementRepository {
       .maybeSingle();
 
     if (error) throw error;
-
     if (!annonce) return null;
 
     return AnnouncementMapper.toDomain(annonce);
@@ -83,7 +94,7 @@ export class SupabaseAnnouncementRepository implements IAnnouncementRepository {
       .maybeSingle();
 
     if (error) throw error;
-    return AnnouncementMapper.toDomain(annonce);
+    return annonce ? AnnouncementMapper.toDomain(annonce) : null;
   }
 
   async createAnnouncement(
@@ -114,7 +125,6 @@ export class SupabaseAnnouncementRepository implements IAnnouncementRepository {
           "Vous avez déjà une annonce en cours. Supprimez-la avant d'en créer une nouvelle.",
         );
       }
-
       throw error;
     }
     return AnnouncementMapper.toDomain(data);

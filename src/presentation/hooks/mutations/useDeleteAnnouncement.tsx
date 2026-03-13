@@ -5,7 +5,7 @@ import { CustomToast } from "../../components/ui/CustomToast";
 import { useToast } from "../../components/ui/molecules/Toast";
 import { useAuth } from "../authContext";
 
-const repo = new SupabaseAnnouncementRepository();
+const repo = SupabaseAnnouncementRepository.getInstance();
 const useCase = new DeleteAnnouncementUseCase(repo);
 
 export function useDeleteAnnouncement() {

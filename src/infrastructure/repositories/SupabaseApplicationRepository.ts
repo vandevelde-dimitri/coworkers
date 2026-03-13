@@ -2,6 +2,18 @@ import { IApplicationRepository } from "@/src/domain/repositories/ApplicationRep
 import { supabase } from "../supabase";
 
 export class SupabaseApplicationRepository implements IApplicationRepository {
+  private static instance: SupabaseApplicationRepository;
+
+  private constructor() {}
+
+  static getInstance(): SupabaseApplicationRepository {
+    if (!SupabaseApplicationRepository.instance) {
+      SupabaseApplicationRepository.instance =
+        new SupabaseApplicationRepository();
+    }
+    return SupabaseApplicationRepository.instance;
+  }
+
   async getRequest(annonceId: string, userId: string) {
     const { data, error } = await supabase
       .from("participant_requests")
@@ -9,6 +21,7 @@ export class SupabaseApplicationRepository implements IApplicationRepository {
       .eq("annonce_id", annonceId)
       .eq("user_id", userId)
       .maybeSingle();
+
     if (error) throw error;
     return data;
   }
@@ -40,11 +53,11 @@ export class SupabaseApplicationRepository implements IApplicationRepository {
 
   async getUserApplications(): Promise<any[]> {
     const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    const userId = session?.user?.id;
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
 
-    if (!userId) return [];
+    if (userError || !user) return [];
 
     const { data, error } = await supabase
       .from("participant_requests")
@@ -60,7 +73,7 @@ export class SupabaseApplicationRepository implements IApplicationRepository {
         )
       `,
       )
-      .eq("user_id", userId)
+      .eq("user_id", user.id)
       .order("created_at", { ascending: false });
 
     if (error) throw error;

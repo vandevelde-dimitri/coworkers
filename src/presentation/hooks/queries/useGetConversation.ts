@@ -3,21 +3,21 @@ import { SupabaseChatRepository } from "@/src/infrastructure/repositories/Supaba
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "../authContext";
 
-const chatRepo = new SupabaseChatRepository();
+const chatRepo = SupabaseChatRepository.getInstance();
 const getConversationsUseCase = new GetConversationsUseCase(chatRepo);
 
 export const useGetConversations = () => {
-    const { session } = useAuth();
-    const userId = session?.user?.id;
+  const { session } = useAuth();
+  const userId = session?.user?.id;
 
-    return useQuery({
-        queryKey: ["conversations", userId],
-        queryFn: async () => {
-            if (!userId) return [];
-            return await getConversationsUseCase.execute(userId);
-        },
-        enabled: !!userId,
-        refetchOnWindowFocus: true,
-        staleTime: 1000 * 60,
-    });
+  return useQuery({
+    queryKey: ["conversations", userId],
+    queryFn: async () => {
+      if (!userId) return [];
+      return await getConversationsUseCase.execute(userId);
+    },
+    enabled: !!userId,
+    refetchOnWindowFocus: true,
+    staleTime: 1000 * 60,
+  });
 };

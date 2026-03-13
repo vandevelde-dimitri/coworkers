@@ -2,7 +2,7 @@ import { GetSettingsUseCase } from "@/src/application/use-case/setting/GetSettin
 import { SupabaseSettingsRepository } from "@/src/infrastructure/repositories/SupabaseSettingRepository";
 import { useQuery } from "@tanstack/react-query";
 
-const repo = new SupabaseSettingsRepository();
+const repo = SupabaseSettingsRepository.getInstance();
 const useCase = new GetSettingsUseCase(repo);
 
 export const useGetSettings = () => {

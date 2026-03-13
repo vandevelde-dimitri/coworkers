@@ -3,7 +3,7 @@ import { Settings } from "@/src/domain/entities/setting/Setting";
 import { SupabaseSettingsRepository } from "@/src/infrastructure/repositories/SupabaseSettingRepository";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-const repo = new SupabaseSettingsRepository();
+const repo = SupabaseSettingsRepository.getInstance();
 const useCase = new UpdateSettingsUseCase(repo);
 
 export const useUpdateSettings = (userId: string) => {

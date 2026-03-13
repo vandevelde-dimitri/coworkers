@@ -4,6 +4,17 @@ import { IFavoriteRepository } from "../../domain/repositories/FavoriteRepositor
 import { AnnouncementListMapper } from "../mappers/AnnouncementListMapper";
 
 export class SupabaseFavoriteRepository implements IFavoriteRepository {
+  private static instance: SupabaseFavoriteRepository;
+
+  private constructor() {}
+
+  static getInstance(): SupabaseFavoriteRepository {
+    if (!SupabaseFavoriteRepository.instance) {
+      SupabaseFavoriteRepository.instance = new SupabaseFavoriteRepository();
+    }
+    return SupabaseFavoriteRepository.instance;
+  }
+
   async getFavoriteStatus(userId: string, annonceId: string): Promise<boolean> {
     const { data, error } = await supabase
       .from("user_annonces")
@@ -40,13 +51,15 @@ export class SupabaseFavoriteRepository implements IFavoriteRepository {
     page: number,
     pageSize: number,
   ): Promise<{ announcements: Announcement[]; totalCount: number }> {
-    const { data: sessionData } = await supabase.auth.getSession();
-    const userId = sessionData?.session?.user?.id;
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
 
-    if (!userId) return { announcements: [], totalCount: 0 };
+    if (userError || !user) return { announcements: [], totalCount: 0 };
 
     const { data, error } = await supabase.rpc("get_favorite_annonces", {
-      p_user_id: userId,
+      p_user_id: user.id,
       p_limit: pageSize,
       p_offset: (page - 1) * pageSize,
     });

@@ -4,7 +4,7 @@ import { supabase } from "@/src/infrastructure/supabase";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 
-const chatRepo = new SupabaseChatRepository();
+const chatRepo = SupabaseChatRepository.getInstance();
 
 export const useChatMessages = (conversationId: string, userId: string) => {
     const queryClient = useQueryClient();

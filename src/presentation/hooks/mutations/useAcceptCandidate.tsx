@@ -2,7 +2,7 @@ import { AcceptCandidateUseCase } from "@/src/application/use-case/notification/
 import { SupabaseParticipantRepository } from "@/src/infrastructure/repositories/SupabaseParticipantRepository";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-const repo = new SupabaseParticipantRepository();
+const repo = SupabaseParticipantRepository.getInstance();
 const useCase = new AcceptCandidateUseCase(repo);
 
 export const useAcceptCandidate = () => {

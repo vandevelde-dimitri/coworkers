@@ -1,7 +1,7 @@
 import { SupabaseApplicationRepository } from "@/src/infrastructure/repositories/SupabaseApplicationRepository";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-const repo = new SupabaseApplicationRepository();
+const repo = SupabaseApplicationRepository.getInstance();
 
 export function useApply(annonceId?: string, userId?: string) {
   const queryClient = useQueryClient();

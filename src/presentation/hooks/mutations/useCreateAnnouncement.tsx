@@ -8,8 +8,8 @@ import { useRouter } from "expo-router";
 import { useToast } from "../../components/ui/molecules/Toast";
 import { useAuth } from "../authContext";
 
-const repoAnnouncement = new SupabaseAnnouncementRepository();
-const repoMessaging = new SupabaseMessagingRepository();
+const repoAnnouncement = SupabaseAnnouncementRepository.getInstance();
+const repoMessaging = SupabaseMessagingRepository.getInstance();
 const useCase = new CreateAnnouncementUseCase(repoAnnouncement, repoMessaging);
 
 export const useCreateAnnouncement = () => {

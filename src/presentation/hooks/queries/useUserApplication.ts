@@ -2,7 +2,7 @@ import { GetUserApplicationsUseCase } from "@/src/application/use-case/applicati
 import { SupabaseApplicationRepository } from "@/src/infrastructure/repositories/SupabaseApplicationRepository";
 import { useQuery } from "@tanstack/react-query";
 
-const repo = new SupabaseApplicationRepository();
+const repo = SupabaseApplicationRepository.getInstance();
 const useCase = new GetUserApplicationsUseCase(repo);
 
 export const useUserApplications = () => {

@@ -9,47 +9,52 @@ import { IUserRepository } from "../../domain/repositories/UserRepository";
 import { UserMapper } from "../mappers/UserMapper";
 
 export class SupabaseUserRepository implements IUserRepository {
+  private static instance: SupabaseUserRepository;
+
+  private constructor() {}
+
+  static getInstance(): SupabaseUserRepository {
+    if (!SupabaseUserRepository.instance) {
+      SupabaseUserRepository.instance = new SupabaseUserRepository();
+    }
+    return SupabaseUserRepository.instance;
+  }
+
   async getUserById(id: string): Promise<User | null> {
     const { data, error } = await supabase
       .from("users")
       .select(
         `*,
-                fc:fc_id ( 
-                id,
-            name
-          )`,
+         fc:fc_id ( id, name )`,
       )
       .eq("id", id)
-      .single();
+      .maybeSingle();
 
     if (error) {
       if (__DEV__) console.error("Erreur récupération utilisateur", error);
       throw error;
     }
 
-    return UserMapper.toDomain(data);
+    return data ? UserMapper.toDomain(data) : null;
   }
 
   async getUserProfilePublic(userId: string): Promise<UserPublic | null> {
-    const { data, error: errorUser } = await supabase
+    const { data, error } = await supabase
       .from("public_profiles")
       .select(
         `*,
-                fc:fc_id ( 
-                id,
-            name
-          )`,
+         fc:fc_id ( id, name )`,
       )
       .eq("id", userId)
-      .single();
+      .maybeSingle();
 
-    if (errorUser) {
+    if (error) {
       if (__DEV__)
         console.error("Erreur récupération profil public utilisateur");
-      throw errorUser;
+      throw error;
     }
 
-    return UserMapper.toDomainPublic(data);
+    return data ? UserMapper.toDomainPublic(data) : null;
   }
 
   async getCurrentSessionId(): Promise<string | null> {
@@ -61,12 +66,7 @@ export class SupabaseUserRepository implements IUserRepository {
 
   async updateUser(data: UpdateUserPayload): Promise<void> {
     const userId = await this.getCurrentSessionId();
-
-    if (!userId) {
-      throw new Error(
-        "Impossible de mettre à jour le profil : session introuvable.",
-      );
-    }
+    if (!userId) throw new Error("Session introuvable.");
 
     const persistenceData = UserMapper.toPersistence(data);
 
@@ -75,98 +75,56 @@ export class SupabaseUserRepository implements IUserRepository {
       .update(persistenceData)
       .eq("id", userId);
 
-    if (error) {
-      if (__DEV__) {
-        console.error(
-          `[ERR_USR_UPDATE_PROFILE] ❌ Erreur Supabase:`,
-          error.message,
-        );
-      }
-      throw error;
-    }
-  }
-
-  async deleteUser(userId: string): Promise<void> {
-    const { error } = await supabase.from("users").delete().eq("id", userId);
-
-    if (error) {
-      if (__DEV__) console.error("Erreur suppression utilisateur:", error);
-      throw error;
-    }
+    if (error) throw error;
   }
 
   async updateImageProfile(avatarUrl: string): Promise<void> {
     const userId = await this.getCurrentSessionId();
-
-    if (!userId) {
-      throw new Error(
-        "Impossible de mettre à jour la photo de profil : session introuvable.",
-      );
-    }
+    if (!userId) throw new Error("Session introuvable.");
 
     const { error } = await supabase
       .from("users")
-      .update({ image_profile: avatarUrl, avatar_updated_at: new Date() })
-      .eq("id", userId)
-      .select();
-    if (error) {
-      if (__DEV__)
-        console.error("Erreur mise à jour avatar utilisateur:", error);
-      throw error;
-    }
+      .update({
+        image_profile: avatarUrl,
+        avatar_updated_at: new Date().toISOString(),
+      })
+      .eq("id", userId);
+
+    if (error) throw error;
   }
+
   async deleteAvatar(): Promise<void> {
     const userId = await this.getCurrentSessionId();
-
-    if (!userId) {
-      throw new Error(
-        "Impossible de supprimer l'avatar : session introuvable.",
-      );
-    }
+    if (!userId) throw new Error("Session introuvable.");
 
     const { error } = await supabase
       .from("users")
-      .update({ image_profile: null, avatar_updated_at: new Date() })
-      .eq("id", userId)
-      .select();
-    if (error) {
-      if (__DEV__)
-        console.error("Erreur suppression avatar utilisateur:", error);
-      throw error;
-    }
+      .update({
+        image_profile: null,
+        avatar_updated_at: new Date().toISOString(),
+      })
+      .eq("id", userId);
+
+    if (error) throw error;
   }
 
   async uploadAvatar(avatarFile: string): Promise<string> {
     const userId = await this.getCurrentSessionId();
+    if (!userId) throw new Error("Session introuvable.");
 
-    if (!userId) {
-      throw new Error(
-        "Impossible de télécharger l'avatar : session introuvable.",
-      );
-    }
-    const fileExt = "webp";
-    const filePath = `${userId}/avatar.${fileExt}`;
+    const filePath = `${userId}/avatar.webp`;
     const arrayBuffer = await uriToArrayBuffer(avatarFile);
 
-    try {
-      const { error } = await supabase.storage
-        .from("avatars")
-        .upload(filePath, arrayBuffer, {
-          contentType: "image/webp",
-          upsert: true,
-        });
-      if (error) {
-        if (__DEV__) console.error("Erreur upload avatar utilisateur:", error);
-        throw error;
-      }
-      const { data: publicUrlData } = await supabase.storage
-        .from("avatars")
-        .getPublicUrl(filePath);
+    const { error: uploadError } = await supabase.storage
+      .from("avatars")
+      .upload(filePath, arrayBuffer, {
+        contentType: "image/webp",
+        upsert: true,
+      });
 
-      return publicUrlData.publicUrl;
-    } catch (error) {
-      if (__DEV__) console.error("Erreur upload avatar utilisateur:", error);
-      throw error;
-    }
+    if (uploadError) throw uploadError;
+
+    const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
+    return data.publicUrl;
   }
 }

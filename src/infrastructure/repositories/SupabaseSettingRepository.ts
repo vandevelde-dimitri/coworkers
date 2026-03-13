@@ -4,6 +4,17 @@ import { SettingsMapper } from "../mappers/SettingMapper";
 import { supabase } from "../supabase";
 
 export class SupabaseSettingsRepository implements ISettingsRepository {
+  private static instance: SupabaseSettingsRepository;
+
+  private constructor() {}
+
+  static getInstance(): SupabaseSettingsRepository {
+    if (!SupabaseSettingsRepository.instance) {
+      SupabaseSettingsRepository.instance = new SupabaseSettingsRepository();
+    }
+    return SupabaseSettingsRepository.instance;
+  }
+
   async getSettings(): Promise<Settings> {
     const {
       data: { user },
@@ -19,13 +30,13 @@ export class SupabaseSettingsRepository implements ISettingsRepository {
       .from("settings")
       .select("*")
       .eq("user_id", user.id)
-      .single();
+      .maybeSingle();
 
-    if (!error && data) {
+    if (data) {
       return SettingsMapper.toDomain(data);
     }
 
-    if (error?.code !== "PGRST116") {
+    if (error && error.code !== "PGRST116") {
       throw error;
     }
 

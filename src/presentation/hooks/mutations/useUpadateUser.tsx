@@ -6,7 +6,7 @@ import { useToast } from "@/src/presentation/components/ui/molecules/Toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React from "react";
 
-const userRepo = new SupabaseUserRepository();
+const userRepo = SupabaseUserRepository.getInstance();
 const useCase = new UpdateUserProfileUseCase(userRepo);
 
 export const useUpdateUser = () => {

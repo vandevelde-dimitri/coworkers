@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { CustomToast } from "../../components/ui/CustomToast";
 import { useToast } from "../../components/ui/molecules/Toast";
 
-const authRepo = new SupabaseAuthRepository();
+const authRepo = SupabaseAuthRepository.getInstance();
 const useCase = new UpdatePasswordUseCase(authRepo);
 
 export const useUpdatePassword = () => {

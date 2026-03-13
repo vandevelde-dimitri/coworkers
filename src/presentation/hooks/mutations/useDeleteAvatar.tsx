@@ -4,7 +4,7 @@ import { DeleteAvatarUseCase } from "../../../application/use-case/user/deleteAv
 import { CustomToast } from "../../components/ui/CustomToast";
 import { useToast } from "../../components/ui/molecules/Toast";
 
-const userRepo = new SupabaseUserRepository();
+const userRepo = SupabaseUserRepository.getInstance();
 const useCase = new DeleteAvatarUseCase(userRepo);
 
 export const useDeleteAvatar = () => {

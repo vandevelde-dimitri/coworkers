@@ -2,6 +2,18 @@ import { IParticipantRepository } from "@/src/domain/repositories/ParticipantRep
 import { supabase } from "@/src/infrastructure/supabase";
 
 export class SupabaseParticipantRepository implements IParticipantRepository {
+  private static instance: SupabaseParticipantRepository;
+
+  private constructor() {}
+
+  static getInstance(): SupabaseParticipantRepository {
+    if (!SupabaseParticipantRepository.instance) {
+      SupabaseParticipantRepository.instance =
+        new SupabaseParticipantRepository();
+    }
+    return SupabaseParticipantRepository.instance;
+  }
+
   async acceptCandidate(candidateId: string, annonceId: string): Promise<void> {
     const { error } = await supabase.rpc("accept_candidate", {
       p_annonce_id: annonceId,
@@ -14,6 +26,7 @@ export class SupabaseParticipantRepository implements IParticipantRepository {
       );
     }
   }
+
   async rejectCandidate(candidateId: string, annonceId: string): Promise<void> {
     const { error } = await supabase
       .from("participant_requests")
@@ -25,7 +38,12 @@ export class SupabaseParticipantRepository implements IParticipantRepository {
       throw new Error(`Erreur lors du refus du candidat: ${error.message}`);
     }
   }
-  async removeParticipant(annonceId: string, participantId: string, conversationId: string ): Promise<void> {
+
+  async removeParticipant(
+    annonceId: string,
+    participantId: string,
+    conversationId: string,
+  ): Promise<void> {
     const { error } = await supabase.rpc("remove_participant", {
       p_annonce_id: annonceId,
       p_participant_id: participantId,

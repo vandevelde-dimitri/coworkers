@@ -5,7 +5,7 @@ import { Alert } from "react-native";
 import { useToast } from "../../components/ui/molecules/Toast";
 import { CustomToast } from "../../components/ui/CustomToast";
 
-const userRepo = new SupabaseUserRepository();
+const userRepo =  SupabaseUserRepository.getInstance();
 const useCase = new UpdateAvatarUserUseCase(userRepo);
 
 export const useUpdateAvatar = () => {

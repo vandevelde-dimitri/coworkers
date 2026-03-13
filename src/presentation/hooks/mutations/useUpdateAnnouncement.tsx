@@ -7,7 +7,7 @@ import { Alert } from "react-native";
 import { useToast } from "../../components/ui/molecules/Toast";
 import { CustomToast } from "../../components/ui/CustomToast";
 
-const repoAnnouncement = new SupabaseAnnouncementRepository();
+const repoAnnouncement = SupabaseAnnouncementRepository.getInstance();
 const useCase = new UpdateAnnouncementUseCase(repoAnnouncement);
 
 export const useUpdateAnnouncement = () => {

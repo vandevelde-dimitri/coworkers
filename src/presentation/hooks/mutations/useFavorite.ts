@@ -3,7 +3,7 @@ import { ToggleFavoriteUseCase } from "@/src/application/use-case/favorite/Toggl
 import { SupabaseFavoriteRepository } from "@/src/infrastructure/repositories/SupabaseFavoriteRepository";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-const repo = new SupabaseFavoriteRepository();
+const repo = SupabaseFavoriteRepository.getInstance();
 const getFavoriteStatusUseCase = new GetFavoriteStatusUseCase(repo);
 const toggleFavoriteUseCase = new ToggleFavoriteUseCase(repo);
 

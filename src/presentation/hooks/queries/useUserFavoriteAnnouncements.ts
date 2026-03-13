@@ -2,7 +2,7 @@ import { GetFavoriteAnnouncementsUseCase } from "@/src/application/use-case/favo
 import { SupabaseFavoriteRepository } from "@/src/infrastructure/repositories/SupabaseFavoriteRepository";
 import { useQuery } from "@tanstack/react-query";
 
-const repo = new SupabaseFavoriteRepository();
+const repo = SupabaseFavoriteRepository.getInstance();
 const useCase = new GetFavoriteAnnouncementsUseCase(repo);
 
 export const useUserFavoriteAnnouncements = (

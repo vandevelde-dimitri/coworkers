@@ -2,11 +2,10 @@ import { LoginUseCase } from "@/src/application/use-case/auth/Login";
 import { Register } from "@/src/domain/entities/auth/Register";
 import { SupabaseAuthRepository } from "@/src/infrastructure/repositories/auth/SupabaseAuthRepository";
 import { useMutation } from "@tanstack/react-query";
-import { Alert } from "react-native";
-import { useToast } from "../../components/ui/molecules/Toast";
 import { CustomToast } from "../../components/ui/CustomToast";
+import { useToast } from "../../components/ui/molecules/Toast";
 
-const authRepo = new SupabaseAuthRepository();
+const authRepo = SupabaseAuthRepository.getInstance();
 const useCase = new LoginUseCase(authRepo);
 
 export const useLogin = () => {
