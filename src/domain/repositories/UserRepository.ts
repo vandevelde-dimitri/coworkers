@@ -5,6 +5,7 @@ export interface IUserRepository {
   updateUser(data: UpdateUserPayload): Promise<void>;
   getCurrentSessionId(): Promise<string | null>;
   deleteAvatar(): Promise<void>;
+  deleteAccount(): Promise<void>;
   updateImageProfile(avatarUrl: string): Promise<void>;
   uploadAvatar(avatarFile: string): Promise<string>;
   getUserProfilePublic(userId: string): Promise<UserPublic | null>;

@@ -1,11 +1,12 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ActivityIndicator, ScrollView, StyleSheet, Text } from "react-native";
 import * as yup from "yup";
 import { View } from "../../components/Themed";
 import { AppButton } from "../../components/ui/AppButton";
+import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import { MenuDisclosureSection } from "../../components/ui/DisclosureMenu";
 import { FormInput } from "../../components/ui/FormInput";
 import { FormMenuSwitch } from "../../components/ui/FormSwitch";
@@ -13,6 +14,7 @@ import { MenuItem } from "../../components/ui/MenuItem";
 import { MenuSection } from "../../components/ui/MenuSection";
 import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
 import { useAuth } from "../../hooks/authContext";
+import { useDeleteAccount } from "../../hooks/mutations/useDeleteAccount";
 import { useUpdateEmail } from "../../hooks/mutations/useUpdateEmail";
 import { useUpdatePassword } from "../../hooks/mutations/useUpdatePassword";
 import { useUpdateSettings } from "../../hooks/mutations/useUpdateSettings";
@@ -22,7 +24,8 @@ export default function SettingsScreen() {
   const router = useRouter();
   const { session } = useAuth();
   const { data: settings, isLoading, isError } = useGetSettings();
-
+  const [open, setOpen] = useState(false);
+  const { mutate: deleteAccount } = useDeleteAccount();
   const user = session?.user;
   const updateSettings = useUpdateSettings(user?.id ?? "");
   const { mutate: updateEmail } = useUpdateEmail();
@@ -195,7 +198,16 @@ export default function SettingsScreen() {
           <AppButton
             title="Supprimer mon compte"
             variant="danger"
-            onPress={() => console.log("supprimer compte")}
+            onPress={() => setOpen(true)}
+          />
+          <ConfirmDialog
+            title="Voirs-vous vraiment supprimer votre compte ?"
+            confirmLabel="oui"
+            cancelLabel="non"
+            onConfirm={deleteAccount}
+            onCancel={() => setOpen(false)}
+            visible={open}
+            danger
           />
         </MenuDisclosureSection>
       </ScrollView>

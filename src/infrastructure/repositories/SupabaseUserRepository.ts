@@ -127,4 +127,12 @@ export class SupabaseUserRepository implements IUserRepository {
     const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
     return data.publicUrl;
   }
+
+  async deleteAccount(): Promise<void> {
+    const { data, error } = await supabase.functions.invoke("delete-account", {
+      method: "POST",
+    });
+
+    if (error) throw error;
+  }
 }
