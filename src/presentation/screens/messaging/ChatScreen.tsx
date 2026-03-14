@@ -31,7 +31,8 @@ export default function ChatScreen({
   const { session } = useAuth();
   const userId = session?.user.id ?? "";
   const [messageText, setMessageText] = useState("");
-  const { markConversationRead, setActiveConversation } = useMessageStatus();
+  const { markConversationRead, setActiveConversation, connectionStatus } =
+    useMessageStatus();
 
   useEffect(() => {
     setActiveConversation(conversationId);
@@ -91,7 +92,32 @@ export default function ChatScreen({
   }, []);
 
   return (
-    <ScreenWrapper title={interlocutorName ?? "Messages"} showBackButton={true}>
+    <ScreenWrapper
+      title={interlocutorName ?? "Messages"}
+      showBackButton={true}
+      headerRight={
+        connectionStatus !== "SUBSCRIBED" && (
+          <View style={styles.statusIndicator}>
+            <View
+              style={[
+                styles.dot,
+                {
+                  backgroundColor:
+                    connectionStatus === "CHANNEL_ERROR"
+                      ? "#EF4444"
+                      : "#F59E0B",
+                },
+              ]}
+            />
+            <Text style={styles.statusText}>
+              {connectionStatus === "CHANNEL_ERROR"
+                ? "Déconnecté"
+                : "Connexion..."}
+            </Text>
+          </View>
+        )
+      }
+    >
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
@@ -219,5 +245,26 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
+  },
+
+  statusIndicator: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.2)",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    width: 90,
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: 6,
+  },
+  statusText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "bold",
   },
 });

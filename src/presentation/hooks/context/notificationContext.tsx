@@ -40,26 +40,16 @@ export const NotificationProvider = ({
       .channel(`user-notifications-${userId}`)
       .on(
         "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "participant_requests",
-        },
-        async (payload) => {
-          const { annonce_id } = payload.new;
+        { event: "INSERT", schema: "public", table: "participant_requests" },
+        (payload) => {
+          const { owner_id } = payload.new as { owner_id: string };
 
-          const { data: annonce } = await supabase
-            .from("annonces")
-            .select("user_id")
-            .eq("id", annonce_id)
-            .single();
-
-          if (annonce?.user_id === userId) {
+          if (owner_id === userId) {
             setNotificationCount((prev) => prev + 1);
+            queryClient.invalidateQueries({
+              queryKey: ["notifications", "combined"],
+            });
           }
-          queryClient.invalidateQueries({
-            queryKey: ["notifications", "combined"],
-          });
         },
       )
       .on(
