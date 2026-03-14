@@ -70,6 +70,7 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const segments = useSegments();
+  const routeSegments = segments as string[];
   const colorScheme = useColorScheme();
   const { session, loading, profileCompleted } = useAuth();
   const router = useRouter();
@@ -77,8 +78,8 @@ function RootLayoutNav() {
   useEffect(() => {
     if (loading) return;
 
-    const inAuthGroup = segments[0] === "(auth)";
-    const inOnboarding = segments[0] === "onboarding";
+    const inAuthGroup = routeSegments[0] === "(auth)";
+    const inOnboarding = routeSegments.includes("onboarding");
 
     if (!session) {
       if (!inAuthGroup) {
@@ -91,7 +92,7 @@ function RootLayoutNav() {
         router.replace("/(tabs)/home");
       }
     }
-  }, [session, profileCompleted, loading, segments[0]]);
+  }, [session, profileCompleted, loading, routeSegments[0]]);
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack screenOptions={{ headerShown: false }}>
