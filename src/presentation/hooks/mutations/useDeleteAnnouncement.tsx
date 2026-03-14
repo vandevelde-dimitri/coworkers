@@ -1,5 +1,6 @@
 import { DeleteAnnouncementUseCase } from "@/src/application/use-case/announcement/DeleteAnnouncement";
 import { SupabaseAnnouncementRepository } from "@/src/infrastructure/repositories/SupabaseAnnouncementRepository";
+import { SupabaseUserRepository } from "@/src/infrastructure/repositories/SupabaseUserRepository";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { CustomToast } from "../../components/ui/CustomToast";
@@ -13,8 +14,9 @@ export function useDeleteAnnouncement() {
   const userId = session?.user?.id;
 
   const useCase = useMemo(() => {
-    const repo = SupabaseAnnouncementRepository.getInstance();
-    return new DeleteAnnouncementUseCase(repo);
+    const announcementRepo = SupabaseAnnouncementRepository.getInstance();
+    const userRepo = SupabaseUserRepository.getInstance();
+    return new DeleteAnnouncementUseCase(announcementRepo, userRepo);
   }, []);
 
   return useMutation({

@@ -41,20 +41,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const checkProfileStatus = async () => {
     try {
-      if (__DEV__) console.log("🔍 Checking profile status...");
       const {
         data: { user },
       } = await supabase.auth.getUser();
       if (user) {
         const isCompleted = await profileStatusUseCase.execute();
-        if (__DEV__) console.log("✓ Profile completed:", isCompleted);
         setProfileCompleted(isCompleted);
       } else {
-        if (__DEV__) console.log("✗ No user found");
         setProfileCompleted(false);
       }
     } catch (error) {
-      if (__DEV__) console.error("❌ checkProfileStatus error:", error);
       setProfileCompleted(false);
     }
   };
