@@ -13,6 +13,7 @@ import Avatar from "../../components/ui/Avatar";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
+import ConversationItemSkeleton from "../../components/ui/skeleton/ConversationItemSkeleton";
 import { useNotificationStatus } from "../../hooks/context/notificationContext";
 import { useAcceptCandidate } from "../../hooks/mutations/useAcceptCandidate";
 import { useRejectCandidate } from "../../hooks/mutations/useRejectCandidate";
@@ -130,23 +131,31 @@ export default function NotificationsScreen() {
 
   return (
     <ScreenWrapper showBackButton title="Notifications">
-      <FlatList
-        data={notifications}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        onRefresh={refetch}
-        refreshing={isLoading}
-        contentContainerStyle={styles.listContainer}
-        ListEmptyComponent={
-          <EmptyState
-            icon="notifications-outline"
-            description="Aucune notification de disponible"
-            title="Aucune notification"
-            onPress={() => navigateSafely("/(tabs)/formAnnouncement")}
-            buttonLabel="Crée une annonce"
-          />
-        }
-      />
+      {isLoading ? (
+        <View style={styles.listContainer}>
+          {[1, 2, 3].map((i) => (
+            <ConversationItemSkeleton key={i} />
+          ))}
+        </View>
+      ) : (
+        <FlatList
+          data={notifications}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+          onRefresh={refetch}
+          refreshing={isLoading}
+          contentContainerStyle={styles.listContainer}
+          ListEmptyComponent={
+            <EmptyState
+              icon="notifications-outline"
+              description="Aucune notification de disponible"
+              title="Aucune notification"
+              onPress={() => navigateSafely("/(tabs)/formAnnouncement")}
+              buttonLabel="Crée une annonce"
+            />
+          }
+        />
+      )}
 
       <ConfirmDialog
         visible={!!selectedRequest}

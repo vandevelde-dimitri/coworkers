@@ -8,6 +8,7 @@ import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { RemoveParticipantButton } from "../../components/ui/RemoveParticipantButton";
 import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
+import AnnouncementOwnerSkeleton from "../../components/ui/skeleton/AnnouncementOwnerSkeleton";
 import { useDeleteAnnouncement } from "../../hooks/mutations/useDeleteAnnouncement";
 import { useOwnerAnnouncement } from "../../hooks/queries/useOwnerAnnouncement";
 import { useProtectedNavigation } from "../../hooks/useProtectedNavigation";
@@ -23,13 +24,9 @@ export default function AnnouncementOwnerScreen() {
 
   if (isLoading) {
     return (
-      <EmptyState
-        icon="search-outline"
-        description="Aucune annonce ne correspond à votre recherche."
-        title="Aucune annonce"
-        onPress={() => navigateSafely("/(tabs)/formAnnouncement")}
-        buttonLabel="Crée une annonce"
-      />
+      <ScreenWrapper title="Mon annonce" showBackButton={false}>
+        <AnnouncementOwnerSkeleton />
+      </ScreenWrapper>
     );
   }
 

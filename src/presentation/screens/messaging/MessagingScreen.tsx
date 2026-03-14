@@ -1,10 +1,11 @@
 import { ScreenWrapper } from "@/src/presentation/components/ui/ScreenWrapper";
 import { useRouter } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
-import { FlatList, StyleSheet, Text } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 import { ConversationItem } from "../../components/ui/ConversationItem";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { Pagination } from "../../components/ui/molecules/pagination/Pagination";
+import ConversationItemSkeleton from "../../components/ui/skeleton/ConversationItemSkeleton";
 import { useMessageStatus } from "../../hooks/context/messageContext";
 import { useGetConversations } from "../../hooks/queries/useGetConversation";
 import { useProtectedNavigation } from "../../hooks/useProtectedNavigation";
@@ -47,18 +48,14 @@ export default function MessagingScreen() {
   if (isLoading) {
     return (
       <ScreenWrapper title="Conversation" showBackButton={false}>
-        <Text>Chargement...</Text>
+        <View style={{ padding: 20 }}>
+          {[1, 2, 3, 4, 5].map((i) => (
+            <ConversationItemSkeleton key={i} />
+          ))}
+        </View>
       </ScreenWrapper>
     );
   }
-
-  // if (totalCount === 0) {
-  //   return (
-  //     <ScreenWrapper title="Conversation" showBackButton={false}>
-  //       <Text>Aucune conversation pour le moment.</Text>
-  //     </ScreenWrapper>
-  //   );
-  // }
 
   return (
     <ScreenWrapper title="Conversation" showBackButton={false}>

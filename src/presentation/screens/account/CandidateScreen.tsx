@@ -12,6 +12,7 @@ import {
 import ApplyButton from "../../components/ui/ApplyButton";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
+import CandidateItemSkeleton from "../../components/ui/skeleton/CandidateItemSkeleton";
 import { useUserApplications } from "../../hooks/queries/useUserApplication";
 import { useProtectedNavigation } from "../../hooks/useProtectedNavigation";
 
@@ -40,6 +41,18 @@ export default function CandidateScreen() {
         return { color: "#FF9500", bg: "rgba(255, 149, 0, 0.1)", icon: "time" };
     }
   };
+
+  if (isLoading) {
+    return (
+      <ScreenWrapper title="Mes candidatures" showBackButton>
+        <View style={{ padding: 20 }}>
+          {[1, 2, 3].map((i) => (
+            <CandidateItemSkeleton key={i} />
+          ))}
+        </View>
+      </ScreenWrapper>
+    );
+  }
 
   const renderItem = ({ item }: { item: CandidateAnnouncement }) => {
     const statusConfig = getStatusStyle(item.status);

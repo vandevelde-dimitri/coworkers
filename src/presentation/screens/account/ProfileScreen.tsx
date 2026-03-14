@@ -15,6 +15,7 @@ import { Bento } from "../../components/ui/Bento";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import { MenuItem } from "../../components/ui/MenuItem";
 import { MenuSection } from "../../components/ui/MenuSection";
+import ProfileSkeleton from "../../components/ui/skeleton/ProfileSkeleton";
 import { UserHeader } from "../../components/ui/UserHeader";
 import { useAuth } from "../../hooks/authContext";
 import { useNotificationStatus } from "../../hooks/context/notificationContext";
@@ -29,11 +30,9 @@ export default function ProfileScreen() {
 
   if (isLoading) {
     return (
-      <View style={[styles.container, { justifyContent: "center" }]}>
-        <Text style={{ color: "rgba(255,255,255,0.5)", fontSize: 16 }}>
-          Chargement en cours...
-        </Text>
-      </View>
+      <ScreenWrapper title="Mon profil" showBackButton={false}>
+        <ProfileSkeleton />
+      </ScreenWrapper>
     );
   }
 
@@ -62,7 +61,10 @@ export default function ProfileScreen() {
           variant="primary"
         />
 
-        <TouchableOpacity onPress={() => setOpen(true)} style={{ marginTop: 20 }}>
+        <TouchableOpacity
+          onPress={() => setOpen(true)}
+          style={{ marginTop: 20 }}
+        >
           <Text style={{ color: "rgba(255,255,255,0.4)" }}>Se déconnecter</Text>
         </TouchableOpacity>
 
