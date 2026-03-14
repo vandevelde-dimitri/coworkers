@@ -60,12 +60,29 @@ export class SupabaseAnnouncementRepository implements IAnnouncementRepository {
     sortBy: string,
     fcId?: string | null,
   ): Promise<{ announcements: Announcement[]; totalCount: number }> {
+    const ALLOWED_SORT_BY = ["places", "recent"];
+    if (!ALLOWED_SORT_BY.includes(sortBy)) {
+      throw new BusinessError(`Tri invalide: ${sortBy}`);
+    }
+
+    const validPageSize = Math.max(10, Math.min(pageSize, 50));
+
+    const validOffset = Math.max(0, (page - 1) * validPageSize);
+    if (validOffset > 100000) {
+      throw new BusinessError("Pagination hors limites");
+    }
+
+    const cleanSearchTerm = (searchTerm || "")
+      .trim()
+      .substring(0, 100)
+      .replace(/[\\%_]/g, "\\$&"); // Échapper % et _
+
     const cleanFcId = fcId === "all" ? null : fcId;
     const { data, error } = await supabase.rpc("get_annonces_for_user", {
       p_fc_id: cleanFcId,
-      p_limit: pageSize,
-      p_offset: (page - 1) * pageSize,
-      p_search: searchTerm,
+      p_limit: validPageSize,
+      p_offset: validOffset,
+      p_search: cleanSearchTerm,
       p_sort_by: sortBy,
     });
 

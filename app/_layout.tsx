@@ -87,7 +87,7 @@ function RootLayoutNav() {
       }
     } else {
       if (!profileCompleted && !inOnboarding) {
-        router.replace("/onboarding");
+        router.replace("/(auth)/onboarding");
       } else if (profileCompleted && (inAuthGroup || inOnboarding)) {
         router.replace("/(tabs)/home");
       }
