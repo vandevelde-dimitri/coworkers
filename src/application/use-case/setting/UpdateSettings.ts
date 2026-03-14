@@ -4,7 +4,7 @@ import { ISettingsRepository } from "@/src/domain/repositories/SettingRepository
 export class UpdateSettingsUseCase {
   constructor(private repository: ISettingsRepository) {}
 
-  async execute(userId: string, updates: Partial<Settings>): Promise<void> {
-    await this.repository.update(userId, updates);
+  async execute(updates: Partial<Settings>): Promise<void> {
+    await this.repository.update(updates);
   }
 }

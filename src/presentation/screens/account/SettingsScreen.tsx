@@ -27,9 +27,11 @@ export default function SettingsScreen() {
   const [open, setOpen] = useState(false);
   const { mutate: deleteAccount } = useDeleteAccount();
   const user = session?.user;
-  const updateSettings = useUpdateSettings(user?.id ?? "");
-  const { mutate: updateEmail } = useUpdateEmail();
-  const { mutate: updatePassword } = useUpdatePassword();
+  const { mutateAsync: updateSettings, isPending: isUpdatingSettings } =
+    useUpdateSettings();
+  const { mutate: updateEmail, isPending: isUpdatingEmail } = useUpdateEmail();
+  const { mutate: updatePassword, isPending: isUpdatingPassword } =
+    useUpdatePassword();
 
   const settingsSchema = yup.object({
     vibrations: yup.boolean(),
@@ -132,7 +134,7 @@ export default function SettingsScreen() {
             description="Recevoir une alerte pour les nouveaux messages"
             icon="notifications"
             onAfterChange={(value) =>
-              updateSettings.mutate({ notificationPush: value })
+              updateSettings({ notificationPush: value })
             }
           />
           <FormMenuSwitch
@@ -141,27 +143,21 @@ export default function SettingsScreen() {
             label="Vibrations"
             description="Activer les vibrations pour les notifications"
             icon="pulse"
-            onAfterChange={(value) =>
-              updateSettings.mutate({ vibrations: value })
-            }
+            onAfterChange={(value) => updateSettings({ vibrations: value })}
           />
           <FormMenuSwitch
             name="toConvey"
             control={settingsForm.control}
             label="Véhiculer"
             icon="car"
-            onAfterChange={(value) =>
-              updateSettings.mutate({ toConvey: value })
-            }
+            onAfterChange={(value) => updateSettings({ toConvey: value })}
           />
           <FormMenuSwitch
             name="available"
             control={settingsForm.control}
             label="Mode vacances"
             icon="airplane"
-            onAfterChange={(value) =>
-              updateSettings.mutate({ available: !value })
-            }
+            onAfterChange={(value) => updateSettings({ available: !value })}
           />
         </MenuSection>
         <MenuDisclosureSection title="Sécurité">
@@ -176,6 +172,7 @@ export default function SettingsScreen() {
           <AppButton
             title="Modifier mon email"
             variant="secondary"
+            disabled={isUpdatingEmail}
             onPress={emailForm.handleSubmit((data) => updateEmail(data.email))}
           />
           <View style={{ height: 20, backgroundColor: "transparent" }} />
@@ -189,6 +186,7 @@ export default function SettingsScreen() {
           <AppButton
             title="Changer le mot de passe"
             variant="secondary"
+            disabled={isUpdatingPassword}
             onPress={passwordForm.handleSubmit((data) =>
               updatePassword(data.password),
             )}

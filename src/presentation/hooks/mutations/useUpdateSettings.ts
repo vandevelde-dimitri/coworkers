@@ -4,7 +4,7 @@ import { SupabaseSettingsRepository } from "@/src/infrastructure/repositories/Su
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 
-export const useUpdateSettings = (userId: string) => {
+export const useUpdateSettings = () => {
   const queryClient = useQueryClient();
 
   const useCase = useMemo(() => {
@@ -13,14 +13,7 @@ export const useUpdateSettings = (userId: string) => {
   }, []);
 
   return useMutation({
-    mutationFn: (updates: Partial<Settings>) => {
-      if (!userId) {
-        throw new Error(
-          "Impossible de mettre à jour les paramètres : userId manquant.",
-        );
-      }
-      return useCase.execute(userId, updates);
-    },
+    mutationFn: (updates: Partial<Settings>) => useCase.execute(updates),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settings"] });
       queryClient.invalidateQueries({ queryKey: ["announcements"] });

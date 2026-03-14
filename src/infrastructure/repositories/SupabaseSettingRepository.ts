@@ -59,17 +59,21 @@ export class SupabaseSettingsRepository implements ISettingsRepository {
     return SettingsMapper.toDomain(createdData);
   }
 
-  async update(userId: string, updates: Partial<Settings>): Promise<void> {
-    if (!userId) {
+  async update(updates: Partial<Settings>): Promise<void> {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user?.id) {
       throw new Error(
-        "Impossible de mettre à jour les paramètres : userId manquant.",
+        "Impossible de mettre à jour les paramètres : session introuvable.",
       );
     }
 
     const { error } = await supabase
       .from("settings")
       .update(SettingsMapper.toPersistence(updates))
-      .eq("user_id", userId);
+      .eq("user_id", user.id);
 
     if (error) throw error;
   }
