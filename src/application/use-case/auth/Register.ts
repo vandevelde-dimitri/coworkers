@@ -13,7 +13,7 @@ export class RegisterUseCase {
   private validateEmail(email: string): void {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      throw new Error("email not valid");
+      throw new Error("email_address_invalid");
     }
   }
 
@@ -22,7 +22,7 @@ export class RegisterUseCase {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 
     if (!passwordRegex.test(password)) {
-      throw new Error("pwd not valid");
+      throw new Error("weak_password");
     }
   }
 }

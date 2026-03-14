@@ -5,6 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { CustomToast } from "../../components/ui/CustomToast";
 import { useToast } from "../../components/ui/molecules/Toast";
+import { getAuthErrorMessage } from "@/utils/authError";
 
 export const useRegister = () => {
   const toast = useToast();
@@ -18,15 +19,9 @@ export const useRegister = () => {
     mutationFn: (payload: Register) =>
       useCase.execute(payload.email, payload.password),
     onError: (error) => {
-      let message = "Une erreur est survenue.";
+      const error_message = getAuthErrorMessage(error);
 
-      if (error.message === "email not valid") {
-        message = "Le format de l'email est invalide.";
-      } else if (error.message === "pwd not valid") {
-        message = "Le mot de passe ne respecte pas les critères de sécurité.";
-      }
-
-      toast.show(<CustomToast title="Erreur" message={message} />, {
+      toast.show(<CustomToast title="Erreur" message={error_message} />, {
         type: "error",
       });
     },
