@@ -5,13 +5,13 @@ import { useMemo } from "react";
 export function useApply(annonceId?: string, userId?: string) {
   const queryClient = useQueryClient();
   const queryKey = ["apply", annonceId, userId];
-
   const repo = useMemo(() => SupabaseApplicationRepository.getInstance(), []);
 
   const requestQuery = useQuery({
     queryKey,
     queryFn: () => repo.getRequest(annonceId!, userId!),
     enabled: !!annonceId && !!userId,
+    staleTime: 0,
   });
 
   const toggleMutation = useMutation({
@@ -34,6 +34,7 @@ export function useApply(annonceId?: string, userId?: string) {
       return { previous };
     },
     onSuccess: () => {
+      queryClient.refetchQueries({ queryKey });
       queryClient.invalidateQueries({ queryKey: ["announcements"] });
       queryClient.invalidateQueries({ queryKey: ["announcement", annonceId] });
       queryClient.invalidateQueries({ queryKey: ["conversations"] });
@@ -43,7 +44,7 @@ export function useApply(annonceId?: string, userId?: string) {
         queryClient.setQueryData(queryKey, ctx.previous);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey });
+      queryClient.refetchQueries({ queryKey });
     },
   });
 
