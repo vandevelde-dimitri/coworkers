@@ -1,4 +1,5 @@
 import { Register } from "@/src/domain/entities/auth/Register";
+import { Ionicons } from "@expo/vector-icons";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -6,7 +7,6 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import {
   KeyboardAvoidingView,
-  Linking,
   Platform,
   ScrollView,
   StyleSheet,
@@ -18,10 +18,30 @@ import * as yup from "yup";
 import { FormInput } from "../../components/ui/FormInput";
 import { StackHeader } from "../../components/ui/Header";
 import { useRegister } from "../../hooks/mutations/useRegister";
+import { usePasswordValidation } from "../../hooks/usePasswordValidation";
+
+const ValidationRow = ({ label, valid }: { label: string; valid: boolean }) => (
+  <View style={styles.row}>
+    <Ionicons
+      name={valid ? "checkmark-circle" : "ellipse-outline"}
+      size={16}
+      color={valid ? "rgba(255, 255, 255, 0.08)" : "rgba(255,255,255,0.3)"}
+    />
+    <Text
+      style={[
+        styles.criteriaText,
+        { color: valid ? "#FFF" : "rgba(255,255,255,0.4)" },
+      ]}
+    >
+      {label}
+    </Text>
+  </View>
+);
 
 export default function RegisterScreen() {
   const router = useRouter();
   const { mutate: register, isPending } = useRegister();
+
   const schema = yup.object({
     email: yup.string().email("Email invalide").required("Email requis"),
     password: yup.string().required("Mot de passe requis"),
@@ -30,21 +50,24 @@ export default function RegisterScreen() {
       .oneOf([yup.ref("password")], "Les mots de passe ne correspondent pas")
       .required("Confirmation requise"),
   });
-  const { control, handleSubmit } = useForm({
+
+  const { control, handleSubmit, watch } = useForm({
     resolver: yupResolver(schema),
   });
 
+  const passwordValue = watch("password") || "";
+  const criteria = usePasswordValidation(passwordValue);
+  const isFormValid = Object.values(criteria).every(Boolean);
+
   const onSubmit = (data: Register) => {
     register(data, {
-      onSuccess: () => {
-        router.replace("/(auth)/login");
-      },
+      onSuccess: () => router.replace("/(auth)/login"),
     });
   };
 
   return (
     <View style={styles.container}>
-      <StatusBar style="dark" />
+      <StatusBar style="light" />
       <StackHeader title="Inscription" />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -73,6 +96,18 @@ export default function RegisterScreen() {
               placeholder="*******"
               type="password"
             />
+
+            <View style={styles.criteriaGrid}>
+              <View style={styles.criteriaColumn}>
+                <ValidationRow label="8+ carac." valid={criteria.length} />
+                <ValidationRow label="1 majuscule" valid={criteria.uppercase} />
+              </View>
+              <View style={styles.criteriaColumn}>
+                <ValidationRow label="1 chiffre" valid={criteria.number} />
+                <ValidationRow label="1 symbole" valid={criteria.specialChar} />
+              </View>
+            </View>
+
             <FormInput
               iconName="lock-closed-outline"
               control={control}
@@ -82,47 +117,17 @@ export default function RegisterScreen() {
               type="password"
             />
           </View>
-          <View style={styles.termsContainer}>
-            <Text style={styles.footerText}>
-              En vous inscrivant, vous acceptez nos{" "}
-              <Text
-                style={styles.linkText}
-                onPress={() =>
-                  Linking.openURL("https://coworkers-legal.vercel.app/")
-                }
-              >
-                Mentions Légales
-              </Text>{" "}
-              et notre{" "}
-              <Text
-                style={styles.linkText}
-                onPress={() =>
-                  Linking.openURL(
-                    "https://coworkers-legal.vercel.app/politique_confidentialite",
-                  )
-                }
-              >
-                Politique de Confidentialité
-              </Text>
-            </Text>
-          </View>
 
           <TouchableOpacity
-            style={[styles.registerButton, isPending && { opacity: 0.7 }]}
+            style={[
+              styles.registerButton,
+              (isPending || !isFormValid) && { opacity: 0.5 },
+            ]}
             onPress={handleSubmit(onSubmit)}
-            disabled={isPending}
+            disabled={isPending || !isFormValid}
           >
             <Text style={styles.registerButtonText}>
               {isPending ? "Inscription..." : "S'inscrire"}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => router.push("/(auth)/login")}
-            style={styles.backLink}
-          >
-            <Text style={styles.footerText}>
-              Déjà inscrit ? <Text style={styles.linkText}>Connexion</Text>
             </Text>
           </TouchableOpacity>
         </ScrollView>
@@ -141,6 +146,26 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   welcomeSubtitle: { fontSize: 16, color: "#B9B9B9" },
+  criteriaGrid: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 5,
+    marginBottom: 20,
+    paddingHorizontal: 5,
+  },
+  criteriaColumn: {
+    width: "48%", // Réparti équitablement
+    gap: 8,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  criteriaText: {
+    fontSize: 12, // Légèrement plus petit pour la compacité
+    fontWeight: "500",
+  },
   registerButton: {
     backgroundColor: "#FFF",
     height: 60,
@@ -150,18 +175,4 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   registerButtonText: { color: "#141E30", fontSize: 18, fontWeight: "700" },
-  backLink: { marginTop: 30, alignItems: "center" },
-  footerText: { color: "#B9B9B9", fontSize: 15 },
-  linkText: { color: "#FFF", fontWeight: "700" },
-  termsContainer: {
-    marginTop: 20,
-    marginBottom: 10,
-    paddingHorizontal: 5,
-  },
-  termsBottom: {
-    marginTop: 40,
-    fontSize: 12,
-    opacity: 0.6,
-    textAlign: "center",
-  },
 });
