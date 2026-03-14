@@ -135,4 +135,15 @@ export class SupabaseUserRepository implements IUserRepository {
 
     if (error) throw error;
   }
+
+  async getUserProfileStatus(): Promise<boolean> {
+    const { data, error } = await supabase.rpc("get_user_profile_status");
+
+    if (error) {
+      if (__DEV__) console.error("Erreur RPC profile status:", error);
+      throw error;
+    }
+
+    return !!data;
+  }
 }

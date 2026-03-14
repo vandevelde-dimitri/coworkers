@@ -1,3 +1,5 @@
+import { GetUserProfileStatusUseCase } from "@/src/application/use-case/user/GetUserProfileStatus";
+import { SupabaseUserRepository } from "@/src/infrastructure/repositories/SupabaseUserRepository";
 import { supabase } from "@/src/infrastructure/supabase";
 import { Session } from "@supabase/supabase-js";
 import React, {
@@ -15,6 +17,7 @@ type AuthContextType = {
   profileCompleted: boolean;
   refreshSession: () => Promise<void>;
   logout: () => Promise<void>;
+  checkProfileStatus: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -23,23 +26,48 @@ const AuthContext = createContext<AuthContextType>({
   profileCompleted: false,
   refreshSession: async () => {},
   logout: async () => {},
+  checkProfileStatus: async () => {},
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [profileCompleted, setProfileCompleted] = useState(false);
+
+  const profileStatusUseCase = useMemo(() => {
+    const userRepo = SupabaseUserRepository.getInstance();
+    return new GetUserProfileStatusUseCase(userRepo);
+  }, []);
+
+  const checkProfileStatus = async () => {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) {
+        const isCompleted = await profileStatusUseCase.execute();
+        setProfileCompleted(isCompleted);
+      } else {
+        setProfileCompleted(false);
+      }
+    } catch (error) {
+      setProfileCompleted(false);
+    }
+  };
 
   useEffect(() => {
     const {
       data: { subscription: authSubscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      setSession(session);
+
       if (event === "INITIAL_SESSION") {
-        setSession(session);
+        await checkProfileStatus();
         setLoading(false);
       } else if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
-        setSession(session);
+        await checkProfileStatus();
       } else if (event === "SIGNED_OUT") {
-        setSession(null);
+        setProfileCompleted(false);
         setLoading(false);
       }
     });
@@ -63,30 +91,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const refreshSession = async () => {
     const { data, error } = await supabase.auth.refreshSession();
-
-    if (error) {
-      if (__DEV__) console.error("refreshSession error", error);
-      return;
-    }
-
+    if (error) return;
     setSession(data.session);
+    await checkProfileStatus();
   };
 
   const logout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      if (__DEV__) console.error("Logout error:", error);
-      throw new Error(error.message);
-    }
+    await supabase.auth.signOut();
   };
-
-  const profileCompleted = useMemo(() => {
-    return session?.user?.user_metadata?.profile_completed === true;
-  }, [session]);
 
   return (
     <AuthContext.Provider
-      value={{ session, loading, profileCompleted, refreshSession, logout }}
+      value={{
+        session,
+        loading,
+        profileCompleted,
+        refreshSession,
+        logout,
+        checkProfileStatus,
+      }}
     >
       {children}
     </AuthContext.Provider>

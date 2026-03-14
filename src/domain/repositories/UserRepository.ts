@@ -9,4 +9,5 @@ export interface IUserRepository {
   updateImageProfile(avatarUrl: string): Promise<void>;
   uploadAvatar(avatarFile: string): Promise<string>;
   getUserProfilePublic(userId: string): Promise<UserPublic | null>;
+  getUserProfileStatus(): Promise<boolean>;
 }

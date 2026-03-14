@@ -1,5 +1,4 @@
 import { UserContract, UserTeam } from "@/src/domain/entities/user/User.enum";
-import { supabase } from "@/src/infrastructure/supabase";
 import { AppButton } from "@/src/presentation/components/ui/AppButton";
 import { CustomToast } from "@/src/presentation/components/ui/CustomToast";
 import { FormInput } from "@/src/presentation/components/ui/FormInput";
@@ -14,7 +13,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import * as yup from "yup";
 
 type OnboardingFormValues = {
@@ -26,10 +25,8 @@ type OnboardingFormValues = {
   contract: UserContract;
 };
 
-const { width } = Dimensions.get("window");
-
 export default function OnboardingScreen() {
-  const { session, refreshSession } = useAuth();
+  const { session, checkProfileStatus } = useAuth();
   const { mutateAsync: updateUser, isPending: isUpdatingUser } =
     useUpdateUser();
   const { data: floors } = useFloors();
@@ -95,13 +92,7 @@ export default function OnboardingScreen() {
           contract: values.contract,
         },
       });
-
-      const { error: authError } = await supabase.auth.updateUser({
-        data: { profile_completed: true },
-      });
-      if (authError) throw authError;
-
-      await refreshSession();
+      await checkProfileStatus();
     } catch (error) {
       if (__DEV__) console.error("Erreur onboarding :", error);
       toast.show(
