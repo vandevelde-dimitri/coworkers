@@ -20,6 +20,7 @@ import {
   View,
 } from "react-native";
 import { EmptyState } from "../../components/ui/EmptyState";
+import { ErrorState } from "../../components/ui/ErrorState";
 import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
 import { useProtectedNavigation } from "../../hooks/useProtectedNavigation";
 
@@ -61,6 +62,7 @@ export default function AnnouncementHomeScreen() {
       totalCount: 0,
     },
     isLoading,
+    isError,
     refetch,
   } = useAnnouncements(
     page,
@@ -158,6 +160,8 @@ export default function AnnouncementHomeScreen() {
           <AnnouncementSkeleton />
           <AnnouncementSkeleton />
         </View>
+      ) : isError ? (
+        <ErrorState onRetry={refetch} />
       ) : (
         <FlatList
           data={announcements}

@@ -4,6 +4,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import { ConversationItem } from "../../components/ui/ConversationItem";
 import { EmptyState } from "../../components/ui/EmptyState";
+import { ErrorState } from "../../components/ui/ErrorState";
 import { Pagination } from "../../components/ui/molecules/pagination/Pagination";
 import ConversationItemSkeleton from "../../components/ui/skeleton/ConversationItemSkeleton";
 import { useMessageStatus } from "../../hooks/context/messageContext";
@@ -13,7 +14,12 @@ import { useProtectedNavigation } from "../../hooks/useProtectedNavigation";
 const PAGE_SIZE = 5;
 
 export default function MessagingScreen() {
-  const { data: conversation, isLoading } = useGetConversations();
+  const {
+    data: conversation,
+    isLoading,
+    isError,
+    refetch,
+  } = useGetConversations();
   const { unreadConversations } = useMessageStatus();
   const router = useRouter();
   const { navigateSafely } = useProtectedNavigation();
@@ -53,6 +59,14 @@ export default function MessagingScreen() {
             <ConversationItemSkeleton key={i} />
           ))}
         </View>
+      </ScreenWrapper>
+    );
+  }
+
+  if (isError) {
+    return (
+      <ScreenWrapper title="Conversation" showBackButton={false}>
+        <ErrorState onRetry={refetch} />
       </ScreenWrapper>
     );
   }

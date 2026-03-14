@@ -3,6 +3,7 @@ import React from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import AnnouncementCardListItem from "../../components/ui/AnnouncementCardListItem";
 import { EmptyState } from "../../components/ui/EmptyState";
+import { ErrorState } from "../../components/ui/ErrorState";
 import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
 import AnnouncementCardSkeleton from "../../components/ui/skeleton/AnnouncementSkeleton";
 import { useUserFavoriteAnnouncements } from "../../hooks/queries/useUserFavoriteAnnouncements";
@@ -10,7 +11,7 @@ import { useProtectedNavigation } from "../../hooks/useProtectedNavigation";
 
 const FavoriteScreen = () => {
   const router = useRouter();
-  const { data, isLoading } = useUserFavoriteAnnouncements();
+  const { data, isLoading, isError, refetch } = useUserFavoriteAnnouncements();
   const { navigateSafely } = useProtectedNavigation();
 
   const announcements = data?.announcements || [];
@@ -22,6 +23,8 @@ const FavoriteScreen = () => {
           <AnnouncementCardSkeleton />
           <AnnouncementCardSkeleton />
         </View>
+      ) : isError ? (
+        <ErrorState onRetry={refetch} />
       ) : (
         <FlatList
           data={announcements}

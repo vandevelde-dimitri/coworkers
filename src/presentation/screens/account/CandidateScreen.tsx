@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import ApplyButton from "../../components/ui/ApplyButton";
 import { EmptyState } from "../../components/ui/EmptyState";
+import { ErrorState } from "../../components/ui/ErrorState";
 import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
 import CandidateItemSkeleton from "../../components/ui/skeleton/CandidateItemSkeleton";
 import { useUserApplications } from "../../hooks/queries/useUserApplication";
@@ -20,7 +21,12 @@ type IoniconName = ComponentProps<typeof Ionicons>["name"];
 
 export default function CandidateScreen() {
   const router = useRouter();
-  const { data: applications, isLoading, refetch } = useUserApplications();
+  const {
+    data: applications,
+    isLoading,
+    isError,
+    refetch,
+  } = useUserApplications();
   const { navigateSafely } = useProtectedNavigation();
 
   const getStatusStyle = (status: string) => {
@@ -50,6 +56,14 @@ export default function CandidateScreen() {
             <CandidateItemSkeleton key={i} />
           ))}
         </View>
+      </ScreenWrapper>
+    );
+  }
+
+  if (isError) {
+    return (
+      <ScreenWrapper title="Mes candidatures" showBackButton>
+        <ErrorState onRetry={refetch} />
       </ScreenWrapper>
     );
   }

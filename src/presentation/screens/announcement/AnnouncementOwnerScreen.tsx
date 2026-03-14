@@ -6,6 +6,7 @@ import { AppButton } from "../../components/ui/AppButton";
 import Avatar from "../../components/ui/Avatar";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import { EmptyState } from "../../components/ui/EmptyState";
+import { ErrorState } from "../../components/ui/ErrorState";
 import { RemoveParticipantButton } from "../../components/ui/RemoveParticipantButton";
 import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
 import AnnouncementOwnerSkeleton from "../../components/ui/skeleton/AnnouncementOwnerSkeleton";
@@ -16,7 +17,7 @@ import { useProtectedNavigation } from "../../hooks/useProtectedNavigation";
 export default function AnnouncementOwnerScreen() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const { data: item, isLoading } = useOwnerAnnouncement();
+  const { data: item, isLoading, isError, refetch } = useOwnerAnnouncement();
   const { navigateSafely } = useProtectedNavigation();
 
   const { mutateAsync: deleteAnnouncement, isPending } =
@@ -26,6 +27,14 @@ export default function AnnouncementOwnerScreen() {
     return (
       <ScreenWrapper title="Mon annonce" showBackButton={false}>
         <AnnouncementOwnerSkeleton />
+      </ScreenWrapper>
+    );
+  }
+
+  if (isError) {
+    return (
+      <ScreenWrapper title="Mon annonce" showBackButton={false}>
+        <ErrorState onRetry={refetch} />
       </ScreenWrapper>
     );
   }

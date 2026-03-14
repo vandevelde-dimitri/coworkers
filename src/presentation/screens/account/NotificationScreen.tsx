@@ -12,6 +12,7 @@ import {
 import Avatar from "../../components/ui/Avatar";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import { EmptyState } from "../../components/ui/EmptyState";
+import { ErrorState } from "../../components/ui/ErrorState";
 import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
 import ConversationItemSkeleton from "../../components/ui/skeleton/ConversationItemSkeleton";
 import { useNotificationStatus } from "../../hooks/context/notificationContext";
@@ -27,7 +28,12 @@ export default function NotificationsScreen() {
     useRejectCandidate();
   const { navigateSafely } = useProtectedNavigation();
 
-  const { data: notifications, isLoading, refetch } = useNotifications();
+  const {
+    data: notifications,
+    isLoading,
+    isError,
+    refetch,
+  } = useNotifications();
   const [selectedRequest, setSelectedRequest] = useState<Notification | null>(
     null,
   );
@@ -137,6 +143,8 @@ export default function NotificationsScreen() {
             <ConversationItemSkeleton key={i} />
           ))}
         </View>
+      ) : isError ? (
+        <ErrorState onRetry={refetch} />
       ) : (
         <FlatList
           data={notifications}
