@@ -3,9 +3,11 @@ import { useRouter } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
 import { FlatList, StyleSheet, Text } from "react-native";
 import { ConversationItem } from "../../components/ui/ConversationItem";
+import { EmptyState } from "../../components/ui/EmptyState";
 import { Pagination } from "../../components/ui/molecules/pagination/Pagination";
 import { useMessageStatus } from "../../hooks/context/messageContext";
 import { useGetConversations } from "../../hooks/queries/useGetConversation";
+import { useProtectedNavigation } from "../../hooks/useProtectedNavigation";
 
 const PAGE_SIZE = 5;
 
@@ -13,6 +15,8 @@ export default function MessagingScreen() {
   const { data: conversation, isLoading } = useGetConversations();
   const { unreadConversations } = useMessageStatus();
   const router = useRouter();
+  const { navigateSafely } = useProtectedNavigation();
+
   const [page, setPage] = useState(1);
 
   const totalCount = conversation?.length ?? 0;
@@ -48,13 +52,13 @@ export default function MessagingScreen() {
     );
   }
 
-  if (totalCount === 0) {
-    return (
-      <ScreenWrapper title="Conversation" showBackButton={false}>
-        <Text>Aucune conversation pour le moment.</Text>
-      </ScreenWrapper>
-    );
-  }
+  // if (totalCount === 0) {
+  //   return (
+  //     <ScreenWrapper title="Conversation" showBackButton={false}>
+  //       <Text>Aucune conversation pour le moment.</Text>
+  //     </ScreenWrapper>
+  //   );
+  // }
 
   return (
     <ScreenWrapper title="Conversation" showBackButton={false}>
@@ -72,6 +76,15 @@ export default function MessagingScreen() {
               dotSize={10}
             />
           ) : null
+        }
+        ListEmptyComponent={
+          <EmptyState
+            icon="search-outline"
+            description="Veuillez participer à une annonce"
+            title="Aucune conversation"
+            onPress={() => navigateSafely("/(tabs)/home")}
+            buttonLabel="Trouver une annonce"
+          />
         }
       />
     </ScreenWrapper>

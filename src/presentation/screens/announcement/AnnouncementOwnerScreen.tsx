@@ -1,44 +1,54 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import {
-  ActivityIndicator,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { AppButton } from "../../components/ui/AppButton";
 import Avatar from "../../components/ui/Avatar";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
+import { EmptyState } from "../../components/ui/EmptyState";
 import { RemoveParticipantButton } from "../../components/ui/RemoveParticipantButton";
 import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
 import { useDeleteAnnouncement } from "../../hooks/mutations/useDeleteAnnouncement";
 import { useOwnerAnnouncement } from "../../hooks/queries/useOwnerAnnouncement";
+import { useProtectedNavigation } from "../../hooks/useProtectedNavigation";
 
 export default function AnnouncementOwnerScreen() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const { data: item, isLoading } = useOwnerAnnouncement();
+  const { navigateSafely } = useProtectedNavigation();
+
   const { mutateAsync: deleteAnnouncement, isPending } =
     useDeleteAnnouncement();
 
   if (isLoading) {
     return (
-      <View style={[styles.container, styles.loadingContainer]}>
-        <ActivityIndicator size="large" color="#FFF" />
-      </View>
+      <EmptyState
+        icon="search-outline"
+        description="Aucune annonce ne correspond à votre recherche."
+        title="Aucune annonce"
+        onPress={() => navigateSafely("/(tabs)/formAnnouncement")}
+        buttonLabel="Crée une annonce"
+      />
     );
   }
 
   if (!item) {
     return (
-      <View style={[styles.container, styles.loadingContainer]}>
-        <Text style={{ color: "rgba(255,255,255,0.5)", fontSize: 16 }}>
-          Vous n'avez pas d'annonce en cours. Créez-en une pour partager votre
-          trajet !
-        </Text>
-      </View>
+      <ScreenWrapper title="Mon annonce" showBackButton={false}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+        >
+          <EmptyState
+            icon="search-outline"
+            description="Vous n'avez aucune annonce"
+            title="Aucune annonce"
+            onPress={() => navigateSafely("/(tabs)/formAnnouncement")}
+            buttonLabel="Crée une annonce"
+          />
+        </ScrollView>
+      </ScreenWrapper>
     );
   }
 

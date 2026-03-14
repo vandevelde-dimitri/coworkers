@@ -11,17 +11,21 @@ import {
 } from "react-native";
 import Avatar from "../../components/ui/Avatar";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
+import { EmptyState } from "../../components/ui/EmptyState";
 import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
 import { useNotificationStatus } from "../../hooks/context/notificationContext";
 import { useAcceptCandidate } from "../../hooks/mutations/useAcceptCandidate";
 import { useRejectCandidate } from "../../hooks/mutations/useRejectCandidate";
 import { useNotifications } from "../../hooks/queries/useNotifications";
+import { useProtectedNavigation } from "../../hooks/useProtectedNavigation";
 
 export default function NotificationsScreen() {
   const { setNotificationCount } = useNotificationStatus();
   const { mutateAsync: acceptCandidate, isPending } = useAcceptCandidate();
   const { mutateAsync: rejectCandidate, isPending: isRejecting } =
     useRejectCandidate();
+  const { navigateSafely } = useProtectedNavigation();
+
   const { data: notifications, isLoading, refetch } = useNotifications();
   const [selectedRequest, setSelectedRequest] = useState<Notification | null>(
     null,
@@ -133,6 +137,15 @@ export default function NotificationsScreen() {
         onRefresh={refetch}
         refreshing={isLoading}
         contentContainerStyle={styles.listContainer}
+        ListEmptyComponent={
+          <EmptyState
+            icon="notifications-outline"
+            description="Aucune notification de disponible"
+            title="Aucune notification"
+            onPress={() => navigateSafely("/(tabs)/formAnnouncement")}
+            buttonLabel="Crée une annonce"
+          />
+        }
       />
 
       <ConfirmDialog

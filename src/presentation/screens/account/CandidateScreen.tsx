@@ -13,12 +13,14 @@ import ApplyButton from "../../components/ui/ApplyButton";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
 import { useUserApplications } from "../../hooks/queries/useUserApplication";
+import { useProtectedNavigation } from "../../hooks/useProtectedNavigation";
 
 type IoniconName = ComponentProps<typeof Ionicons>["name"];
 
 export default function CandidateScreen() {
   const router = useRouter();
   const { data: applications, isLoading, refetch } = useUserApplications();
+  const { navigateSafely } = useProtectedNavigation();
 
   const getStatusStyle = (status: string) => {
     switch (status) {
@@ -115,9 +117,11 @@ export default function CandidateScreen() {
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={
           <EmptyState
-            iconName="notifications"
+            icon="search-outline"
+            description="Veuillez participer à une annonce"
             title="Aucune candidature"
-            description="Tes futures aventures s'afficheront ici."
+            onPress={() => navigateSafely("/(tabs)/home")}
+            buttonLabel="Trouver une annonce"
           />
         }
       />

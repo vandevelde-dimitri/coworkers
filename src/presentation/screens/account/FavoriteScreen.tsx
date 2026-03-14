@@ -6,10 +6,12 @@ import { EmptyState } from "../../components/ui/EmptyState";
 import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
 import AnnouncementCardSkeleton from "../../components/ui/skeleton/AnnouncementSkeleton";
 import { useUserFavoriteAnnouncements } from "../../hooks/queries/useUserFavoriteAnnouncements";
+import { useProtectedNavigation } from "../../hooks/useProtectedNavigation";
 
 const FavoriteScreen = () => {
   const router = useRouter();
   const { data, isLoading } = useUserFavoriteAnnouncements();
+  const { navigateSafely } = useProtectedNavigation();
 
   const announcements = data?.announcements || [];
 
@@ -37,10 +39,11 @@ const FavoriteScreen = () => {
           )}
           ListEmptyComponent={
             <EmptyState
-              iconName="heart-outline"
-              description="Ajoutez des annonces à vos favoris pour les retrouver ici."
-              title="Aucun favori"
-              onPress={() => router.push("/(tabs)/home")}
+              icon="heart-outline"
+              description="Veuillez mettre en favori une annonce"
+              title="Aucune favoris"
+              onPress={() => navigateSafely("/(tabs)/home")}
+              buttonLabel="Trouver une annonce"
             />
           }
           contentContainerStyle={styles.listContent}

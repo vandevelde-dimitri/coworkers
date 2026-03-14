@@ -177,10 +177,11 @@ export default function AnnouncementHomeScreen() {
           )}
           ListEmptyComponent={
             <EmptyState
-              iconName="search-outline"
+              icon="search-outline"
               description="Aucune annonce ne correspond à votre recherche."
               title="Aucune annonce"
-              onPress={() => navigateSafely("../add")}
+              onPress={() => navigateSafely("/(tabs)/formAnnouncement")}
+              buttonLabel="Crée une annonce"
             />
           }
           contentContainerStyle={styles.listContent}
