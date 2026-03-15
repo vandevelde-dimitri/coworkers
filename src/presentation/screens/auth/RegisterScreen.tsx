@@ -7,6 +7,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import {
   KeyboardAvoidingView,
+  Linking,
   Platform,
   ScrollView,
   StyleSheet,
@@ -117,7 +118,30 @@ export default function RegisterScreen() {
               type="password"
             />
           </View>
-
+          <View style={styles.termsContainer}>
+            <Text style={styles.footerText}>
+              En vous inscrivant, vous acceptez nos{" "}
+              <Text
+                style={styles.linkText}
+                onPress={() =>
+                  Linking.openURL("https://coworkers-legal.vercel.app/")
+                }
+              >
+                Mentions Légales
+              </Text>{" "}
+              et notre{" "}
+              <Text
+                style={styles.linkText}
+                onPress={() =>
+                  Linking.openURL(
+                    "https://coworkers-legal.vercel.app/politique_confidentialite",
+                  )
+                }
+              >
+                Politique de Confidentialité
+              </Text>
+            </Text>
+          </View>
           <TouchableOpacity
             style={[
               styles.registerButton,
@@ -154,7 +178,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   criteriaColumn: {
-    width: "48%", // Réparti équitablement
+    width: "48%",
     gap: 8,
   },
   row: {
@@ -163,7 +187,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   criteriaText: {
-    fontSize: 12, // Légèrement plus petit pour la compacité
+    fontSize: 12,
     fontWeight: "500",
   },
   registerButton: {
@@ -175,4 +199,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   registerButtonText: { color: "#141E30", fontSize: 18, fontWeight: "700" },
+  termsContainer: { marginTop: 15 },
+  footerText: { color: "#B9B9B9", fontSize: 12, textAlign: "center" },
+  linkText: { color: "#FFF", textDecorationLine: "underline" },
 });

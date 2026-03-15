@@ -2,7 +2,13 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { ActivityIndicator, ScrollView, StyleSheet, Text } from "react-native";
+import {
+  ActivityIndicator,
+  Linking,
+  ScrollView,
+  StyleSheet,
+  Text,
+} from "react-native";
 import * as yup from "yup";
 import { View } from "../../components/Themed";
 import { AppButton } from "../../components/ui/AppButton";
@@ -206,6 +212,24 @@ export default function SettingsScreen() {
             onCancel={() => setOpen(false)}
             visible={open}
             danger
+          />
+        </MenuDisclosureSection>
+        <MenuDisclosureSection title="Informations Légales">
+          <MenuItem
+            onPress={() =>
+              Linking.openURL(
+                "https://coworkers-legal.vercel.app/politique_confidentialite",
+              )
+            }
+            icon="shield-checkmark-outline"
+            label="Politique de Confidentialité"
+          />
+          <MenuItem
+            onPress={() =>
+              Linking.openURL("https://coworkers-legal.vercel.app/")
+            }
+            icon="document-text-outline"
+            label="Mentions Légales"
           />
         </MenuDisclosureSection>
       </ScrollView>
