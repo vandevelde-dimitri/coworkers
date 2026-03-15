@@ -52,6 +52,8 @@ const Avatar = ({
       })}
     >
       <Image
+        accessible={true}
+        accessibilityLabel="Avatar de l'utilisateur"
         source={imageSource || fallbackImage}
         style={{
           width: size,
