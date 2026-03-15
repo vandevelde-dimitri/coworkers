@@ -12,6 +12,8 @@ export const getAuthErrorMessage = (error: any) => {
       return "Le mot de passe doit contenir au moins 8 caractères.";
     case "User is banned":
       return "Votre compte a été restreint. Veuillez contacter le support pour plus d'informations.";
+    case "password_required":
+      return "Le mot de passe est requis.";
     default:
       return "Une erreur est survenue, veuillez réessayer.";
   }

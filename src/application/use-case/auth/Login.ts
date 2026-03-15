@@ -18,11 +18,13 @@ export class LoginUseCase {
   }
 
   private validatePassword(password: string): void {
-    // Regex : 1 minuscule, 1 majuscule, 1 chiffre, 1 caractère spécial, 8+ caractères
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    if (!password || password.length < 1) {
+      throw new Error("password_required");
+    }
 
-    if (!passwordRegex.test(password)) {
-      throw new Error("weak_password");
+    // Optionnel : Une sécurité de base (ex: < 8) mais JAMAIS de Regex complexe ici.
+    if (password.length < 8) {
+      throw new Error("invalid_credentials");
     }
   }
 }
