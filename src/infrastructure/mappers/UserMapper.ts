@@ -31,7 +31,7 @@ export class UserMapper {
       avatarUpdatedAt: raw.avatar_updated_at,
       contract: raw.contract,
       fcId: raw.fc_id,
-      fcName: raw.fc.name,
+      fcName: raw.fc?.name,
       memberSince: new Date(raw.created_at),
     };
   }

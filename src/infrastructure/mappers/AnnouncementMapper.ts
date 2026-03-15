@@ -7,7 +7,10 @@ export class AnnouncementMapper {
     const acceptedPassengers = raw.participant_requests
       ? raw.participant_requests
           .filter((req: any) => req.status === RequestParticipant.ACCEPTED)
-          .map((req: any) => UserMapper.toDomain(req.users))
+          .map((req: any) =>
+            req.users ? UserMapper.toDomain(req.users) : null,
+          )
+          .filter(Boolean)
       : [];
 
     return {

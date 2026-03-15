@@ -1,5 +1,5 @@
 import { LoginUseCase } from "@/src/application/use-case/auth/Login";
-import { Register } from "@/src/domain/entities/auth/Register";
+import { Login } from "@/src/domain/entities/auth/Login";
 import { SupabaseAuthRepository } from "@/src/infrastructure/repositories/auth/SupabaseAuthRepository";
 import { getAuthErrorMessage } from "@/utils/authError";
 import { PostgrestError } from "@supabase/supabase-js";
@@ -17,7 +17,7 @@ export const useLogin = () => {
   }, []);
 
   return useMutation({
-    mutationFn: (payload: Register) =>
+    mutationFn: (payload: Login) =>
       useCase.execute(payload.email, payload.password),
     onError: (error: PostgrestError) => {
       const error_message = getAuthErrorMessage(error);
