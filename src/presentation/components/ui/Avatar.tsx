@@ -41,7 +41,7 @@ const Avatar = ({
 
   const handlePress = () => {
     if (disablePress) return;
-    console.log("pressed");
+    if (__DEV__) console.log("pressed");
   };
 
   return (
