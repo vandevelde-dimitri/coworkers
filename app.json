@@ -60,11 +60,13 @@
         "expo-build-properties",
         {
           "android": {
-            "navigationBarColor": "#0F2027",
-            "navigationBarTranslucent": true
+            "enableEdgeToEdge": true,
+            "navigationBarColor": "#00000000",
+            "statusBarColor": "transparent"
           }
         }
-      ]
+      ],
+      "./plugins/withTransparentNavBar.js"
     ],
     "experiments": {
       "typedRoutes": true

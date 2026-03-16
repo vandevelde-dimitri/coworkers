@@ -1,3 +1,10 @@
+import { ToastProviderWithViewport } from "@/src/presentation/components/ui/molecules/Toast";
+import { NetworkBanner } from "@/src/presentation/components/ui/NetworkBanner";
+import { useColorScheme } from "@/src/presentation/components/useColorScheme.web";
+import { AuthProvider, useAuth } from "@/src/presentation/hooks/authContext";
+import { MessageProvider } from "@/src/presentation/hooks/context/messageContext";
+import { NotificationProvider } from "@/src/presentation/hooks/context/notificationContext";
+import { queryClient } from "@/utils/react-query";
 import { FontAwesome } from "@expo/vector-icons";
 import {
   DarkTheme,
@@ -6,16 +13,10 @@ import {
 } from "@react-navigation/native";
 import { QueryClientProvider } from "@tanstack/react-query";
 import * as Font from "expo-font";
+import * as NavigationBar from "expo-navigation-bar";
 import { SplashScreen, Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
-
-import { ToastProviderWithViewport } from "@/src/presentation/components/ui/molecules/Toast";
-import { NetworkBanner } from "@/src/presentation/components/ui/NetworkBanner";
-import { useColorScheme } from "@/src/presentation/components/useColorScheme.web";
-import { AuthProvider, useAuth } from "@/src/presentation/hooks/authContext";
-import { MessageProvider } from "@/src/presentation/hooks/context/messageContext";
-import { NotificationProvider } from "@/src/presentation/hooks/context/notificationContext";
-import { queryClient } from "@/utils/react-query";
+import { Platform } from "react-native";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -46,6 +47,11 @@ function RootLayoutNav() {
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
   });
+
+  if (Platform.OS === "android") {
+    NavigationBar.setPositionAsync("absolute");
+    NavigationBar.setBackgroundColorAsync("#00000000");
+  }
 
   useEffect(() => {
     if (loading || !fontsLoaded) {
