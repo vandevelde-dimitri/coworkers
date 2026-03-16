@@ -1,3 +1,14 @@
+import { FontAwesome } from "@expo/vector-icons";
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from "@react-navigation/native";
+import { QueryClientProvider } from "@tanstack/react-query";
+import * as Font from "expo-font";
+import { SplashScreen, Stack, useRouter, useSegments } from "expo-router";
+import { useEffect } from "react";
+
 import { ToastProviderWithViewport } from "@/src/presentation/components/ui/molecules/Toast";
 import { NetworkBanner } from "@/src/presentation/components/ui/NetworkBanner";
 import { useColorScheme } from "@/src/presentation/components/useColorScheme.web";
@@ -5,53 +16,10 @@ import { AuthProvider, useAuth } from "@/src/presentation/hooks/authContext";
 import { MessageProvider } from "@/src/presentation/hooks/context/messageContext";
 import { NotificationProvider } from "@/src/presentation/hooks/context/notificationContext";
 import { queryClient } from "@/utils/react-query";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { useFonts } from "expo-font";
-import { Stack, useRouter, useSegments } from "expo-router";
-import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
-import "react-native-reanimated";
 
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from "expo-router";
-
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: "(auth)/welcome",
-};
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
-    ...FontAwesome.font,
-  });
-
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
-  useEffect(() => {
-    if (error) throw error;
-  }, [error]);
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
   return (
     <QueryClientProvider client={queryClient}>
       <ToastProviderWithViewport>
@@ -69,17 +37,23 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const segments = useSegments();
-  const routeSegments = segments as string[];
-  const colorScheme = useColorScheme();
   const { session, loading, profileCompleted } = useAuth();
   const router = useRouter();
+  const segments = useSegments() as string[];
+  const colorScheme = useColorScheme();
+
+  const [fontsLoaded] = Font.useFonts({
+    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+    ...FontAwesome.font,
+  });
 
   useEffect(() => {
-    if (loading) return;
+    if (loading || !fontsLoaded) {
+      return;
+    }
 
-    const inAuthGroup = routeSegments[0] === "(auth)";
-    const inOnboarding = routeSegments.includes("onboarding");
+    const inAuthGroup = segments[0] === "(auth)";
+    const inOnboarding = segments.includes("onboarding");
 
     if (!session) {
       if (!inAuthGroup) {
@@ -92,7 +66,14 @@ function RootLayoutNav() {
         router.replace("/(tabs)/home");
       }
     }
-  }, [session, profileCompleted, loading, routeSegments[0]]);
+
+    SplashScreen.hideAsync();
+  }, [session, profileCompleted, segments, fontsLoaded, loading]);
+
+  if (!fontsLoaded || loading) {
+    return null;
+  }
+
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack screenOptions={{ headerShown: false }}>

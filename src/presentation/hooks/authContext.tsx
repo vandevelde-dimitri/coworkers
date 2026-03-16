@@ -44,49 +44,104 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (user) {
-        const isCompleted = await profileStatusUseCase.execute();
-        setProfileCompleted(isCompleted);
-      } else {
+
+      if (!user) {
         setProfileCompleted(false);
+        return;
+      }
+
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(
+          () => reject(new Error("Profile status check timeout")),
+          5000,
+        ),
+      );
+
+      const statusPromise = profileStatusUseCase.execute();
+
+      try {
+        const isCompleted = (await Promise.race([
+          statusPromise,
+          timeoutPromise,
+        ])) as boolean;
+        setProfileCompleted(isCompleted);
+        if (__DEV__) console.log("Profile completed:", isCompleted);
+      } catch (raceError) {
+        if (__DEV__) console.warn("Profile check race error:", raceError);
+        setProfileCompleted(true);
       }
     } catch (error) {
-      setProfileCompleted(false);
+      if (__DEV__) console.error("Profile status check error:", error);
+      setProfileCompleted(true);
     }
   };
 
   useEffect(() => {
+    let isMounted = true;
+    let initTimeoutId: ReturnType<typeof setTimeout>;
+
+    const initializeAuth = async () => {
+      try {
+        const {
+          data: { session: restoredSession },
+          error,
+        } = await supabase.auth.getSession();
+
+        if (isMounted) {
+          if (restoredSession) {
+            setSession(restoredSession);
+            checkProfileStatus();
+          } else {
+            setLoading(false);
+          }
+        }
+      } catch (error) {
+        if (__DEV__) console.error("Auth initialization error:", error);
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    initializeAuth();
+
+    initTimeoutId = setTimeout(() => {
+      if (isMounted) {
+        if (__DEV__)
+          console.warn("Auth initialization timeout - forcing completion");
+        setLoading(false);
+      }
+    }, 3000);
+
     const {
       data: { subscription: authSubscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setSession(session);
+      if (!isMounted) return;
 
-      if (event === "INITIAL_SESSION") {
-        await checkProfileStatus();
-        setLoading(false);
-      } else if (event === "SIGNED_IN") {
-        await checkProfileStatus();
-        setLoading(false);
-      } else if (event === "TOKEN_REFRESHED") {
+      setSession(session);
+      setLoading(false);
+      clearTimeout(initTimeoutId);
+
+      if (event === "SIGNED_IN") {
         await checkProfileStatus();
       } else if (event === "SIGNED_OUT") {
         setProfileCompleted(false);
-        setLoading(false);
+      } else if (event === "TOKEN_REFRESHED" && session) {
+        setSession(session);
       }
     });
 
     const subscriptionAppState = AppState.addEventListener(
       "change",
       (state) => {
-        if (state === "active") {
-          supabase.auth.startAutoRefresh();
-        } else {
-          supabase.auth.stopAutoRefresh();
-        }
+        if (state === "active") supabase.auth.startAutoRefresh();
+        else supabase.auth.stopAutoRefresh();
       },
     );
 
     return () => {
+      isMounted = false;
+      clearTimeout(initTimeoutId);
       authSubscription.unsubscribe();
       subscriptionAppState.remove();
     };
@@ -94,9 +149,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const refreshSession = async () => {
     const { data, error } = await supabase.auth.refreshSession();
-    if (error) return;
-    setSession(data.session);
-    await checkProfileStatus();
+    if (error) {
+      if (__DEV__) console.error("Refresh session error:", error);
+      return;
+    }
+    if (data.session) {
+      setSession(data.session);
+      await checkProfileStatus();
+    }
   };
 
   const logout = async () => {
