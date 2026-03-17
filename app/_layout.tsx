@@ -13,10 +13,8 @@ import {
 } from "@react-navigation/native";
 import { QueryClientProvider } from "@tanstack/react-query";
 import * as Font from "expo-font";
-import * as NavigationBar from "expo-navigation-bar";
 import { SplashScreen, Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
-import { Platform } from "react-native";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -48,12 +46,15 @@ function RootLayoutNav() {
     ...FontAwesome.font,
   });
 
-  if (Platform.OS === "android") {
-    NavigationBar.setPositionAsync("absolute");
-    NavigationBar.setBackgroundColorAsync("#00000000");
-  }
-
   useEffect(() => {
+    if (__DEV__)
+      console.table({
+        session: !!session,
+        loading,
+        profileCompleted,
+        segment: segments[0],
+      });
+
     if (loading || !fontsLoaded) {
       return;
     }
@@ -63,12 +64,15 @@ function RootLayoutNav() {
 
     if (!session) {
       if (!inAuthGroup) {
+        if (__DEV__) console.log("[Nav] Redirection: Welcome");
         router.replace("/(auth)/welcome");
       }
     } else {
       if (!profileCompleted && !inOnboarding) {
+        if (__DEV__) console.log("[Nav] Redirection: Onboarding");
         router.replace("/(auth)/onboarding");
       } else if (profileCompleted && (inAuthGroup || inOnboarding)) {
+        if (__DEV__) console.log("[Nav] Redirection: Home");
         router.replace("/(tabs)/home");
       }
     }

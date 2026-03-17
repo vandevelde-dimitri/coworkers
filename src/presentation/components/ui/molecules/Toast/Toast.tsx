@@ -23,12 +23,6 @@ import type {
   ToastType as ToastVariant,
 } from "./Toast.types";
 
-if (Platform.OS === "android") {
-  if (UIManager.setLayoutAnimationEnabledExperimental) {
-    UIManager.setLayoutAnimationEnabledExperimental(true);
-  }
-}
-
 interface ToastProps {
   toast: ToastType;
   index: number;

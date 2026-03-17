@@ -40,6 +40,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const checkProfileStatus = async () => {
+    setLoading(true);
+    if (__DEV__) console.log(" [Auth] Checking profile status...");
     try {
       const {
         data: { user },
@@ -50,6 +52,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return;
       }
 
+      // Ton système de timeout est très bien
       const timeoutPromise = new Promise((_, reject) =>
         setTimeout(
           () => reject(new Error("Profile status check timeout")),
@@ -64,15 +67,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           statusPromise,
           timeoutPromise,
         ])) as boolean;
+
         setProfileCompleted(isCompleted);
-        if (__DEV__) console.log("Profile completed:", isCompleted);
+        if (__DEV__)
+          console.log(
+            `[Auth] Profile status: ${isCompleted ? "COMPLETED" : "INCOMPLETE"}`,
+          );
       } catch (raceError) {
-        if (__DEV__) console.warn("Profile check race error:", raceError);
+        // En cas de timeout, on considère par prudence que c'est true
+        // pour éviter de bloquer l'utilisateur sur l'onboarding
         setProfileCompleted(true);
       }
     } catch (error) {
-      if (__DEV__) console.error("Profile status check error:", error);
+      if (__DEV__) console.error("❌ [Auth] Profile check error:", error);
       setProfileCompleted(true);
+    } finally {
+      // C'EST ICI QUE TOUT SE JOUE :
+      setLoading(false);
+      if (__DEV__) console.log("🔓 [Auth] Loading finished.");
     }
   };
 
@@ -119,16 +131,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (!isMounted) return;
 
       setSession(session);
-      setLoading(false);
-      clearTimeout(initTimeoutId);
+      // Supprime le setLoading(false) qui était ici !
 
-      if (event === "SIGNED_IN") {
-        await checkProfileStatus();
+      if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
+        await checkProfileStatus(); // Cette fonction gère maintenant le setLoading(false)
       } else if (event === "SIGNED_OUT") {
         setProfileCompleted(false);
-      } else if (event === "TOKEN_REFRESHED" && session) {
-        setSession(session);
+        setLoading(false); // Ici on peut le laisser car pas de profil à checker
       }
+
+      clearTimeout(initTimeoutId);
     });
 
     const subscriptionAppState = AppState.addEventListener(
