@@ -18,6 +18,8 @@ export default function RootLayoutNav() {
                 <Stack.Screen name="login" />
                 <Stack.Screen name="register" />
                 <Stack.Screen name="onboarding" />
+                <Stack.Screen name="forgot-password" />
+                <Stack.Screen name="reset-password" />
             </Stack>
         </ThemeProvider>
     );

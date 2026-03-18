@@ -4,6 +4,7 @@ import { useColorScheme } from "@/src/presentation/components/useColorScheme.web
 import { AuthProvider, useAuth } from "@/src/presentation/hooks/authContext";
 import { MessageProvider } from "@/src/presentation/hooks/context/messageContext";
 import { NotificationProvider } from "@/src/presentation/hooks/context/notificationContext";
+import { useSupabaseDeepLink } from "@/src/presentation/hooks/useSupabaseDeepLink";
 import { queryClient } from "@/utils/react-query";
 import { FontAwesome } from "@expo/vector-icons";
 import {
@@ -13,6 +14,7 @@ import {
 } from "@react-navigation/native";
 import { QueryClientProvider } from "@tanstack/react-query";
 import * as Font from "expo-font";
+import * as Linking from "expo-linking";
 import { SplashScreen, Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
 
@@ -40,34 +42,38 @@ function RootLayoutNav() {
   const router = useRouter();
   const segments = useSegments() as string[];
   const colorScheme = useColorScheme();
+  const url = Linking.useURL();
 
   const [fontsLoaded] = Font.useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
   });
 
-  useEffect(() => {
-    if (__DEV__)
-      console.table({
-        session: !!session,
-        loading,
-        profileCompleted,
-        segment: segments[0],
-      });
+  useSupabaseDeepLink();
 
-    if (loading || !fontsLoaded) {
+  useEffect(() => {
+    // 1. Attente du chargement initial
+    if (loading || !fontsLoaded) return;
+
+    // 2. Détermination de l'état de navigation
+    const inAuthGroup = segments[0] === "(auth)";
+    const inOnboarding = segments.includes("onboarding");
+    const isOnResetPage = segments.includes("reset-password");
+
+    if (isOnResetPage) {
+      SplashScreen.hideAsync();
       return;
     }
 
-    const inAuthGroup = segments[0] === "(auth)";
-    const inOnboarding = segments.includes("onboarding");
-
+    // --- LOGIQUE DE NAVIGATION CLASSIQUE ---
     if (!session) {
+      // Utilisateur non connecté -> redirection Welcome
       if (!inAuthGroup) {
         if (__DEV__) console.log("[Nav] Redirection: Welcome");
         router.replace("/(auth)/welcome");
       }
     } else {
+      // Utilisateur connecté
       if (!profileCompleted && !inOnboarding) {
         if (__DEV__) console.log("[Nav] Redirection: Onboarding");
         router.replace("/(auth)/onboarding");
@@ -78,7 +84,7 @@ function RootLayoutNav() {
     }
 
     SplashScreen.hideAsync();
-  }, [session, profileCompleted, segments, fontsLoaded, loading]);
+  }, [session, profileCompleted, segments, fontsLoaded, loading, url]);
 
   if (!fontsLoaded || loading) {
     return null;

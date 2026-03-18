@@ -70,6 +70,14 @@ export default function LoginScreen() {
             iconName="lock-closed-outline"
             placeholder="••••••••"
           />
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>Un oubli de mot de passe ? </Text>
+            <TouchableOpacity
+              onPress={() => router.push("/(auth)/forgot-password")}
+            >
+              <Text style={styles.linkText}>Réinitialiser</Text>
+            </TouchableOpacity>
+          </View>
 
           <TouchableOpacity
             style={[
