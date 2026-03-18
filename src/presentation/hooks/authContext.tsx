@@ -1,15 +1,9 @@
-import { GetUserProfileStatusUseCase } from "@/src/application/use-case/user/GetUserProfileStatus";
-import { SupabaseUserRepository } from "@/src/infrastructure/repositories/SupabaseUserRepository";
 import { supabase } from "@/src/infrastructure/supabase";
 import { Session } from "@supabase/supabase-js";
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { AppState } from "react-native";
+import { getIsRecoveryFlow } from "./deepLinkFlag";
+import { useUserProfileStatus } from "./queries/useUserProfileStatus";
 
 type AuthContextType = {
   session: Session | null;
@@ -33,11 +27,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [profileCompleted, setProfileCompleted] = useState(false);
+  const [shouldCheckProfile, setShouldCheckProfile] = useState(false);
 
-  const profileStatusUseCase = useMemo(() => {
-    const userRepo = SupabaseUserRepository.getInstance();
-    return new GetUserProfileStatusUseCase(userRepo);
-  }, []);
+  // Hook React Query pour checker le profile
+  const { data: profileStatus, isLoading: profileLoading } =
+    useUserProfileStatus(shouldCheckProfile);
+
+  // Quand le profile status arrive, mettre à jour l'état
+  useEffect(() => {
+    if (shouldCheckProfile && !profileLoading) {
+      if (profileStatus !== undefined) {
+        setProfileCompleted(profileStatus);
+        if (__DEV__)
+          console.log(
+            `[Auth] Profile status: ${profileStatus ? "COMPLETED" : "INCOMPLETE"}`,
+          );
+      }
+      setLoading(false);
+      setShouldCheckProfile(false);
+    }
+  }, [profileStatus, profileLoading, shouldCheckProfile]);
 
   const checkProfileStatus = async () => {
     setLoading(true);
@@ -49,42 +58,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (!user) {
         setProfileCompleted(false);
+        setLoading(false);
         return;
       }
 
-      // Ton système de timeout est très bien
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(
-          () => reject(new Error("Profile status check timeout")),
-          5000,
-        ),
-      );
-
-      const statusPromise = profileStatusUseCase.execute();
-
-      try {
-        const isCompleted = (await Promise.race([
-          statusPromise,
-          timeoutPromise,
-        ])) as boolean;
-
-        setProfileCompleted(isCompleted);
-        if (__DEV__)
-          console.log(
-            `[Auth] Profile status: ${isCompleted ? "COMPLETED" : "INCOMPLETE"}`,
-          );
-      } catch (raceError) {
-        // En cas de timeout, on considère par prudence que c'est true
-        // pour éviter de bloquer l'utilisateur sur l'onboarding
-        setProfileCompleted(true);
-      }
+      // Déclencher la query React Query
+      setShouldCheckProfile(true);
     } catch (error) {
       if (__DEV__) console.error("❌ [Auth] Profile check error:", error);
       setProfileCompleted(true);
-    } finally {
-      // C'EST ICI QUE TOUT SE JOUE :
       setLoading(false);
-      if (__DEV__) console.log("🔓 [Auth] Loading finished.");
     }
   };
 
@@ -131,13 +114,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (!isMounted) return;
 
       setSession(session);
-      // Supprime le setLoading(false) qui était ici !
+
+      // 🔑 Ne pas checker le profil si on est en recovery flow (deep link)
+      const inRecoveryFlow = getIsRecoveryFlow();
 
       if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
-        await checkProfileStatus(); // Cette fonction gère maintenant le setLoading(false)
+        if (inRecoveryFlow) {
+          // Pendant le recovery flow, on juste set la session et return
+          // Le layout va blocker les redirections jusqu'à setRecoveryFlow(false)
+          if (__DEV__)
+            console.log(
+              "[Auth] Recovery flow detected - skipping profile check",
+            );
+          setLoading(false);
+        } else {
+          // Normal flow: checker le profil
+          await checkProfileStatus();
+        }
       } else if (event === "SIGNED_OUT") {
         setProfileCompleted(false);
-        setLoading(false); // Ici on peut le laisser car pas de profil à checker
+        setLoading(false);
       }
 
       clearTimeout(initTimeoutId);

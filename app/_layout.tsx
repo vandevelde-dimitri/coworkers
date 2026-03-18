@@ -4,6 +4,7 @@ import { useColorScheme } from "@/src/presentation/components/useColorScheme.web
 import { AuthProvider, useAuth } from "@/src/presentation/hooks/authContext";
 import { MessageProvider } from "@/src/presentation/hooks/context/messageContext";
 import { NotificationProvider } from "@/src/presentation/hooks/context/notificationContext";
+import { getIsRecoveryFlow } from "@/src/presentation/hooks/deepLinkFlag";
 import { useSupabaseDeepLink } from "@/src/presentation/hooks/useSupabaseDeepLink";
 import { queryClient } from "@/utils/react-query";
 import { FontAwesome } from "@expo/vector-icons";
@@ -39,6 +40,7 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const { session, loading, profileCompleted } = useAuth();
+  const isRecoveryFlow = getIsRecoveryFlow();
   const router = useRouter();
   const segments = useSegments() as string[];
   const colorScheme = useColorScheme();
@@ -60,7 +62,8 @@ function RootLayoutNav() {
     const inOnboarding = segments.includes("onboarding");
     const isOnResetPage = segments.includes("reset-password");
 
-    if (isOnResetPage) {
+    // 🔑 BLOQUER la navigation si recovery flow en cours OU si on est sur reset-password
+    if (isRecoveryFlow || isOnResetPage) {
       SplashScreen.hideAsync();
       return;
     }
@@ -84,7 +87,15 @@ function RootLayoutNav() {
     }
 
     SplashScreen.hideAsync();
-  }, [session, profileCompleted, segments, fontsLoaded, loading, url]);
+  }, [
+    session,
+    profileCompleted,
+    segments,
+    fontsLoaded,
+    loading,
+    url,
+    isRecoveryFlow,
+  ]);
 
   if (!fontsLoaded || loading) {
     return null;
