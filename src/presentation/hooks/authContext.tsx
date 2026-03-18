@@ -1,20 +1,15 @@
-import { GetUserProfileStatusUseCase } from "@/src/application/use-case/user/GetUserProfileStatus";
-import { SupabaseUserRepository } from "@/src/infrastructure/repositories/SupabaseUserRepository";
 import { supabase } from "@/src/infrastructure/supabase";
 import { Session } from "@supabase/supabase-js";
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { AppState } from "react-native";
+import { useUserProfileStatus } from "./queries/useUserProfileStatus";
 
 type AuthContextType = {
   session: Session | null;
   loading: boolean;
   profileCompleted: boolean;
+  isRecovering: boolean;
+  startRecovery: () => void;
   refreshSession: () => Promise<void>;
   logout: () => Promise<void>;
   checkProfileStatus: () => Promise<void>;
@@ -24,6 +19,8 @@ const AuthContext = createContext<AuthContextType>({
   session: null,
   loading: true,
   profileCompleted: false,
+  isRecovering: false,
+  startRecovery: () => {},
   refreshSession: async () => {},
   logout: async () => {},
   checkProfileStatus: async () => {},
@@ -31,118 +28,65 @@ const AuthContext = createContext<AuthContextType>({
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [profileCompleted, setProfileCompleted] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [isRecovering, setIsRecovering] = useState(false);
 
-  const profileStatusUseCase = useMemo(() => {
-    const userRepo = SupabaseUserRepository.getInstance();
-    return new GetUserProfileStatusUseCase(userRepo);
-  }, []);
+  // --- LOGIQUE DE VÉRIFICATION DU PROFIL ---
+  // On active React Query QUE si on a une session et qu'on n'est PAS en recovery.
+  const isQueryEnabled = !!session && !isRecovering;
 
-  const checkProfileStatus = async () => {
-    setLoading(true);
-    if (__DEV__) console.log(" [Auth] Checking profile status...");
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+  const {
+    data: profileStatus,
+    isLoading: profileLoading,
+    refetch,
+  } = useUserProfileStatus(isQueryEnabled);
 
-      if (!user) {
-        setProfileCompleted(false);
-        return;
-      }
-
-      // Ton système de timeout est très bien
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(
-          () => reject(new Error("Profile status check timeout")),
-          5000,
-        ),
-      );
-
-      const statusPromise = profileStatusUseCase.execute();
-
-      try {
-        const isCompleted = (await Promise.race([
-          statusPromise,
-          timeoutPromise,
-        ])) as boolean;
-
-        setProfileCompleted(isCompleted);
-        if (__DEV__)
-          console.log(
-            `[Auth] Profile status: ${isCompleted ? "COMPLETED" : "INCOMPLETE"}`,
-          );
-      } catch (raceError) {
-        // En cas de timeout, on considère par prudence que c'est true
-        // pour éviter de bloquer l'utilisateur sur l'onboarding
-        setProfileCompleted(true);
-      }
-    } catch (error) {
-      if (__DEV__) console.error("❌ [Auth] Profile check error:", error);
-      setProfileCompleted(true);
-    } finally {
-      // C'EST ICI QUE TOUT SE JOUE :
-      setLoading(false);
-      if (__DEV__) console.log("🔓 [Auth] Loading finished.");
-    }
-  };
+  // Calcul du loading global :
+  // Si on est en recovery, on débloque l'UI (loading = false).
+  // Sinon, on attend l'auth ET le chargement du profil (si session existante).
+  const loading = isRecovering
+    ? false
+    : authLoading || (!!session && profileLoading);
 
   useEffect(() => {
     let isMounted = true;
-    let initTimeoutId: ReturnType<typeof setTimeout>;
 
-    const initializeAuth = async () => {
+    // 1. Initialisation de la session au démarrage
+    const initAuth = async () => {
       try {
         const {
-          data: { session: restoredSession },
-          error,
+          data: { session: s },
         } = await supabase.auth.getSession();
-
         if (isMounted) {
-          if (restoredSession) {
-            setSession(restoredSession);
-            checkProfileStatus();
-          } else {
-            setLoading(false);
-          }
+          setSession(s);
+          setAuthLoading(false);
         }
-      } catch (error) {
-        if (__DEV__) console.error("Auth initialization error:", error);
-        if (isMounted) {
-          setLoading(false);
-        }
+      } catch (e) {
+        if (isMounted) setAuthLoading(false);
       }
     };
 
-    initializeAuth();
+    initAuth();
 
-    initTimeoutId = setTimeout(() => {
-      if (isMounted) {
-        if (__DEV__)
-          console.warn("Auth initialization timeout - forcing completion");
-        setLoading(false);
-      }
-    }, 3000);
-
+    // 2. Écoute des changements d'état (Login, Logout, Recovery)
     const {
-      data: { subscription: authSubscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
       if (!isMounted) return;
 
-      setSession(session);
-      // Supprime le setLoading(false) qui était ici !
+      if (__DEV__) console.log(`🔔 [Auth Event]: ${event}`);
+      setSession(currentSession);
 
-      if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
-        await checkProfileStatus(); // Cette fonction gère maintenant le setLoading(false)
+      if (event === "PASSWORD_RECOVERY") {
+        setIsRecovering(true);
       } else if (event === "SIGNED_OUT") {
-        setProfileCompleted(false);
-        setLoading(false); // Ici on peut le laisser car pas de profil à checker
+        setIsRecovering(false);
       }
 
-      clearTimeout(initTimeoutId);
+      setAuthLoading(false);
     });
 
+    // 3. Gestion du rafraîchissement Auto (AppState)
     const subscriptionAppState = AppState.addEventListener(
       "change",
       (state) => {
@@ -153,26 +97,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     return () => {
       isMounted = false;
-      clearTimeout(initTimeoutId);
-      authSubscription.unsubscribe();
+      subscription.unsubscribe();
       subscriptionAppState.remove();
     };
   }, []);
 
-  const refreshSession = async () => {
-    const { data, error } = await supabase.auth.refreshSession();
-    if (error) {
-      if (__DEV__) console.error("Refresh session error:", error);
-      return;
-    }
-    if (data.session) {
-      setSession(data.session);
-      await checkProfileStatus();
-    }
-  };
-
   const logout = async () => {
     await supabase.auth.signOut();
+    setIsRecovering(false);
+  };
+
+  const refreshSession = async () => {
+    await supabase.auth.refreshSession();
   };
 
   return (
@@ -180,10 +116,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       value={{
         session,
         loading,
-        profileCompleted,
+        // On force profileCompleted à true en recovery pour éviter la redirection Onboarding
+        profileCompleted: isRecovering ? true : !!profileStatus,
+        isRecovering,
+        startRecovery: () => {
+          if (__DEV__) console.log("🔒 [Auth] Recovery Lock activé");
+          setIsRecovering(true);
+        },
         refreshSession,
         logout,
-        checkProfileStatus,
+        checkProfileStatus: async () => {
+          await refetch();
+        },
       }}
     >
       {children}

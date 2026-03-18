@@ -4,6 +4,7 @@ import { useColorScheme } from "@/src/presentation/components/useColorScheme.web
 import { AuthProvider, useAuth } from "@/src/presentation/hooks/authContext";
 import { MessageProvider } from "@/src/presentation/hooks/context/messageContext";
 import { NotificationProvider } from "@/src/presentation/hooks/context/notificationContext";
+import { useSupabaseDeepLink } from "@/src/presentation/hooks/useSupabaseDeepLink";
 import { queryClient } from "@/utils/react-query";
 import { FontAwesome } from "@expo/vector-icons";
 import {
@@ -36,7 +37,8 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const { session, loading, profileCompleted } = useAuth();
+  // 1. On récupère isRecovering depuis le contexte
+  const { session, loading, profileCompleted, isRecovering } = useAuth();
   const router = useRouter();
   const segments = useSegments() as string[];
   const colorScheme = useColorScheme();
@@ -46,47 +48,62 @@ function RootLayoutNav() {
     ...FontAwesome.font,
   });
 
-  useEffect(() => {
-    if (__DEV__)
-      console.table({
-        session: !!session,
-        loading,
-        profileCompleted,
-        segment: segments[0],
-      });
+  // Activation du hook de deep link qui gère l'injection des tokens
+  useSupabaseDeepLink();
 
-    if (loading || !fontsLoaded) {
+  useEffect(() => {
+    // A. Attente du chargement initial (Fonts + Auth + Profil)
+    // Grâce au changement dans AuthProvider, loading sera false dès le début si isRecovering est true.
+    if (loading || !fontsLoaded) return;
+
+    // B. Détermination du contexte de navigation actuel
+    const inAuthGroup = segments[0] === "(auth)";
+    const inOnboarding = segments.includes("onboarding");
+    const isOnResetPage = segments.includes("reset-password");
+
+    // 🔥 PRIORITÉ RÉCUPÉRATION (RECOVERY)
+    // Si on est en mode recovery ou déjà sur la page de reset, on arrête tout.
+    // Cela empêche l'app de rediriger vers /onboarding même si le profil n'est pas encore "chargé".
+    if (isRecovering || isOnResetPage) {
+      if (__DEV__)
+        console.log("[Nav] Mode Recovery actif - Redirections gelées.");
+      SplashScreen.hideAsync();
       return;
     }
 
-    const inAuthGroup = segments[0] === "(auth)";
-    const inOnboarding = segments.includes("onboarding");
-
+    // C. LOGIQUE DE NAVIGATION CLASSIQUE (Hors Reset Password)
     if (!session) {
+      // Cas : Utilisateur non connecté
       if (!inAuthGroup) {
         if (__DEV__) console.log("[Nav] Redirection: Welcome");
         router.replace("/(auth)/welcome");
       }
     } else {
+      // Cas : Utilisateur connecté
       if (!profileCompleted && !inOnboarding) {
+        // Profil incomplet -> Onboarding
         if (__DEV__) console.log("[Nav] Redirection: Onboarding");
         router.replace("/(auth)/onboarding");
       } else if (profileCompleted && (inAuthGroup || inOnboarding)) {
+        // Profil complet mais encore dans l'auth/onboarding -> Home
         if (__DEV__) console.log("[Nav] Redirection: Home");
         router.replace("/(tabs)/home");
       }
     }
 
     SplashScreen.hideAsync();
-  }, [session, profileCompleted, segments, fontsLoaded, loading]);
+  }, [session, profileCompleted, segments, fontsLoaded, loading, isRecovering]);
 
-  if (!fontsLoaded || loading) {
+  // D. RENDU
+  // On ne bloque pas le rendu si on est en isRecovering (pour afficher la page de reset immédiatement)
+  if (!fontsLoaded || (loading && !isRecovering)) {
     return null;
   }
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack screenOptions={{ headerShown: false }}>
+        {/* On définit explicitement les groupes pour éviter les erreurs de route */}
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="(tabs)" />
       </Stack>

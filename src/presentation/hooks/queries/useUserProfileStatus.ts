@@ -12,7 +12,7 @@ export const useUserProfileStatus = (enabled: boolean = true) => {
   return useQuery({
     queryKey: ["user-profile-status"],
     queryFn: () => useCase.execute(),
-    enabled: enabled,
     staleTime: 1000 * 60 * 5,
+    enabled: enabled, // 👈 C'est ici que le verrouillage se fait
   });
 };
