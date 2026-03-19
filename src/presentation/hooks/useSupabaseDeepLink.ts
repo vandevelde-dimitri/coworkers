@@ -1,57 +1,97 @@
 import { supabase } from "@/src/infrastructure/supabase";
 import * as Linking from "expo-linking";
 import { useRouter } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { setRecoveryFlow } from "./deepLinkFlag";
 
 export const useSupabaseDeepLink = () => {
   const url = Linking.useURL();
   const router = useRouter();
+  const hasProcessed = useRef(false);
 
   useEffect(() => {
-    const handleTokenNavigation = async (rawUrl: string) => {
-      // 1. On ne traite que les URLs de récupération
-      if (
-        !rawUrl.includes("type=recovery") &&
-        !rawUrl.includes("reset-password")
-      )
-        return;
+    (async () => {
+      try {
+        const rawUrl = url;
 
-      if (__DEV__) console.log("🔗 Analyse du Deep Link...");
+        // 1. On ne traite que les URLs de récupération
+        if (
+          !rawUrl?.includes("type=recovery") &&
+          !rawUrl?.includes("reset-password")
+        )
+          return;
 
-      // 2. Extraction manuelle des tokens (Gestion du #)
-      const hashIndex = rawUrl.indexOf("#");
-      if (hashIndex === -1) return;
+        // 2. Éviter les doublons (critical!)
+        if (hasProcessed.current) {
+          if (__DEV__)
+            console.log("[DeepLink] Déjà traité, ignoring duplicate URL");
+          return;
+        }
 
-      const hashFragment = rawUrl.substring(hashIndex + 1);
-      const params = new URLSearchParams(hashFragment);
+        if (__DEV__) console.log("🔗 Analyse du Deep Link...");
 
-      const accessToken = params.get("access_token");
-      const refreshToken = params.get("refresh_token");
+        // 3. Extraction manuelle des tokens (Gestion du #)
+        const hashIndex = rawUrl.indexOf("#");
+        if (hashIndex === -1) {
+          if (__DEV__) console.log("[DeepLink] Pas de hash trouvé");
+          return;
+        }
 
-      if (accessToken) {
-        if (__DEV__)
-          console.log("🔑 Tokens trouvés ! Synchronisation Supabase...");
+        const hashFragment = rawUrl.substring(hashIndex + 1);
+        const params = new URLSearchParams(hashFragment);
 
-        // 3. On injecte manuellement la session dans le SDK
-        const { error } = await supabase.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken || "",
-        });
+        const accessToken = params.get("access_token");
+        const refreshToken = params.get("refresh_token");
+        const type = params.get("type");
 
-        if (!error) {
-          if (__DEV__) console.log("✅ Session OK. Redirection forcée.");
-          // On redirige vers l'écran de reset
+        if (__DEV__) {
+          console.log("[DeepLink] accessToken:", accessToken ? "✓" : "✗");
+          console.log("[DeepLink] type:", type);
+        }
+
+        if (accessToken && type === "recovery") {
+          hasProcessed.current = true;
+
+          if (__DEV__)
+            console.log("🔑 Tokens trouvés ! Synchronisation Supabase...");
+
+          // 🚨 Flag le flow AVANT de changer la session
+          setRecoveryFlow(true);
+          if (__DEV__) console.log("[DeepLink] Recovery flow flagged");
+
+          // 4. Injecter la session SANS await (fire & forget)
+          // Supabase gère la synchronisation en background
+          supabase.auth
+            .setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken || "",
+            })
+            .then(({ error }) => {
+              if (__DEV__) {
+                if (error) {
+                  console.error("[DeepLink] setSession error:", error.message);
+                } else {
+                  console.log("[DeepLink] setSession: ✅ OK");
+                }
+              }
+            });
+
+          // Naviguer IMMÉDIATEMENT (le layout va blocker les autres redirections)
+          if (__DEV__) console.log("→ Navigation vers /(auth)/reset-password");
+
           router.replace("/(auth)/reset-password");
         } else {
-          console.error("❌ Erreur setSession:", error.message);
+          if (__DEV__)
+            console.log("[DeepLink] Pas de tokens ou type incorrect", {
+              accessToken: !!accessToken,
+              type,
+            });
         }
+      } catch (err: any) {
+        if (__DEV__) console.error("[DeepLink] Erreur globale:", err.message);
       }
-    };
+    })();
+  }, [url, router, setRecoveryFlow]);
 
-    if (url) {
-      handleTokenNavigation(url);
-    }
-  }, [url]);
-
-  return { isDeepLinkLoading: !!url && url.includes("#access_token") };
+  return {};
 };

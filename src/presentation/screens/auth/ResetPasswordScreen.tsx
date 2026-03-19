@@ -1,5 +1,9 @@
 import { ScreenWrapper } from "@/src/presentation/components/ui/ScreenWrapper";
 import { useAuth } from "@/src/presentation/hooks/authContext";
+import {
+  getIsRecoveryFlow,
+  setRecoveryFlow,
+} from "@/src/presentation/hooks/deepLinkFlag";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
@@ -14,30 +18,49 @@ import {
 } from "react-native";
 import { CustomToast } from "../../components/ui/CustomToast";
 import { useToast } from "../../components/ui/molecules/Toast";
-import { useUpdatePassword } from "../../hooks/mutations/useUpdatePassword"; // Ton hook
+import { useUpdatePassword } from "../../hooks/mutations/useUpdatePassword";
 
 export default function ResetPasswordScreen() {
   const [password, setPassword] = useState("");
-  const { session, loading: authLoading } = useAuth();
+  const { session, loading: authLoading, logout } = useAuth();
+  const isRecoveryFlow = getIsRecoveryFlow();
   const { mutateAsync: updatePassword, isPending } = useUpdatePassword();
   const router = useRouter();
   const toast = useToast();
 
-  // Sécurité : Si pas de session après le chargement, on redirige
   useEffect(() => {
+    if (isRecoveryFlow) {
+      if (__DEV__)
+        console.log(
+          "[ResetPassword] In recovery flow - skipping session check",
+        );
+      return;
+    }
+
     if (!authLoading && !session) {
+      if (__DEV__)
+        console.log("[ResetPassword] No session - redirecting to login");
       router.replace("/(auth)/login");
     }
-  }, [session, authLoading]);
+  }, [session, authLoading, isRecoveryFlow]);
 
   const handleUpdate = async () => {
     try {
       await updatePassword(password);
+
+      await logout();
+
+      setRecoveryFlow(false);
+
       toast.show(
-        <CustomToast title="Succès" message="Mot de passe mis à jour !" />,
+        <CustomToast
+          title="Succès"
+          message="Mot de passe mis à jour ! Reconnectez-vous."
+        />,
         { type: "success" },
       );
-      router.replace("/(tabs)/home");
+
+      router.replace("/(auth)/login");
     } catch (error: any) {
       toast.show(<CustomToast title="Erreur" message={error.message} />, {
         type: "error",

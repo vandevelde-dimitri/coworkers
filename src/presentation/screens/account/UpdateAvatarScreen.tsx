@@ -12,7 +12,7 @@ import { MenuSection } from "../../components/ui/MenuSection";
 import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
 import { useDeleteAvatar } from "../../hooks/mutations/useDeleteAvatar";
 import { useUpdateAvatar } from "../../hooks/mutations/useUpdateAvatar";
-import { useCurrentUser } from "../../hooks/queries/useUser";
+import { useCurrentUser } from "../../hooks/queries/useCurrentUser";
 
 export default function EditAvatarScreen() {
   const [open, setOpen] = useState(false);

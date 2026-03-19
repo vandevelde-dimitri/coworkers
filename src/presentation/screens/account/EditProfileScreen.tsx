@@ -16,8 +16,8 @@ import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
 import { UpdateUserPayload } from "@/src/domain/entities/user/User";
 import { useRouter } from "expo-router";
 import { useUpdateUser } from "../../hooks/mutations/useUpadateUser";
+import { useCurrentUser } from "../../hooks/queries/useCurrentUser";
 import { useFloors } from "../../hooks/queries/useFloor";
-import { useCurrentUser } from "../../hooks/queries/useUser";
 
 export default function EditProfileScreen() {
   const router = useRouter();

@@ -13,11 +13,13 @@ import * as yup from "yup";
 import { View } from "../../components/Themed";
 import { AppButton } from "../../components/ui/AppButton";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
+import { CustomToast } from "../../components/ui/CustomToast";
 import { MenuDisclosureSection } from "../../components/ui/DisclosureMenu";
 import { FormInput } from "../../components/ui/FormInput";
 import { FormMenuSwitch } from "../../components/ui/FormSwitch";
 import { MenuItem } from "../../components/ui/MenuItem";
 import { MenuSection } from "../../components/ui/MenuSection";
+import { useToast } from "../../components/ui/molecules/Toast";
 import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
 import { useAuth } from "../../hooks/authContext";
 import { useDeleteAccount } from "../../hooks/mutations/useDeleteAccount";
@@ -29,16 +31,20 @@ import { useGetSettings } from "../../hooks/queries/useSettings";
 export default function SettingsScreen() {
   const router = useRouter();
   const { session } = useAuth();
-  const { data: settings, isLoading, isError } = useGetSettings();
+  const {
+    data: settings,
+    isLoading,
+    isError,
+    refetch: refetchSettings,
+  } = useGetSettings();
   const [open, setOpen] = useState(false);
   const { mutate: deleteAccount } = useDeleteAccount();
   const user = session?.user;
-  const { mutateAsync: updateSettings, isPending: isUpdatingSettings } =
-    useUpdateSettings();
+  const { mutateAsync: updateSettings } = useUpdateSettings();
   const { mutate: updateEmail, isPending: isUpdatingEmail } = useUpdateEmail();
   const { mutate: updatePassword, isPending: isUpdatingPassword } =
     useUpdatePassword();
-
+  const toast = useToast();
   const settingsSchema = yup.object({
     vibrations: yup.boolean(),
     notificationPush: yup.boolean(),
@@ -87,7 +93,7 @@ export default function SettingsScreen() {
       vibrations: settings.vibrations,
       notificationPush: settings.notificationPush,
       toConvey: settings.toConvey,
-      available: !settings.available,
+      available: settings.available,
     });
   }, [settings, settingsForm]);
 
@@ -101,7 +107,7 @@ export default function SettingsScreen() {
           <AppButton
             title="Réessayer"
             onPress={() => {
-              /* Re-fetch logic */
+              refetchSettings();
             }}
           />
         </View>
@@ -193,9 +199,19 @@ export default function SettingsScreen() {
             title="Changer le mot de passe"
             variant="secondary"
             disabled={isUpdatingPassword}
-            onPress={passwordForm.handleSubmit((data) =>
-              updatePassword(data.password),
-            )}
+            onPress={passwordForm.handleSubmit((data) => {
+              updatePassword(data.password, {
+                onSuccess: () => {
+                  toast.show(
+                    <CustomToast
+                      title="Succès"
+                      message="Mot de passe mis à jour !"
+                    />,
+                    { type: "success" },
+                  );
+                },
+              });
+            })}
           />
         </MenuDisclosureSection>
         <MenuDisclosureSection title="Zone de danger">
@@ -205,7 +221,7 @@ export default function SettingsScreen() {
             onPress={() => setOpen(true)}
           />
           <ConfirmDialog
-            title="Voirs-vous vraiment supprimer votre compte ?"
+            title="Voulez-vous vraiment supprimer votre compte ?"
             confirmLabel="oui"
             cancelLabel="non"
             onConfirm={deleteAccount}

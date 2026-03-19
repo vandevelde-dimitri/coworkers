@@ -19,7 +19,7 @@ import ProfileSkeleton from "../../components/ui/skeleton/ProfileSkeleton";
 import { UserHeader } from "../../components/ui/UserHeader";
 import { useAuth } from "../../hooks/authContext";
 import { useNotificationStatus } from "../../hooks/context/notificationContext";
-import { useCurrentUser } from "../../hooks/queries/useUser";
+import { useCurrentUser } from "../../hooks/queries/useCurrentUser";
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -69,7 +69,7 @@ export default function ProfileScreen() {
         </TouchableOpacity>
 
         <ConfirmDialog
-          title="Voirs-vous vraiment vous déconnecter ?"
+          title="Voulez-vous vraiment vous déconnecter ?"
           confirmLabel="oui"
           cancelLabel="non"
           onConfirm={logout}

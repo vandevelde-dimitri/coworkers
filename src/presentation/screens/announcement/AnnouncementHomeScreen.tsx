@@ -5,8 +5,8 @@ import { SearchBar } from "@/src/presentation/components/ui/molecules/search-bar
 import AnnouncementSkeleton from "@/src/presentation/components/ui/skeleton/AnnouncementSkeleton";
 import { useAuth } from "@/src/presentation/hooks/authContext";
 import { useAnnouncements } from "@/src/presentation/hooks/queries/useAnnouncement";
+import { useCurrentUser } from "@/src/presentation/hooks/queries/useCurrentUser";
 import { useFloors } from "@/src/presentation/hooks/queries/useFloor";
-import { useCurrentUser } from "@/src/presentation/hooks/queries/useUser";
 import { useDebounce } from "@/src/presentation/hooks/useDebounce";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
