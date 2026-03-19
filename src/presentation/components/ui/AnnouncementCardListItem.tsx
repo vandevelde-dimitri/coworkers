@@ -24,7 +24,7 @@ export default function AnnouncementCardListItem({
       >
         <View style={styles.cardHeader}>
           <View style={styles.driverSection}>
-            <Avatar user={item.owner} size={38} disablePress={true} />
+            <Avatar user={item.owner} size={38} />
             <View>
               <View style={styles.nameRow}>
                 <Text style={styles.driverName}>{item.owner?.firstName}</Text>

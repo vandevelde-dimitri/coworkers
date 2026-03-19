@@ -29,6 +29,10 @@ export interface UserPublic {
   fcName: string;
   fcId: string;
   memberSince: Date;
+  settings: {
+    toConvey: boolean;
+    available: boolean;
+  };
 }
 
 export type UpdateUserPayload = Partial<

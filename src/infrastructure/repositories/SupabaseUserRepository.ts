@@ -41,12 +41,11 @@ export class SupabaseUserRepository implements IUserRepository {
   async getUserProfilePublic(userId: string): Promise<UserPublic | null> {
     const { data, error } = await supabase
       .from("public_profiles")
-      .select(
-        `*,
-         fc:fc_id ( id, name )`,
-      )
+      .select(`*`)
       .eq("id", userId)
       .maybeSingle();
+
+    console.log("data", data);
 
     if (error) {
       if (__DEV__)

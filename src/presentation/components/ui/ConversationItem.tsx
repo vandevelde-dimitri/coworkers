@@ -22,11 +22,7 @@ export function ConversationItem({
       >
         <View style={styles.cardContent}>
           <View style={styles.avatarWrapper}>
-            <Avatar
-              userData={item.interlocutor}
-              size={44}
-              disablePress={true}
-            />
+            <Avatar userData={item.interlocutor} size={44} />
             {unread && <View style={styles.unreadDot} />}
           </View>
           <View style={styles.textSection}>

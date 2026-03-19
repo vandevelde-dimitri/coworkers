@@ -12,7 +12,6 @@ module.exports = function withTransparentNavBar(config) {
     if (fs.existsSync(stringsPath)) {
       let content = fs.readFileSync(stringsPath, "utf-8");
 
-      // Remplacer android:enforceNavigationBarContrast à true par false
       content = content.replace(
         /<item name="android:enforceNavigationBarContrast"[^>]*>true<\/item>/g,
         '<item name="android:enforceNavigationBarContrast" tools:targetApi="29">false</item>',

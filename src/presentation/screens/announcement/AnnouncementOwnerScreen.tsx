@@ -85,7 +85,7 @@ export default function AnnouncementOwnerScreen() {
       >
         <View style={styles.glassCard}>
           <View style={styles.ownerHeader}>
-            <Avatar userData={item.owner} size={64} disablePress={true} />
+            <Avatar userData={item.owner} size={64} disablePress />
             <View style={styles.ownerInfo}>
               <Text style={styles.ownerName}>
                 {item.owner.firstName} {item.owner.lastName}
@@ -149,7 +149,7 @@ export default function AnnouncementOwnerScreen() {
           item.passenger.map((p) => (
             <View key={p.id} style={styles.passengerRow}>
               <View style={styles.passengerAvatar}>
-                <Avatar userData={p} size={44} disablePress={true} />
+                <Avatar userData={p} size={44} />
               </View>
               <View>
                 <Text style={styles.passengerName}>{p.firstName}</Text>

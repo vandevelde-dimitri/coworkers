@@ -62,13 +62,12 @@ function RootLayoutNav() {
     const inOnboarding = segments.includes("onboarding");
     const isOnResetPage = segments.includes("reset-password");
 
-    // 🔑 BLOQUER la navigation si recovery flow en cours OU si on est sur reset-password
+    // BLOQUER la navigation si recovery flow en cours OU si on est sur reset-password
     if (isRecoveryFlow || isOnResetPage) {
       SplashScreen.hideAsync();
       return;
     }
 
-    // --- LOGIQUE DE NAVIGATION CLASSIQUE ---
     if (!session) {
       // Utilisateur non connecté -> redirection Welcome
       if (!inAuthGroup) {
@@ -106,6 +105,13 @@ function RootLayoutNav() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen
+          name="user/[id]"
+          options={{
+            headerShown: false,
+            presentation: "modal",
+          }}
+        />
       </Stack>
     </ThemeProvider>
   );

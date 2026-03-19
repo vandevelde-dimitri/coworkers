@@ -115,7 +115,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       setSession(session);
 
-      // 🔑 Ne pas checker le profil si on est en recovery flow (deep link)
+      // Ne pas checker le profil si on est en recovery flow (deep link)
       const inRecoveryFlow = getIsRecoveryFlow();
 
       if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {

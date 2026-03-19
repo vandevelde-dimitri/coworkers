@@ -31,8 +31,12 @@ export class UserMapper {
       avatarUpdatedAt: raw.avatar_updated_at,
       contract: raw.contract,
       fcId: raw.fc_id,
-      fcName: raw.fc?.name,
+      fcName: raw.fc_name,
       memberSince: new Date(raw.created_at),
+      settings: {
+        toConvey: raw.to_convey,
+        available: raw.available,
+      },
     };
   }
 

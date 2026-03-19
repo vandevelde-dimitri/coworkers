@@ -73,7 +73,7 @@ export default function EditAvatarScreen() {
     <ScreenWrapper title="Modifier la photo" showBackButton={true}>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.avatarPreviewContainer}>
-          <Avatar user={user} size={140} disablePress={true} />
+          <Avatar user={user} size={140} disablePress />
         </View>
 
         <MenuSection title="">

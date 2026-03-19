@@ -14,14 +14,12 @@ export const useSupabaseDeepLink = () => {
       try {
         const rawUrl = url;
 
-        // 1. On ne traite que les URLs de récupération
         if (
           !rawUrl?.includes("type=recovery") &&
           !rawUrl?.includes("reset-password")
         )
           return;
 
-        // 2. Éviter les doublons (critical!)
         if (hasProcessed.current) {
           if (__DEV__)
             console.log("[DeepLink] Déjà traité, ignoring duplicate URL");
@@ -30,7 +28,6 @@ export const useSupabaseDeepLink = () => {
 
         if (__DEV__) console.log("🔗 Analyse du Deep Link...");
 
-        // 3. Extraction manuelle des tokens (Gestion du #)
         const hashIndex = rawUrl.indexOf("#");
         if (hashIndex === -1) {
           if (__DEV__) console.log("[DeepLink] Pas de hash trouvé");
@@ -55,12 +52,9 @@ export const useSupabaseDeepLink = () => {
           if (__DEV__)
             console.log("🔑 Tokens trouvés ! Synchronisation Supabase...");
 
-          // 🚨 Flag le flow AVANT de changer la session
           setRecoveryFlow(true);
           if (__DEV__) console.log("[DeepLink] Recovery flow flagged");
 
-          // 4. Injecter la session SANS await (fire & forget)
-          // Supabase gère la synchronisation en background
           supabase.auth
             .setSession({
               access_token: accessToken,
@@ -76,7 +70,6 @@ export const useSupabaseDeepLink = () => {
               }
             });
 
-          // Naviguer IMMÉDIATEMENT (le layout va blocker les autres redirections)
           if (__DEV__) console.log("→ Navigation vers /(auth)/reset-password");
 
           router.replace("/(auth)/reset-password");

@@ -3,7 +3,7 @@ export interface Notification {
   annonceId: string;
   annonceTitle: string;
   otherUserId: string;
-  status: string; // 'pending', 'accepted', 'refused', etc.
+  status: string;
   scope: "owner" | "candidate";
   createdAt: string;
   userName: string;

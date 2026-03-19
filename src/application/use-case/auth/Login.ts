@@ -22,7 +22,6 @@ export class LoginUseCase {
       throw new Error("password_required");
     }
 
-    // Optionnel : Une sécurité de base (ex: < 8) mais JAMAIS de Regex complexe ici.
     if (password.length < 8) {
       throw new Error("invalid_credentials");
     }

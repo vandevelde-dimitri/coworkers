@@ -42,6 +42,10 @@ const Avatar = ({
   const handlePress = () => {
     if (disablePress) return;
     if (__DEV__) console.log("pressed");
+    router.push({
+      pathname: "/user/[id]",
+      params: { id: user?.id || id },
+    });
   };
 
   return (

@@ -81,7 +81,7 @@ export default function AnnouncementDetailScreen({
       >
         <View style={styles.glassCard}>
           <View style={styles.ownerHeader}>
-            <Avatar user={item.owner} size={64} disablePress={true} />
+            <Avatar user={item.owner} size={64} />
             <View style={styles.ownerInfo}>
               <Text style={styles.ownerName}>
                 {item.owner.firstName} {item.owner.lastName}
@@ -144,7 +144,7 @@ export default function AnnouncementDetailScreen({
         {item.passenger.length > 0 ? (
           item.passenger.map((p) => (
             <View key={p.id} style={styles.passengerRow}>
-              <Avatar user={p} size={44} disablePress={true} />
+              <Avatar user={p} size={44} />
               <View style={{ marginLeft: 12 }}>
                 <Text style={styles.passengerName}>{p.firstName}</Text>
                 <Text style={styles.passengerSub}>{p.city}</Text>
