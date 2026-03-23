@@ -54,28 +54,23 @@ function RootLayoutNav() {
   useSupabaseDeepLink();
 
   useEffect(() => {
-    // 1. Attente du chargement initial
     if (loading || !fontsLoaded) return;
 
-    // 2. Détermination de l'état de navigation
     const inAuthGroup = segments[0] === "(auth)";
     const inOnboarding = segments.includes("onboarding");
     const isOnResetPage = segments.includes("reset-password");
 
-    // BLOQUER la navigation si recovery flow en cours OU si on est sur reset-password
     if (isRecoveryFlow || isOnResetPage) {
       SplashScreen.hideAsync();
       return;
     }
 
     if (!session) {
-      // Utilisateur non connecté -> redirection Welcome
       if (!inAuthGroup) {
         if (__DEV__) console.log("[Nav] Redirection: Welcome");
         router.replace("/(auth)/welcome");
       }
     } else {
-      // Utilisateur connecté
       if (!profileCompleted && !inOnboarding) {
         if (__DEV__) console.log("[Nav] Redirection: Onboarding");
         router.replace("/(auth)/onboarding");

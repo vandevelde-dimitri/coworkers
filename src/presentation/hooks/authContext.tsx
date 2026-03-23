@@ -1,5 +1,6 @@
 import { supabase } from "@/src/infrastructure/supabase";
 import { Session } from "@supabase/supabase-js";
+import { useQueryClient } from "@tanstack/react-query";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { AppState } from "react-native";
 import { getIsRecoveryFlow } from "./deepLinkFlag";
@@ -12,6 +13,7 @@ type AuthContextType = {
   refreshSession: () => Promise<void>;
   logout: () => Promise<void>;
   checkProfileStatus: () => Promise<void>;
+  setProfileCompleted: (value: boolean) => void;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -21,6 +23,7 @@ const AuthContext = createContext<AuthContextType>({
   refreshSession: async () => {},
   logout: async () => {},
   checkProfileStatus: async () => {},
+  setProfileCompleted: () => {},
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -28,26 +31,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [profileCompleted, setProfileCompleted] = useState(false);
   const [shouldCheckProfile, setShouldCheckProfile] = useState(false);
+  const queryClient = useQueryClient();
 
-  // Hook React Query pour checker le profile
   const { data: profileStatus, isLoading: profileLoading } =
     useUserProfileStatus(shouldCheckProfile);
 
-  // Quand le profile status arrive, mettre à jour l'état
   useEffect(() => {
     if (shouldCheckProfile && !profileLoading) {
       if (profileStatus !== undefined) {
-        setProfileCompleted(profileStatus);
-        if (__DEV__)
-          console.log(
-            `[Auth] Profile status: ${profileStatus ? "COMPLETED" : "INCOMPLETE"}`,
-          );
+        if (profileCompleted && profileStatus === false) {
+          if (__DEV__)
+            console.log(
+              "[Auth] Profil déjà complété manuellement, on ignore le statut serveur 'false'.",
+            );
+        } else {
+          setProfileCompleted(profileStatus);
+        }
       }
       setLoading(false);
       setShouldCheckProfile(false);
     }
-  }, [profileStatus, profileLoading, shouldCheckProfile]);
-
+  }, [profileStatus, profileLoading, shouldCheckProfile, profileCompleted]);
   const checkProfileStatus = async () => {
     setLoading(true);
     if (__DEV__) console.log(" [Auth] Checking profile status...");
@@ -62,7 +66,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return;
       }
 
-      // Déclencher la query React Query
       setShouldCheckProfile(true);
     } catch (error) {
       if (__DEV__) console.error("❌ [Auth] Profile check error:", error);
@@ -115,20 +118,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       setSession(session);
 
-      // Ne pas checker le profil si on est en recovery flow (deep link)
       const inRecoveryFlow = getIsRecoveryFlow();
 
       if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
         if (inRecoveryFlow) {
-          // Pendant le recovery flow, on juste set la session et return
-          // Le layout va blocker les redirections jusqu'à setRecoveryFlow(false)
           if (__DEV__)
             console.log(
               "[Auth] Recovery flow detected - skipping profile check",
             );
           setLoading(false);
         } else {
-          // Normal flow: checker le profil
           await checkProfileStatus();
         }
       } else if (event === "SIGNED_OUT") {
@@ -168,7 +167,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+
+      queryClient.clear();
+
+      setSession(null);
+      setProfileCompleted(false);
+
+      if (__DEV__) console.log("[Auth] Logout: Session and Cache cleared");
+    } catch (error) {
+      if (__DEV__) console.error("Error during logout:", error);
+    }
   };
 
   return (
@@ -180,6 +190,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         refreshSession,
         logout,
         checkProfileStatus,
+        setProfileCompleted,
       }}
     >
       {children}

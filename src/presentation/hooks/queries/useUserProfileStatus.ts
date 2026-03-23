@@ -32,7 +32,7 @@ export const useUserProfileStatus = (enabled: boolean = true) => {
       }
     },
     enabled: enabled,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 0,
     retry: 2,
   });
 };

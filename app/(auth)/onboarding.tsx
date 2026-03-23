@@ -4,14 +4,14 @@ import { CustomToast } from "@/src/presentation/components/ui/CustomToast";
 import { FormInput } from "@/src/presentation/components/ui/FormInput";
 import { FormInputCity } from "@/src/presentation/components/ui/FormInputCity";
 import { FormSelect } from "@/src/presentation/components/ui/FormSelect";
-import { StackHeader } from "@/src/presentation/components/ui/Header";
 import { useToast } from "@/src/presentation/components/ui/molecules/Toast";
+import { ScreenWrapper } from "@/src/presentation/components/ui/ScreenWrapper";
 import { useAuth } from "@/src/presentation/hooks/authContext";
 import { useUpdateUser } from "@/src/presentation/hooks/mutations/useUpadateUser";
 import { useFloors } from "@/src/presentation/hooks/queries/useFloor";
 import { capitalize } from "@/utils/capitalize";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { StatusBar } from "expo-status-bar";
+import { useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
@@ -27,9 +27,11 @@ type OnboardingFormValues = {
 };
 
 export default function OnboardingScreen() {
-  const { session, checkProfileStatus } = useAuth();
+  const { session, checkProfileStatus, setProfileCompleted } = useAuth();
   const { mutateAsync: updateUser, isPending: isUpdatingUser } =
     useUpdateUser();
+  const queryClient = useQueryClient();
+
   const { data: floors } = useFloors();
   const [step, setStep] = useState(1);
   const toast = useToast();
@@ -93,6 +95,10 @@ export default function OnboardingScreen() {
           contract: values.contract,
         },
       });
+      setProfileCompleted(true);
+      queryClient.invalidateQueries({
+        queryKey: ["user-profile-status"],
+      });
       await checkProfileStatus();
     } catch (error) {
       if (__DEV__) console.error("Erreur onboarding :", error);
@@ -106,10 +112,7 @@ export default function OnboardingScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar style="dark" />
-      <StackHeader title="Nouveau Profil" />
-
+    <ScreenWrapper title="Nouveau Profil" showBackButton={false}>
       <View style={styles.progressBg}>
         <View
           style={[styles.progressFill, { width: `${(step / 3) * 100}%` }]}
@@ -119,6 +122,7 @@ export default function OnboardingScreen() {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
           <Text style={styles.stepText}>ÉTAPE {step} SUR 3</Text>
@@ -200,7 +204,7 @@ export default function OnboardingScreen() {
           />
         </View>
       </ScrollView>
-    </View>
+    </ScreenWrapper>
   );
 }
 
