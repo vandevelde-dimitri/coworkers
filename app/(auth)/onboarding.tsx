@@ -2,6 +2,7 @@ import { UserContract, UserTeam } from "@/src/domain/entities/user/User.enum";
 import { AppButton } from "@/src/presentation/components/ui/AppButton";
 import { CustomToast } from "@/src/presentation/components/ui/CustomToast";
 import { FormInput } from "@/src/presentation/components/ui/FormInput";
+import { FormInputCity } from "@/src/presentation/components/ui/FormInputCity";
 import { FormSelect } from "@/src/presentation/components/ui/FormSelect";
 import { StackHeader } from "@/src/presentation/components/ui/Header";
 import { useToast } from "@/src/presentation/components/ui/molecules/Toast";
@@ -150,13 +151,12 @@ export default function OnboardingScreen() {
 
           {step === 2 && (
             <>
-              <FormInput
-                name="city"
+              <FormInputCity
                 control={control}
                 label="Ville"
-                placeholder="Paris, Lyon..."
                 iconName="location-outline"
               />
+
               <FormSelect
                 name="team"
                 control={control}

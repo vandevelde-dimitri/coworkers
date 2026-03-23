@@ -2,7 +2,6 @@ import { Register } from "@/src/domain/entities/auth/Register";
 import { Ionicons } from "@expo/vector-icons";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { useForm } from "react-hook-form";
 import {
@@ -17,7 +16,7 @@ import {
 } from "react-native";
 import * as yup from "yup";
 import { FormInput } from "../../components/ui/FormInput";
-import { StackHeader } from "../../components/ui/Header";
+import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
 import { useRegister } from "../../hooks/mutations/useRegister";
 import { usePasswordValidation } from "../../hooks/usePasswordValidation";
 
@@ -67,9 +66,7 @@ export default function RegisterScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar style="light" />
-      <StackHeader title="Inscription" />
+    <ScreenWrapper title="Inscription" showBackButton={true}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
@@ -156,13 +153,12 @@ export default function RegisterScreen() {
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
-    </View>
+    </ScreenWrapper>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#141E30" },
-  scrollContent: { padding: 25, paddingTop: 40 },
+  scrollContent: { padding: 20, paddingBottom: 150 },
   welcomeTitle: {
     fontSize: 28,
     fontWeight: "800",

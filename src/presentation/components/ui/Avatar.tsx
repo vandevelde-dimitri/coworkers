@@ -4,6 +4,7 @@ import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import React from "react";
 import { Pressable } from "react-native";
+import { useAuth } from "../../hooks/authContext";
 
 type AvatarProps = {
   userData?: {
@@ -31,8 +32,9 @@ const Avatar = ({
   };
 
   const { profileAvatar, avatarUpdatedAt, contract, id } = avatarData;
+  const { session } = useAuth();
   const router = useRouter();
-
+  const ownerProfile = id === session?.user.id;
   const cacheKey = avatarUpdatedAt ? new Date(avatarUpdatedAt).getTime() : "";
   const imageSource = profileAvatar ? `${profileAvatar}?v=${cacheKey}` : null;
 
@@ -42,10 +44,14 @@ const Avatar = ({
   const handlePress = () => {
     if (disablePress) return;
     if (__DEV__) console.log("pressed");
-    router.push({
-      pathname: "/user/[id]",
-      params: { id: user?.id || id },
-    });
+    if (!ownerProfile) {
+      router.push({
+        pathname: "/user/[id]",
+        params: { id: user?.id || id },
+      });
+    } else {
+      router.push("/(tabs)/account");
+    }
   };
 
   return (

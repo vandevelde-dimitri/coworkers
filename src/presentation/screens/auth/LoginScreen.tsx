@@ -1,7 +1,6 @@
 import { Login } from "@/src/domain/entities/auth/Login";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { useForm } from "react-hook-form";
 import {
@@ -15,7 +14,7 @@ import {
 } from "react-native";
 import * as yup from "yup";
 import { FormInput } from "../../components/ui/FormInput";
-import { StackHeader } from "../../components/ui/Header";
+import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
 import { useLogin } from "../../hooks/mutations/useLogin";
 
 export default function LoginScreen() {
@@ -38,9 +37,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar style="dark" />
-      <StackHeader title="Connexion" />
+    <ScreenWrapper title="Connexion" showBackButton>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
@@ -70,12 +67,14 @@ export default function LoginScreen() {
             iconName="lock-closed-outline"
             placeholder="••••••••"
           />
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>Un oubli de mot de passe ? </Text>
+          <View style={styles.forgotPasswordContainer}>
             <TouchableOpacity
               onPress={() => router.push("/(auth)/forgot-password")}
+              activeOpacity={0.7}
             >
-              <Text style={styles.linkText}>Réinitialiser</Text>
+              <Text style={styles.forgotPasswordText}>
+                Mot de passe oublié ?
+              </Text>
             </TouchableOpacity>
           </View>
 
@@ -92,21 +91,20 @@ export default function LoginScreen() {
             </Text>
           </TouchableOpacity>
 
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>Pas encore de compte ? </Text>
+          <View style={styles.signupContainer}>
+            <Text style={styles.noAccountText}>Pas encore de compte ? </Text>
             <TouchableOpacity onPress={() => router.push("/(auth)/register")}>
-              <Text style={styles.linkText}>S'inscrire</Text>
+              <Text style={styles.signupActionText}>S'inscrire</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </View>
+    </ScreenWrapper>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#141E30" },
-  scrollContent: { padding: 25, paddingTop: 40 },
+  scrollContent: { padding: 20, paddingBottom: 150 },
   headerTextContainer: { marginBottom: 40 },
   welcomeTitle: {
     fontSize: 28,
@@ -124,12 +122,31 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   loginButtonText: { color: "#141E30", fontSize: 18, fontWeight: "700" },
-  footer: { flexDirection: "row", justifyContent: "center", marginTop: 30 },
-  footerText: { color: "#B9B9B9", fontSize: 15 },
-  linkText: {
+  forgotPasswordContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  forgotPasswordText: {
+    color: "rgba(255, 255, 255, 0.6)",
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  signupContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 35,
+  },
+  noAccountText: {
+    color: "#B9B9B9",
+    fontSize: 15,
+  },
+  signupActionText: {
     color: "#FFF",
     fontSize: 15,
-    fontWeight: "700",
+    fontWeight: "800",
     textDecorationLine: "underline",
   },
 });

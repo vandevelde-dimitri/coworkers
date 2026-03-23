@@ -15,6 +15,7 @@ import { ScreenWrapper } from "../../components/ui/ScreenWrapper";
 
 import { UpdateUserPayload } from "@/src/domain/entities/user/User";
 import { useRouter } from "expo-router";
+import { FormInputCity } from "../../components/ui/FormInputCity";
 import { useUpdateUser } from "../../hooks/mutations/useUpadateUser";
 import { useCurrentUser } from "../../hooks/queries/useCurrentUser";
 import { useFloors } from "../../hooks/queries/useFloor";
@@ -95,6 +96,7 @@ export default function EditProfileScreen() {
       <ScrollView
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
         <MenuSection title="Photo de profil">
           <MenuItem
@@ -118,11 +120,10 @@ export default function EditProfileScreen() {
               label="Nom"
               placeholder="Ton nom"
             />
-            <FormInput
-              name="city"
+            <FormInputCity
+              placeholder="Paris, Lyon..."
               control={control}
               label="Ville"
-              placeholder="Ta ville actuelle"
             />
           </View>
         </MenuSection>
