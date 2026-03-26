@@ -42,10 +42,7 @@ export default function AnnouncementOwnerScreen() {
   if (!item) {
     return (
       <ScreenWrapper title="Mon annonce" showBackButton={false}>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContent}
-        >
+        <View style={styles.listContainer}>
           <EmptyState
             icon="search-outline"
             description="Vous n'avez aucune annonce"
@@ -53,7 +50,7 @@ export default function AnnouncementOwnerScreen() {
             onPress={() => navigateSafely("/(tabs)/formAnnouncement")}
             buttonLabel="Crée une annonce"
           />
-        </ScrollView>
+        </View>
       </ScreenWrapper>
     );
   }
@@ -192,6 +189,12 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#141E30" },
   loadingContainer: { justifyContent: "center", alignItems: "center" },
 
+  listContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 150,
+    flexGrow: 1,
+  },
   scrollContent: { padding: 20, paddingBottom: 150 },
 
   glassCard: {

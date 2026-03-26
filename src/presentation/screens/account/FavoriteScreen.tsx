@@ -104,5 +104,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 10,
     paddingBottom: 150,
+    flexGrow: 1,
   },
 });

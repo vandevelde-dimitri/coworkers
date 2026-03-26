@@ -104,6 +104,9 @@ export default function MessagingScreen() {
 
 const styles = StyleSheet.create({
   listContainer: {
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 150,
+    flexGrow: 1,
   },
 });

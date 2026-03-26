@@ -186,7 +186,12 @@ export default function NotificationsScreen() {
 }
 
 const styles = StyleSheet.create({
-  listContainer: { padding: 16, paddingBottom: 40 },
+  listContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 150,
+    flexGrow: 1,
+  },
   glassCard: {
     backgroundColor: "rgba(255, 255, 255, 0.05)",
     borderRadius: 24,

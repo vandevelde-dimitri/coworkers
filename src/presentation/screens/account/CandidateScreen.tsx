@@ -158,8 +158,9 @@ export default function CandidateScreen() {
 
 const styles = StyleSheet.create({
   listContent: {
-    padding: 16,
-    paddingBottom: 40,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 150,
     flexGrow: 1,
   },
   glassCard: {

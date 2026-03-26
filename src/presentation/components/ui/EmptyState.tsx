@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { ComponentProps } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import { AppButton } from "./AppButton";
 
 type IoniconName = ComponentProps<typeof Ionicons>["name"];
 
@@ -21,22 +22,23 @@ export const EmptyState = ({
 }: EmptyStateProps) => {
   return (
     <View style={styles.container}>
-      <Ionicons
-        name={icon as any}
-        size={56}
-        color="rgba(255, 255, 255, 0.3)"
-        style={styles.icon}
-      />
+      <View style={styles.iconContainer}>
+        <Ionicons
+          name={icon as any}
+          size={64}
+          color="rgba(255, 255, 255, 0.4)"
+          style={styles.icon}
+        />
+      </View>
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.description}>{description}</Text>
       {onPress && buttonLabel && (
-        <TouchableOpacity
-          style={styles.button}
-          activeOpacity={0.8}
+        <AppButton
+          title={buttonLabel}
           onPress={onPress}
-        >
-          <Text style={styles.buttonText}>{buttonLabel}</Text>
-        </TouchableOpacity>
+          variant="primary"
+          style={styles.button}
+        />
       )}
     </View>
   );
@@ -44,41 +46,35 @@ export const EmptyState = ({
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 30,
+    paddingHorizontal: 24,
     paddingVertical: 60,
-    minHeight: 300,
+    minHeight: 350,
+  },
+  iconContainer: {
+    marginBottom: 24,
+    opacity: 0.75,
   },
   icon: {
-    marginBottom: 20,
-    opacity: 0.6,
+    opacity: 0.7,
   },
   title: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "700",
     color: "#FFFFFF",
     marginBottom: 12,
     textAlign: "center",
   },
   description: {
-    fontSize: 14,
-    color: "rgba(255, 255, 255, 0.5)",
+    fontSize: 16,
+    color: "rgba(255, 255, 255, 0.6)",
     textAlign: "center",
-    marginBottom: 28,
-    lineHeight: 20,
+    marginBottom: 32,
+    lineHeight: 24,
   },
   button: {
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.2)",
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 15,
-  },
-  buttonText: {
-    fontWeight: "600",
-    color: "#FFFFFF",
-    fontSize: 14,
+    minWidth: 200,
   },
 });
