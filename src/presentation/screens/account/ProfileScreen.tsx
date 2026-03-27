@@ -3,7 +3,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  Linking,
   ScrollView,
   StyleSheet,
   Text,
@@ -156,7 +155,7 @@ export default function ProfileScreen() {
         <View style={styles.footerSection}>
           <TouchableOpacity
             style={styles.supportLink}
-            onPress={() => Linking.openURL("mailto:vandevdimitri@gmail.com")}
+            onPress={() => router.push("/(tabs)/account/contact" as any)}
           >
             <Text style={styles.supportText}>
               Besoin d'aide ? Contacter le support

@@ -9,6 +9,7 @@ export default function AccountStackLayout() {
       <Stack.Screen name="candidate" />
       <Stack.Screen name="favorite" />
       <Stack.Screen name="updateAvatar" />
+      <Stack.Screen name="contact" />
     </Stack>
   );
 }
