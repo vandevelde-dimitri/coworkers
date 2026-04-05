@@ -117,6 +117,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (!isMounted) return;
 
       setSession(session);
+      if (event === "USER_UPDATED") {
+        if (__DEV__) console.log("[Auth] User updated event detected");
+        // On force la mise à jour de la session pour récupérer le nouvel email
+        console.log("session: ", session);
+
+        setSession(session);
+      }
 
       const inRecoveryFlow = getIsRecoveryFlow();
 

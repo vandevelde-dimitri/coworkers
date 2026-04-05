@@ -24,8 +24,8 @@ export const useUpdateEmail = () => {
     onSuccess: () => {
       toast.show(
         <CustomToast
-          title="Succès"
-          message="Un email de confirmation a été envoyé"
+          title="Vérification"
+          message="Consultez votre nouvelle boîte mail pour valider !"
         />,
         { type: "success" },
       );

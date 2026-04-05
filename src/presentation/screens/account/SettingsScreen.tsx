@@ -31,26 +31,33 @@ import { useGetSettings } from "../../hooks/queries/useSettings";
 export default function SettingsScreen() {
   const router = useRouter();
   const { session } = useAuth();
+  const toast = useToast();
+
+  // Une seule source de vérité pour l'email de la session
+  const sessionEmail = session?.user?.email;
+
   const {
     data: settings,
     isLoading,
     isError,
     refetch: refetchSettings,
   } = useGetSettings();
+
   const [open, setOpen] = useState(false);
   const { mutate: deleteAccount } = useDeleteAccount();
-  const user = session?.user;
   const { mutateAsync: updateSettings } = useUpdateSettings();
   const { mutate: updateEmail, isPending: isUpdatingEmail } = useUpdateEmail();
   const { mutate: updatePassword, isPending: isUpdatingPassword } =
     useUpdatePassword();
-  const toast = useToast();
+
+  // --- SCHEMAS DE VALIDATION ---
   const settingsSchema = yup.object({
     vibrations: yup.boolean(),
     notificationPush: yup.boolean(),
     toConvey: yup.boolean(),
     available: yup.boolean(),
   });
+
   const emailSchema = yup.object({
     email: yup.string().email("Email invalide").required("Email requis"),
   });
@@ -62,18 +69,15 @@ export default function SettingsScreen() {
       .required("Mot de passe requis"),
   });
 
+  // --- FORMS ---
   const emailForm = useForm({
     resolver: yupResolver(emailSchema),
-    defaultValues: {
-      email: user?.email ?? "",
-    },
+    defaultValues: { email: sessionEmail ?? "" },
   });
 
   const passwordForm = useForm({
     resolver: yupResolver(passwordSchema),
-    defaultValues: {
-      password: "",
-    },
+    defaultValues: { password: "" },
   });
 
   const settingsForm = useForm({
@@ -86,30 +90,41 @@ export default function SettingsScreen() {
     },
   });
 
+  // --- SYNC DES SETTINGS ---
   useEffect(() => {
-    if (!settings) return;
-
-    settingsForm.reset({
-      vibrations: settings.vibrations,
-      notificationPush: settings.notificationPush,
-      toConvey: settings.toConvey,
-      available: settings.available,
-    });
+    if (settings) {
+      settingsForm.reset({
+        vibrations: settings.vibrations,
+        notificationPush: settings.notificationPush,
+        toConvey: settings.toConvey,
+        available: settings.available,
+      });
+    }
   }, [settings, settingsForm]);
+
+  // --- SYNC DE L'EMAIL (Correction du switch) ---
+  useEffect(() => {
+    const currentFormValue = emailForm.getValues("email");
+
+    // On ne reset QUE si l'email session est différent de l'UI
+    // et que l'utilisateur n'est pas en train de modifier le champ
+    if (
+      sessionEmail &&
+      sessionEmail !== currentFormValue &&
+      !emailForm.formState.isDirty
+    ) {
+      emailForm.reset({ email: sessionEmail });
+    }
+  }, [sessionEmail, emailForm]);
 
   if (isError) {
     return (
       <ScreenWrapper showBackButton={true} title="Paramètres">
         <View style={styles.container}>
-          <Text style={{ color: "red" }}>
+          <Text style={{ color: "red", marginBottom: 10 }}>
             Impossible de charger vos paramètres.
           </Text>
-          <AppButton
-            title="Réessayer"
-            onPress={() => {
-              refetchSettings();
-            }}
-          />
+          <AppButton title="Réessayer" onPress={() => refetchSettings()} />
         </View>
       </ScreenWrapper>
     );
@@ -119,11 +134,14 @@ export default function SettingsScreen() {
     return (
       <ScreenWrapper showBackButton={true} title="Paramètres">
         <View style={styles.container}>
-          <ActivityIndicator />
+          <ActivityIndicator size="large" />
         </View>
       </ScreenWrapper>
     );
   }
+
+  //? session de base
+  console.log("session de base: ", session);
 
   return (
     <ScreenWrapper showBackButton={true} title="Paramètres">
@@ -138,6 +156,7 @@ export default function SettingsScreen() {
             label="Modifier mon profil"
           />
         </MenuSection>
+
         <MenuSection title="Préférences">
           <FormMenuSwitch
             name="notificationPush"
@@ -172,22 +191,37 @@ export default function SettingsScreen() {
             onAfterChange={(value) => updateSettings({ available: !value })}
           />
         </MenuSection>
+
         <MenuDisclosureSection title="Sécurité">
           <FormInput
             control={emailForm.control}
             name="email"
-            label="Email"
+            label="Email actuel"
             type="email"
             iconName="mail-outline"
-            placeholder="john@doe.fr"
+            placeholder="votre@email.fr"
           />
           <AppButton
-            title="Modifier mon email"
+            title={isUpdatingEmail ? "Envoi en cours..." : "Modifier mon email"}
             variant="secondary"
             disabled={isUpdatingEmail}
-            onPress={emailForm.handleSubmit((data) => updateEmail(data.email))}
+            onPress={emailForm.handleSubmit((data) => {
+              updateEmail(data.email, {
+                onSuccess: () => {
+                  toast.show(
+                    <CustomToast
+                      title="Vérification"
+                      message="Lien envoyé sur votre nouvelle adresse !"
+                    />,
+                    { type: "info" },
+                  );
+                },
+              });
+            })}
           />
-          <View style={{ height: 20, backgroundColor: "transparent" }} />
+
+          <View style={{ height: 30, backgroundColor: "transparent" }} />
+
           <FormInput
             name="password"
             control={passwordForm.control}
@@ -209,11 +243,13 @@ export default function SettingsScreen() {
                     />,
                     { type: "success" },
                   );
+                  passwordForm.reset();
                 },
               });
             })}
           />
         </MenuDisclosureSection>
+
         <MenuDisclosureSection title="Zone de danger">
           <AppButton
             title="Supprimer mon compte"
@@ -230,6 +266,7 @@ export default function SettingsScreen() {
             danger
           />
         </MenuDisclosureSection>
+
         <MenuDisclosureSection title="Informations Légales">
           <MenuItem
             onPress={() =>
