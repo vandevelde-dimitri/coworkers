@@ -38,8 +38,10 @@ const Avatar = ({
   const cacheKey = avatarUpdatedAt ? new Date(avatarUpdatedAt).getTime() : "";
   const imageSource = profileAvatar ? `${profileAvatar}?v=${cacheKey}` : null;
 
+  console.log("test du nom - prenom", userData);
+
   const fallbackImage =
-    "https://ctkoosixwtoxxtilcuqh.supabase.co/storage/v1/object/public/avatars/1903ad4c-4a65-4cb0-a21c-9590c00b6b63/avatar.webp";
+    "https://images.unsplash.com/photo-1740252117044-2af197eea287?q=80&w=580&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
   const handlePress = () => {
     if (disablePress) return;
